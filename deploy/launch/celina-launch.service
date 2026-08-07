@@ -1,0 +1,23 @@
+# Celina — сервис церемониальной кнопки запуска (см. launch_server.py).
+# Установка (секрет подставить свой, например `openssl rand -hex 10`):
+#   mkdir -p /opt/celina-launch && cp deploy/launch/launch_server.py /opt/celina-launch/
+#   cp deploy/launch/celina-launch.service /etc/systemd/system/
+#   sed -i "s/__SECRET__/<ваш-секрет>/" /etc/systemd/system/celina-launch.service
+#   systemctl daemon-reload && systemctl enable --now celina-launch
+[Unit]
+Description=Celina launch button (ceremonial go-live)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+Environment=LAUNCH_SECRET=__SECRET__
+Environment=FLAG=/var/www/celina-launch/prelaunch.flag
+Environment=PORT=9099
+Environment=SITE=https://celinaeda.ru
+ExecStart=/usr/bin/python3 /opt/celina-launch/launch_server.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,40 @@
+# Celina — запуск одной командой:  docker compose up -d --build
+# Данные (БД + загрузки) хранятся в томах и НЕ теряются при пересборке.
+services:
+  celina:
+    build:
+      context: .
+      args:
+        # поменяйте на свой домен перед сборкой (или через .env: VITE_SITE_URL=...)
+        VITE_SITE_URL: ${VITE_SITE_URL:-https://celina.ru}
+        # опционально: аналитика и подтверждение прав в вебмастерах (пусто → выкл.)
+        VITE_YANDEX_METRICA_ID: ${VITE_YANDEX_METRICA_ID:-}
+        VITE_YANDEX_VERIFICATION: ${VITE_YANDEX_VERIFICATION:-}
+        VITE_GOOGLE_VERIFICATION: ${VITE_GOOGLE_VERIFICATION:-}
+    restart: unless-stopped
+    # Хостовая сеть: у этого провайдера исходящий трафик из docker-моста (NAT)
+    # блокируется — контейнер не может открыть SMTP к Gmail, и коды 2FA/сброса
+    # не уходят. С host-сетью контейнер выходит наружу как сам хост (у хоста
+    # доступ к smtp.gmail.com:465 есть), почта работает. Порт публикуется напрямую
+    # (PORT=80), поэтому секция ports не нужна (при host-сети она игнорируется).
+    network_mode: host
+    # секреты и почта берутся из backend/.env (JWT_SECRET, SMTP_*)
+    env_file: ./backend/.env
+    environment:
+      NODE_ENV: production
+      # Без nginx на хосте: PORT=80, HOST=0.0.0.0 (сайт на http://IP-сервера).
+      # За nginx+HTTPS (см. deploy/nginx-docker-proxy.conf): в .env рядом с этим
+      # файлом задать CELINA_PORT=4000 и CELINA_HOST=127.0.0.1 — nginx терминирует
+      # TLS на 80/443 и проксирует на Node, порт Node снаружи недоступен.
+      PORT: ${CELINA_PORT:-80}
+      HOST: ${CELINA_HOST:-0.0.0.0}
+      FRONTEND_DIST: /app/frontend-dist
+      DATABASE_URL: file:/app/data/prod.db
+    volumes:
+      - celina-data:/app/data        # база данных (пользователи, заказы)
+      - celina-uploads:/app/uploads  # загруженные фото/документы
+      - celina-kyc:/app/uploads-private  # ПРИВАТНЫЕ документы верификации (паспорта) — обязателен, иначе теряются при пересборке
+volumes:
+  celina-data:
+  celina-uploads:
+  celina-kyc:

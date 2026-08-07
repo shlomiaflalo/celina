@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#e0860c" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Celina" />
+    <!-- Заголовок/описание/OG/Twitter задаёт <Seo> per-route (vite-react-ssg Head):
+         у каждой страницы свои метаданные без дублей. Шаблонный <title> не ставим,
+         иначе он перекрывает per-route заголовок при пререндере. -->
+    <!-- LCP-герой ленты: приоритетная загрузка webp (‑34% к jpg); браузеры без
+         поддержки webp игнорируют preload с type и возьмут jpg-фолбэк из <picture> -->
+    <link rel="preload" as="image" href="/images/red-square.webp" type="image/webp" fetchpriority="high" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Шрифты грузим НЕ блокируя рендер: из России fonts.googleapis.com бывает
+         медленным/недоступным, а блокирующий <link rel=stylesheet> тормозил бы
+         первую отрисовку (Core Web Vitals). media=print→all по onload + noscript-фолбэк. -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      />
+    </noscript>
+    <!-- Маяк ошибок устройства: инлайн (НЕ в бандле!) и на ES5 — ловит даже
+         SyntaxError самого бандла на старых iPhone/Android (иначе такие устройства
+         молча получают мёртвую страницу, а мы ничего не видим в логах сервера).
+         Шлёт максимум 3 отчёта за загрузку страницы на /api/client-log. -->
+    <script>
+      (function () {
+        var sent = 0;
+        function report(kind, msg) {
+          try {
+            if (sent >= 3) return;
+            sent++;
+            var body = JSON.stringify({
+              kind: kind,
+              msg: String(msg).slice(0, 500),
+              ua: navigator.userAgent,
+              url: location.pathname
+            });
+            if (navigator.sendBeacon) {
+              navigator.sendBeacon("/api/client-log", new Blob([body], { type: "application/json" }));
+            } else {
+              var x = new XMLHttpRequest();
+              x.open("POST", "/api/client-log", true);
+              x.setRequestHeader("Content-Type", "application/json");
+              x.send(body);
+            }
+          } catch (e) { /* молча */ }
+        }
+        window.addEventListener("error", function (e) {
+          report("error", (e.message || "?") + " @ " + (e.filename || "?") + ":" + (e.lineno || 0));
+        });
+        window.addEventListener("unhandledrejection", function (e) {
+          report("unhandledrejection", e.reason && (e.reason.stack || e.reason.message) || String(e.reason));
+        });
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

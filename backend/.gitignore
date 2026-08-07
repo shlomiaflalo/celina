@@ -1,0 +1,8 @@
+node_modules
+.env
+.env.*
+# пример без секретов ДОЛЖЕН быть в репозитории (нужен для `cp .env.example .env` на сервере)
+!.env.example
+dist
+*.db
+prisma/dev.db

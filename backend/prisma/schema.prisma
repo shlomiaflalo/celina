@@ -1,0 +1,282 @@
+// Celina — модель данных
+// dev: SQLite. prod: заменить provider на "postgresql".
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite не поддерживает enum. Значения хранятся как строки,
+// типы заданы в src/lib/enums.ts.
+//   Role:        BUYER | COOK
+//   OrderStatus: PENDING | ACCEPTED | COOKING | READY | DELIVERED | CANCELLED
+//   Fulfillment: DELIVERY | PICKUP
+
+model User {
+  id           String  @id @default(cuid())
+  phone        String  @unique
+  name         String
+  passwordHash String
+  role         String  @default("BUYER")
+  email        String?
+  isFounder    Boolean @default(false) // доступ к панели основателя и одобрению верификаций
+  address      String?
+  city         String?
+
+  // восстановление пароля
+  resetCode           String?
+  resetCodeExp        DateTime?
+  // «выйти везде»: токены, выданные ДО этого момента и НЕ привязанные к сессии
+  // (старые, без sid), считаются отозванными. Ставится при logout-all,
+  // logout-others и при сбросе пароля.
+  sessionsRevokedAt   DateTime?
+  // двухфакторный код для входа в панель основателя
+  twoFACode           String?
+  twoFAExp            DateTime?
+  founderSessionUntil DateTime?
+  lat                 Float?
+  lng                 Float?
+  createdAt           DateTime  @default(now())
+
+  // Верификация личности (видео + официальный документ)
+  // verificationStatus: UNVERIFIED | PENDING | VERIFIED | REJECTED
+  isVerified           Boolean   @default(false)
+  verificationStatus   String    @default("UNVERIFIED")
+  verificationVideoUrl String?
+  verificationDocUrl   String?
+  verifiedAt           DateTime?
+  // Согласие с Политикой конфиденциальности и Условиями
+  policyAcceptedAt     DateTime?
+  // ОТДЕЛЬНОЕ согласие на обработку биометрии (ст.11 152-ФЗ): селфи-видео + документ
+  biometricConsentAt   DateTime?
+  // LEGACY, не используется: возрастной барьер снят вместе с алкогольным
+  // мессенджингом (ФЗ-171) — сервис про домашнюю еду и соседские посиделки.
+  // Колонка оставлена, чтобы не терять данные существующих аккаунтов.
+  over18ConfirmedAt    DateTime?
+
+  // Реферальная программа (двусторонняя): свой код + кто пригласил
+  referralCode String? @unique
+  referredById String?
+  referredBy   User?   @relation("Referrals", fields: [referredById], references: [id])
+  referrals    User[]  @relation("Referrals")
+
+  cookProfile      CookProfile?
+  orders           Order[]         @relation("BuyerOrders")
+  reviews          Review[]
+  notifications    Notification[]
+  hostedGatherings Gathering[]     @relation("GatheringHost")
+  gatheringRsvps   GatheringRsvp[]
+  sessions         Session[]
+}
+
+// Сессия входа = одно устройство. Нужна, чтобы: (1) ограничивать число
+// одновременных устройств (как Netflix/WhatsApp) и (2) выходить удалённо с
+// конкретного или всех устройств (JWT сам по себе отозвать нельзя — проверяем
+// сессию по sid из токена). revokedAt != null → сессия завершена.
+model Session {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent  String?
+  ip         String?
+  device     String? // человекочитаемо: «Chrome · Windows», «Safari · iPhone»
+  location   String? // приблизительно по IP: «London, UK» (best-effort)
+  createdAt  DateTime  @default(now())
+  lastSeenAt DateTime  @default(now())
+  revokedAt  DateTime?
+
+  @@index([userId])
+}
+
+// Список ожидания по районам («Приведите Селину в свой двор»). Решает проблему
+// холодного старта маркетплейса ЧЕСТНО: копит РЕАЛЬНЫЙ спрос до появления
+// поваров и даёт основателю карту, где набирать поваров в первую очередь.
+// Никаких выдуманных счётчиков — показываем только настоящие числа.
+model Waitlist {
+  id        String   @id @default(cuid())
+  city      String
+  district  String? // район/двор — где именно ждут
+  contact   String? // необязательно: e-mail или телефон, чтобы сообщить о запуске
+  role      String   @default("EATER") // EATER (хочу заказывать) | COOK (хочу готовить)
+  ip        String? // для дедупликации/антиспама
+  createdAt DateTime @default(now())
+
+  @@index([city])
+}
+
+// Уведомления пользователю (новый заказ, смена статуса, звонок и т.п.).
+// Доставляются в реальном времени по SSE + хранятся для истории/непрочитанных.
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String // order_new | order_status | call
+  title     String
+  body      String   @default("")
+  orderId   String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+}
+
+model CookProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  kitchenName  String
+  bio          String?
+  avatarUrl    String?
+  coverUrl     String?
+  cuisine      String  @default("") // CSV: "русская,грузинская"
+  rating       Float   @default(0)
+  ratingsCount Int     @default(0)
+
+  isOnline        Boolean @default(false)
+  deliveryEnabled Boolean @default(true)
+  pickupEnabled   Boolean @default(true)
+  deliveryFee     Float   @default(0)
+  minOrder        Float   @default(0)
+  city            String?
+
+  // «Ужин у повара дома» — особенная фишка: приём гостей у себя
+  dineInEnabled Boolean @default(false)
+  dineInPrice   Float   @default(0) // цена за гостя
+  dineInSeats   Int     @default(0) // максимум гостей
+  dineInDesc    String?
+
+  // Верификация повара (безопасность пищи)
+  hygieneAccepted    Boolean   @default(false) // принял санитарные нормы
+  kitchenPhotos      String    @default("") // CSV: фото кухни (до 4)
+  foodSafetySignedAt DateTime? // подписал заявление о безопасности
+
+  // Разовый платёж за активацию аккаунта повара ($1) — стартовая бизнес-модель
+  activationPaidAt    DateTime?
+  activationPaymentId String?
+
+  dishes    Dish[]
+  orders    Order[]
+  reviews   Review[]
+  createdAt DateTime @default(now())
+}
+
+model Dish {
+  id            String      @id @default(cuid())
+  cookProfileId String
+  cookProfile   CookProfile @relation(fields: [cookProfileId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+  price       Float
+  photoUrl    String? // главное фото (= photos[0])
+  photos      String  @default("") // CSV из url до 4 фото
+  videoUrl    String? // видео блюда
+  category    String  @default("горячее")
+  portions    Int     @default(0) // доступно порций
+  prepTimeMin Int     @default(30)
+  tags        String  @default("") // CSV: "острое,вегетарианское"
+  ingredients String? // состав блюда
+  allergens   String  @default("") // CSV: глютен,молоко,яйца,орехи…
+  isAvailable Boolean @default(true)
+
+  orderItems OrderItem[]
+  createdAt  DateTime    @default(now())
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  buyerId       String
+  buyer         User        @relation("BuyerOrders", fields: [buyerId], references: [id])
+  cookProfileId String
+  cookProfile   CookProfile @relation(fields: [cookProfileId], references: [id])
+
+  status       String    @default("PENDING")
+  fulfillment  String    @default("DELIVERY")
+  scheduledFor DateTime?
+  address      String?
+  deliveryFee  Float     @default(0)
+  total        Float     @default(0)
+  note         String?
+
+  // Оплата (платёжный шлюз). paymentStatus: UNPAID | PAID | REFUNDED
+  paymentStatus String    @default("UNPAID")
+  paymentMethod String? // card | cash
+  paymentId     String? // id транзакции у эквайера
+  paidAt        DateTime?
+
+  items     OrderItem[]
+  review    Review?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model OrderItem {
+  id      String  @id @default(cuid())
+  orderId String
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  dishId  String?
+  dish    Dish?   @relation(fields: [dishId], references: [id])
+
+  titleSnapshot String
+  priceAtOrder  Float
+  qty           Int    @default(1)
+}
+
+model Review {
+  id            String      @id @default(cuid())
+  orderId       String      @unique
+  order         Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  buyerId       String
+  buyer         User        @relation(fields: [buyerId], references: [id])
+  cookProfileId String
+  cookProfile   CookProfile @relation(fields: [cookProfileId], references: [id])
+
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+}
+
+// «Застолье» — соседская встреча/ужин, которую организует любой пользователь.
+// Социальный слой Celina: соседи собираются за общим столом. Ссылка-приглашение
+// публичная и индексируемая (вирусная петля + SEO).
+model Gathering {
+  id     String @id @default(cuid())
+  hostId String
+  host   User   @relation("GatheringHost", fields: [hostId], references: [id], onDelete: Cascade)
+
+  title         String
+  description   String?
+  coverUrl      String?
+  city          String?
+  address       String? // показывается только подтверждённым гостям
+  lat           Float?
+  lng           Float?
+  startsAt      DateTime
+  maxSeats      Int      @default(6)
+  pricePerGuest Float    @default(0) // 0 = бесплатно (приносим с собой / в гости)
+  status        String   @default("OPEN") // OPEN | FULL | CANCELLED | PAST
+
+  rsvps     GatheringRsvp[]
+  createdAt DateTime        @default(now())
+
+  @@index([city, startsAt])
+}
+
+model GatheringRsvp {
+  id          String    @id @default(cuid())
+  gatheringId String
+  gathering   Gathering @relation(fields: [gatheringId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  guests      Int       @default(1)
+  status      String    @default("GOING") // GOING | CANCELLED
+  createdAt   DateTime  @default(now())
+
+  @@unique([gatheringId, userId])
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Celina — домашняя еда от соседей",
+  "short_name": "Celina",
+  "description": "Заказывайте домашнюю еду у соседей-поваров",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fffaf0",
+  "theme_color": "#ef9412",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

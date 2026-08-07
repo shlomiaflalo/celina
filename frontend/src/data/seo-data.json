@@ -1,0 +1,189 @@
+{
+  "generatedAt": "2026-08-04T19:31:39.984Z",
+  "cooks": [
+    {
+      "id": "cmrk4hwln000axy9o6eivkbcs",
+      "slug": "gruzinskiy-dvorik-ivkbcs",
+      "kitchenName": "Грузинский дворик",
+      "ownerName": "Георгий",
+      "bio": "Настоящие хинкали и хачапури по семейным рецептам из Тбилиси.",
+      "city": "Москва",
+      "cuisine": [
+        "грузинская"
+      ],
+      "rating": 4.9,
+      "ratingsCount": 67,
+      "lat": 55.7522,
+      "lng": 37.6179,
+      "dishes": [
+        {
+          "id": "cmrk4hwln000bxy9o4un0j7nb",
+          "slug": "hinkali-5-sht-n0j7nb",
+          "title": "Хинкали (5 шт.)",
+          "category": "горячее",
+          "price": 550,
+          "photoUrl": "/images/khinkali.jpg",
+          "description": "Сочные хинкали с говядиной и зеленью."
+        },
+        {
+          "id": "cmrk4hwln000cxy9of8np1da2",
+          "slug": "hachapuri-po-adzharski-np1da2",
+          "title": "Хачапури по-аджарски",
+          "category": "выпечка",
+          "price": 650,
+          "photoUrl": "/images/khachapuri.jpg",
+          "description": "Лодочка с сыром сулугуни и яйцом."
+        }
+      ],
+      "reviews": [
+        {
+          "rating": 5,
+          "comment": "Хачапури как в Тбилиси. Спасибо, Георгий!",
+          "createdAt": "2026-07-14T04:00:10.704Z",
+          "buyerName": "Анна"
+        }
+      ]
+    },
+    {
+      "id": "cmrk4hwi60003xy9ohldtbeq8",
+      "slug": "domashnyaya-kuhnya-marii-dtbeq8",
+      "kitchenName": "Домашняя кухня Марии",
+      "ownerName": "Мария Иванова",
+      "bio": "Готовлю как бабушка учила — щи, борщи, пельмени ручной лепки.",
+      "city": "Москва",
+      "cuisine": [
+        "русская",
+        "домашняя"
+      ],
+      "rating": 4.8,
+      "ratingsCount": 42,
+      "lat": 55.7301,
+      "lng": 37.5958,
+      "dishes": [
+        {
+          "id": "cmrk4hwi60005xy9ogj7bn7f8",
+          "slug": "pelmeni-domashnie-7bn7f8",
+          "title": "Пельмени домашние",
+          "category": "горячее",
+          "price": 490,
+          "photoUrl": "/images/pelmeni.jpg",
+          "description": "Ручная лепка, говядина и свинина. Порция 15 шт."
+        },
+        {
+          "id": "cmrk4hwi70006xy9ouxwp9su3",
+          "slug": "bliny-s-nachinkoy-wp9su3",
+          "title": "Блины с начинкой",
+          "category": "горячее",
+          "price": 350,
+          "photoUrl": "/images/blini.jpg",
+          "description": "Тонкие блины с творогом или мясом, 5 шт."
+        },
+        {
+          "id": "cmrk4hwi70007xy9o8ervxotw",
+          "slug": "salat-olive-rvxotw",
+          "title": "Салат Оливье",
+          "category": "салаты",
+          "price": 380,
+          "photoUrl": "/images/olivier-salad.jpg",
+          "description": "Классический оливье по домашнему рецепту."
+        },
+        {
+          "id": "cmrk4hwi70008xy9oq8j492j1",
+          "slug": "syrniki-so-smetanoy-j492j1",
+          "title": "Сырники со сметаной",
+          "category": "десерты",
+          "price": 320,
+          "photoUrl": "/images/syrniki.jpg",
+          "description": "Нежные творожные сырники, 4 шт."
+        }
+      ],
+      "reviews": [
+        {
+          "rating": 4,
+          "comment": "Очень вкусно, пельмени домашние. Чуть дольше ждала доставку.",
+          "createdAt": "2026-07-14T04:00:10.719Z",
+          "buyerName": "Анна"
+        },
+        {
+          "rating": 5,
+          "comment": "Борщ — пальчики оближешь, как у бабушки 🥰",
+          "createdAt": "2026-07-14T04:00:10.713Z",
+          "buyerName": "Анна"
+        }
+      ]
+    },
+    {
+      "id": "cmrk4hwou000exy9o38vbfw9r",
+      "slug": "pirogi-ot-olgi-vbfw9r",
+      "kitchenName": "Пироги от Ольги",
+      "ownerName": "Ольга",
+      "bio": "Домашняя выпечка: пироги, ватрушки, торты на заказ.",
+      "city": "Санкт-Петербург",
+      "cuisine": [
+        "выпечка",
+        "домашняя"
+      ],
+      "rating": 4.7,
+      "ratingsCount": 23,
+      "lat": 59.9362,
+      "lng": 30.3702,
+      "dishes": [
+        {
+          "id": "cmrk4hwou000fxy9of8647s7r",
+          "slug": "pirog-s-yablokami-647s7r",
+          "title": "Пирог с яблоками",
+          "category": "выпечка",
+          "price": 850,
+          "photoUrl": "/images/apple-pie.jpg",
+          "description": "Песочный пирог с антоновкой."
+        },
+        {
+          "id": "cmrk4hwou000gxy9oi26vas5j",
+          "slug": "pirozhki-pechenye-6-sht-6vas5j",
+          "title": "Пирожки печёные (6 шт.)",
+          "category": "выпечка",
+          "price": 360,
+          "photoUrl": "/images/pirozhki.jpg",
+          "description": "С капустой, картошкой и яблоком — на выбор."
+        }
+      ],
+      "reviews": []
+    }
+  ],
+  "cities": [
+    {
+      "name": "Москва",
+      "prep": "Москве",
+      "slug": "moskva",
+      "cookCount": 2
+    },
+    {
+      "name": "Санкт-Петербург",
+      "prep": "Санкт-Петербурге",
+      "slug": "sankt-peterburg",
+      "cookCount": 1
+    }
+  ],
+  "categories": [
+    {
+      "name": "горячее",
+      "slug": "goryachee",
+      "count": 3
+    },
+    {
+      "name": "выпечка",
+      "slug": "vypechka",
+      "count": 3
+    },
+    {
+      "name": "салаты",
+      "slug": "salaty",
+      "count": 1
+    },
+    {
+      "name": "десерты",
+      "slug": "deserty",
+      "count": 1
+    }
+  ]
+}

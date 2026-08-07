@@ -1,0 +1,404 @@
+@import "tailwindcss";
+
+:root {
+  /* Тёплая палитра: оранжево-жёлтый градиент + белый */
+  --brand: #f59e0b;        /* основной янтарный */
+  --brand-orange: #f97316; /* апельсиновый */
+  --brand-amber: #fbbf24;  /* жёлтый */
+  --brand-deep: #ea580c;   /* насыщенный для hover */
+  --cream: #fffaf0;
+}
+
+:root {
+  --logo: #e0860c; /* цвет логотипа (оранжевый) для текста на белом */
+}
+
+/* iOS Safari рисует серую «вспышку» при касании — на анимированных чипах
+   (jelly/scale) она появляется СМЕЩЁННОЙ, поверх соседней кнопки, и выглядит
+   как баг. Отключаем: у нас есть свой отклик (:active scale).
+   touch-action: manipulation — мгновенный тап без задержки двойного тапа. */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+button, a, [role="button"] {
+  touch-action: manipulation;
+}
+
+/* Страница НИКОГДА не должна уезжать вбок на телефоне. Один длинный заголовок,
+   широкая таблица или неудачный перевод раньше давали горизонтальную прокрутку:
+   пользователь случайно смахивал вбок и весь макет выглядел «съехавшим».
+   clip (Safari 16+) в отличие от hidden НЕ создаёт скролл-контейнер, поэтому
+   position: sticky и инерционный скролл на iOS продолжают работать; hidden
+   оставлен фолбэком для старых браузеров.
+   Это страховка, а не замена вёрстке: причину переполнения всё равно чиним. */
+html {
+  overflow-x: hidden;
+}
+@supports (overflow-x: clip) {
+  html {
+    overflow-x: clip;
+  }
+}
+
+html,
+body {
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  /* текст по умолчанию (на оранжевом фоне) — белый */
+  color: #ffffff;
+  /* фон — цвет логотипа (оранжевый) */
+  background:
+    radial-gradient(1100px 700px at 85% -5%, #ffc24d 0%, transparent 55%),
+    radial-gradient(900px 600px at -5% 20%, #ffb13a 0%, transparent 55%),
+    linear-gradient(160deg, #f4a01f 0%, #e6850c 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Высота ВИДИМОЙ области на мобильных: 100vh включает зону под тулбарами
+   браузера, из-за чего нижние кнопки «уезжали» за нижний тулбар (iOS/Android).
+   svh = только видимая часть; старые браузеры отбрасывают незнакомую единицу
+   и остаются на 100vh (прогрессивное улучшение). */
+.min-h-viewport {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+.h-viewport {
+  height: 100vh;
+  height: 100svh;
+}
+
+/* ===== Liquid Glass: прозрачная капля воды, которая дрожит при касании ===== */
+/* Кнопка на оранжевом фоне: сплошной белый, текст цвета логотипа, без рамки */
+.btn-glass {
+  position: relative;
+  background: #ffffff;
+  border: none;
+  box-shadow: 0 4px 14px rgba(176, 104, 8, 0.18);
+  color: #e0860c;
+  font-weight: 600;
+  transition: background 0.2s ease, box-shadow 0.2s ease,
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.btn-glass:hover:not(:disabled) {
+  background: #fff7ee;
+  box-shadow: 0 8px 22px rgba(176, 104, 8, 0.24);
+  animation: jelly 0.7s ease;
+}
+.btn-glass:active:not(:disabled) { transform: scale(0.95); }
+
+/* Кнопка на БЕЛОМ фоне (шапка, формы, окна): инверсия — оранжевый фон, белый текст */
+.btn-solid {
+  position: relative;
+  background: #e0860c;
+  border: none;
+  box-shadow: 0 4px 14px rgba(176, 104, 8, 0.28);
+  color: #ffffff;
+  font-weight: 600;
+  transition: background 0.2s ease, box-shadow 0.2s ease,
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.btn-solid:hover:not(:disabled) {
+  background: #c9760a;
+  box-shadow: 0 8px 22px rgba(176, 104, 8, 0.34);
+  animation: jelly 0.7s ease;
+}
+.btn-solid:active:not(:disabled) { transform: scale(0.95); }
+
+/* дрожание капли */
+@keyframes jelly {
+  0%   { transform: scale(1, 1); }
+  22%  { transform: scale(1.07, 0.9); }
+  44%  { transform: scale(0.93, 1.07); }
+  64%  { transform: scale(1.04, 0.97); }
+  82%  { transform: scale(0.98, 1.02); }
+  100% { transform: scale(1, 1); }
+}
+
+/* вторичные кнопки/чипы — тот же белый, без рамки */
+.glass-soft {
+  background: #ffffff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(176, 104, 8, 0.12);
+  color: #e0860c;
+  font-weight: 600;
+  transition: background 0.18s ease, transform 0.12s ease;
+}
+.glass-soft:hover { background: #fff7ee; }
+
+/* стеклянная панель/карточка поверх оранжевого фона */
+.glass-card {
+  background: rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  backdrop-filter: blur(18px) saturate(1.3);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 10px 30px rgba(120, 70, 10, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* === Цветовая система: на белом — цвет логотипа, на оранжевом — белый === */
+.glass-card,
+.glass-soft,
+.on-white {
+  color: var(--logo);
+}
+input,
+textarea,
+select {
+  color: var(--logo);
+}
+input::placeholder,
+textarea::placeholder {
+  /* плейсхолдер — цвет логотипа, чуть приглушён (легче читается, чем 0.55,
+     но всё ещё светлее реального ввода, чтобы отличаться от набранного текста) */
+  color: rgba(224, 134, 12, 0.72);
+}
+/* любой белый/светлый фон (карточки, шапка, формы) → текст цвета логотипа.
+   ИСКЛЮЧЕНИЕ: полупрозрачные подложки bg-white/10…/40 на оранжевом фоне —
+   они остаются тёмно-оранжевыми, и текст на них должен наследовать белый
+   (иначе вопросы FAQ и заголовки карточек были невидимы: оранжевый на оранжевом). */
+[class*="bg-white"]:not([class*="bg-white/1"]):not([class*="bg-white/2"]):not([class*="bg-white/3"]):not([class*="bg-white/4"]),
+[class*="orange-50"],
+[class*="amber-50"],
+[class*="bg-stone-100"] {
+  color: var(--logo);
+}
+
+/* ===== Утилиты бренда ===== */
+.wordmark {
+  font-family: "Fredoka", "Inter", system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+.brand-gradient {
+  background: linear-gradient(135deg, #f97316 0%, #fbbf24 100%);
+}
+.brand-text-gradient {
+  background: linear-gradient(135deg, #ea580c 0%, #f59e0b 60%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ============================================================
+   Анимации
+   ============================================================ */
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+@keyframes pop-in {
+  0%   { opacity: 0; transform: scale(0.85); }
+  70%  { transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.animate-pop-in { animation: pop-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Пар над тарелкой */
+@keyframes steam {
+  0%   { opacity: 0; transform: translateY(0) scaleX(1); }
+  25%  { opacity: 0.7; }
+  60%  { opacity: 0.5; transform: translateY(-26px) scaleX(1.25); }
+  100% { opacity: 0; transform: translateY(-52px) scaleX(0.8); }
+}
+.steam {
+  transform-origin: center bottom;
+  animation: steam 3.4s ease-in-out infinite;
+}
+
+/* Парящая пиала-логотип: плавно поднимается, чуть покачивается */
+@keyframes float-bowl {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50%      { transform: translateY(-22px) rotate(2deg); }
+}
+.float-bowl { animation: float-bowl 4.5s ease-in-out infinite; transform-origin: center center; }
+
+/* Тень под пиалой сжимается, когда она поднимается */
+@keyframes shadow-pulse {
+  0%, 100% { transform: scaleX(1);   opacity: 0.28; }
+  50%      { transform: scaleX(0.7); opacity: 0.15; }
+}
+.shadow-pulse { transform-origin: center center; animation: shadow-pulse 4.5s ease-in-out infinite; }
+
+/* Лёгкое парение для декоративных элементов */
+@keyframes floaty {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-9px) rotate(8deg); }
+}
+.floaty { animation: floaty 3.6s ease-in-out infinite; }
+
+/* Мягкое свечение фона */
+@keyframes glow {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%      { opacity: 0.85; transform: scale(1.08); }
+}
+.glow { animation: glow 5s ease-in-out infinite; }
+
+/* Блики-частицы */
+@keyframes rise {
+  0%   { opacity: 0; transform: translateY(10px) scale(0.6); }
+  30%  { opacity: 0.9; }
+  100% { opacity: 0; transform: translateY(-60px) scale(1.1); }
+}
+.spark { animation: rise 4s ease-in-out infinite; }
+
+/* Кастомный курсор — оранжевый круг в цвете логотипа */
+.custom-cursor,
+.custom-cursor * {
+  cursor: none !important;
+}
+.cursor-dot {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  border: 2.5px solid #ffffff;
+  background: #ef9412;
+  /* контрастная обводка + тень → виден на любом фоне (белом, оранжевом, тёмном) */
+  box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.2s ease, width 0.15s ease, height 0.15s ease, background 0.15s ease;
+  will-change: transform;
+}
+.cursor-dot.down {
+  width: 15px;
+  height: 15px;
+  background: #d97f0a;
+}
+.cursor-dot.hot {
+  width: 36px;
+  height: 36px;
+  background: rgba(239, 148, 18, 0.45);
+}
+
+/* Пуш-уведомление прилетает сверху, как на iPhone */
+@keyframes notif-in {
+  0%   { opacity: 0; transform: translateY(-28px) scale(0.92); }
+  60%  { opacity: 1; transform: translateY(4px) scale(1.01); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.notif-in { animation: notif-in 0.55s cubic-bezier(0.22, 1.2, 0.36, 1) both; }
+.notif-card { transition: opacity 0.4s ease, transform 0.4s ease; }
+
+/* Разовый выброс пара от кнопки после заказа */
+@keyframes steam-up {
+  0% { opacity: 0; transform: translateY(10px) scaleX(0.9); }
+  25% { opacity: 0.8; }
+  100% { opacity: 0; transform: translateY(-46px) scaleX(1.5); }
+}
+.steam-wisp {
+  transform-origin: bottom center;
+  animation: steam-up 1.2s ease-out forwards;
+}
+
+/* Появление секций при прокрутке (scroll-reveal) */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Бесконечная лента блюд (marquee) */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 38s linear infinite;
+}
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+.dish-tile {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+}
+.dish-tile:hover {
+  transform: scale(1.09);
+  box-shadow: 0 18px 40px rgba(60, 30, 0, 0.4);
+}
+
+/* Матрёшки: мягкое покачивание + кросс-фейд фото в животике */
+@keyframes mfloat { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-12px) } }
+.matryoshka {
+  animation: mfloat 4.5s ease-in-out infinite;
+  filter: drop-shadow(0 10px 18px rgba(60, 30, 0, 0.18));
+}
+.matryoshka:hover { animation-play-state: paused; }
+@keyframes mfadein { from { opacity: 0 } to { opacity: 1 } }
+.m-fade { animation: mfadein 0.9s ease both; }
+
+/* Само-рисующаяся линия графика роста */
+@keyframes draw-line {
+  to { stroke-dashoffset: 0; }
+}
+.draw-line {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+}
+.reveal.in .draw-line {
+  animation: draw-line 1.6s ease-out forwards;
+}
+@keyframes pop-dot {
+  0% { opacity: 0; transform: scale(0); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.reveal.in .chart-dot {
+  animation: pop-dot 0.4s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .steam, .floaty, .glow, .spark, .float-bowl, .shadow-pulse, .notif-in,
+  .marquee-track, .draw-line, .chart-dot, .matryoshka, .m-fade {
+    animation: none !important;
+  }
+  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .draw-line { stroke-dashoffset: 0 !important; }
+  .btn-glass:hover:not(:disabled),
+  .btn-solid:hover:not(:disabled) { animation: none !important; }
+}
+
+/* ── Поля даты/времени в фирменных цветах (вместо серо-сине-белого нативного) ── */
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"],
+input[type="month"] {
+  /* подсветка выбранной даты/сегодня в попапе календаря → оранжевый бренда */
+  accent-color: #e0860c;
+  color-scheme: light;
+}
+/* иконка-кнопка календаря: серую заменяем оранжевой иконкой бренда */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator,
+input[type="month"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 1;
+  width: 18px;
+  height: 18px;
+  padding: 2px;
+  border-radius: 6px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%23e0860c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: background-color 0.15s ease;
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover,
+input[type="month"]::-webkit-calendar-picker-indicator:hover {
+  background-color: #fff3df;
+}

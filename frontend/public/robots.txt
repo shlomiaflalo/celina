@@ -1,0 +1,29 @@
+# Celina — robots
+# Публичные страницы открыты для индексации; приватные (корзина, кабинеты, заказы) закрыты.
+
+User-agent: *
+Allow: /
+Disallow: /cart
+Disallow: /profile
+Disallow: /orders
+Disallow: /cook/
+Disallow: /cook$
+Allow: /cooks/
+Disallow: /verify
+Disallow: /founder
+Disallow: /login
+
+User-agent: Yandex
+Allow: /
+Disallow: /cart
+Disallow: /profile
+Disallow: /orders
+Disallow: /cook/
+Disallow: /cook$
+Allow: /cooks/
+Disallow: /verify
+Disallow: /founder
+Disallow: /login
+Clean-param: lang /
+
+Sitemap: https://celinaeda.ru/sitemap.xml
