@@ -14,7 +14,7 @@ export function CategoryCityPage() {
   const cooks = cooksInCityByCategory(citySlug, categorySlug);
   if (!city || !cat || cooks.length === 0) return <NotFound />;
 
-  const title = `${cap(cat.name)} в ${city.prep} — заказать домашнюю еду | Celina`;
+  const title = `${cap(cat.name)} в ${city.prep} — заказать домашнюю еду — Селина`;
   const description = `${cap(cat.name)} на заказ в ${city.prep}: ${cooks.length} ${plRu(cooks.length, ["домашний повар готовит", "домашних повара готовят", "домашних поваров готовят"])} по семейным рецептам. Доставка и самовывоз. Соседи кормят соседей.`;
 
   // соседние города, где есть эта же категория — перелинковка

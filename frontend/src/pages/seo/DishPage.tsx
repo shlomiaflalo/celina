@@ -22,7 +22,7 @@ export function DishPage() {
 
   const img = dish.photoUrl || cityImage(cook.city);
   const dishUrl = `${SITE_URL}/blyudo/${dish.slug}`;
-  const title = `${cap(dish.title)} — заказать домашнее блюдо${cook.city ? ` в ${cityPrepOf(cook.city)}` : ""} | Celina`;
+  const title = `${cap(dish.title)} — заказать домашнее блюдо${cook.city ? ` в ${cityPrepOf(cook.city)}` : ""} — Селина`;
   // насыщенное описание для выдачи. Короткое авторское (напр. «Вкусно») дополняем
   // продающим текстом, а не отдаём в мету огрызок в 10 символов.
   const richFallback = `Закажите ${dish.title} от домашнего повара ${cook.kitchenName}${cook.city ? ` в городе ${cook.city}` : ""} на Celina — ${dish.price} ₽. Приготовлено дома по семейному рецепту. Доставка и самовывоз. Соседи кормят соседей.`;

@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+**/.git
+**/*.db
+**/*.db-journal
+backend/uploads
+frontend/dist
+**/.DS_Store
+logo + media
+*.png
+DEPLOY.md

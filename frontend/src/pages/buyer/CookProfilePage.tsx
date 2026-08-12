@@ -18,6 +18,7 @@ import { sameCity } from "../../lib/address";
 import { DeleteButton } from "../../components/DeleteButton";
 import { useAuth } from "../../auth/AuthContext";
 import { useT, useTr, useLang, plRu } from "../../i18n";
+import { describeCookAt } from "../../lib/cookAt";
 import { Seo, SITE_URL, clampMeta } from "../../components/Seo";
 import { ShareButtons } from "../../components/ShareButtons";
 import { seoCookToProfile, citySlugOf, cityPrepOf } from "../../lib/seoData";
@@ -160,7 +161,7 @@ export function CookProfilePage() {
 
   // структурированные данные для поисковиков: ресторан + меню + отзывы + хлебные крошки
   const cookUrl = `${SITE_URL}/cooks/${cook.id}`;
-  const seoTitle = `${cook.kitchenName} — домашняя еда${cook.city ? ` в ${cityPrepOf(cook.city)}` : ""} | Celina`;
+  const seoTitle = `${cook.kitchenName} — домашняя еда${cook.city ? ` в ${cityPrepOf(cook.city)}` : ""} — Селина`;
   // насыщенное и в пределах 158 символов: короткое авторское bio дополняем продающим текстом
   const cookFallback = `Закажите домашнюю еду у повара ${cook.kitchenName}${cook.city ? ` в городе ${cook.city}` : ""} на Celina. ${cook.dishes?.length ?? 0} ${plRu(cook.dishes?.length ?? 0, ["блюдо, приготовленное", "блюда, приготовленных", "блюд, приготовленных"])} дома по семейным рецептам. Доставка и самовывоз.`;
   const cookBio = cook.bio?.trim() || "";
@@ -381,6 +382,25 @@ export function CookProfilePage() {
                     <div className="mt-2 flex flex-wrap items-center gap-2 text-xs ">
                       <span className="inline-flex items-center gap-1"><ClockIcon size={13} /> {dish.prepTimeMin} {t.cook.prepTime}</span>
                       <span>{dish.portions} {t.cook.portionsLeft(dish.portions)}</span>
+                      {/* «Готовлю в четверг к 18:00» — снимает главный страх заказа
+                          у частника: еду приготовят к этому часу, а не достанут
+                          из холодильника. Показываем ярче остальных мет. */}
+                      {(() => {
+                        const c = describeCookAt(dish.cookAt, lang === "en" ? "en" : "ru");
+                        if (c.kind === "none") return null;
+                        const hot = c.kind === "soon";
+                        return (
+                          <span
+                            className={
+                              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-semibold " +
+                              // светлый фон → текст цвета логотипа; оранжевый фон → белый
+                              (hot ? "bg-[#e0860c] text-white" : "bg-orange-100 text-[#e0860c]")
+                            }
+                          >
+                            <ClockIcon size={12} /> {c.text}
+                          </span>
+                        );
+                      })()}
                       {dish.tags.map((tag) => (
                         <Badge key={tag} tone="amber">{t.tags[tag] || tag}</Badge>
                       ))}

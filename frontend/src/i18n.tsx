@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { DEFAULT_TITLE, pageOwnsTitle } from "./lib/pageTitle";
 
 export type Lang = "ru" | "en";
 
@@ -258,6 +259,10 @@ const ru = {
     prepTimeLabel: "Время готовки, мин",
     ingredients: "Состав",
     ingredientsHint: "Перечислите ингредиенты через запятую",
+    // время готовки партии («Готовлю в четверг к 18:00») — см. lib/cookAt.ts
+    cookAtLabel: "Когда готовите партию",
+    cookAtHint: "Оставьте пустым, если готовите под заказ. Покупатель увидит, к какому часу будет свежее блюдо.",
+    cookAtClear: "Готовлю под заказ",
     allergens: "Аллергены",
     contains: "Содержит",
     // С 01.03.2026 первая группа кондитерских изделий (печенье, вафли, зефир,
@@ -636,6 +641,7 @@ const ru = {
     intro: "Есть вопрос, идея или хотите стать поваром? Напишите нам — будем рады.",
     email: "Почта",
     social: "Соцсети",
+    founder: "Связаться с основателем",
     nav: "Контакты",
     aboutNav: "О нас",
     manifestNav: "Манифест",
@@ -829,7 +835,7 @@ const ru = {
     open: "Открыть",
     close: "Закрыть",
     accept: "Принимаю",
-    lastUpdated: "Редакция от 27 июля 2026 · проверяется еженедельно",
+    lastUpdated: "Редакция от 10 августа 2026 · проверяется еженедельно",
   },
 
   founder: {
@@ -1153,6 +1159,9 @@ const en: typeof ru = {
     prepTimeLabel: "Prep time, min",
     ingredients: "Ingredients",
     ingredientsHint: "List ingredients, comma-separated",
+    cookAtLabel: "When are you cooking this batch",
+    cookAtHint: "Leave empty if you cook to order. Buyers will see the hour the dish will be fresh by.",
+    cookAtClear: "I cook to order",
     allergens: "Allergens",
     contains: "Contains",
     markingWarnTitle: "Check the marking requirements",
@@ -1513,6 +1522,7 @@ const en: typeof ru = {
     intro: "Have a question, idea, or want to become a cook? Reach out — we'd love to hear from you.",
     email: "Email",
     social: "Social",
+    founder: "Contact the founder",
     nav: "Contact",
     aboutNav: "About",
     manifestNav: "Manifesto",
@@ -1703,7 +1713,7 @@ const en: typeof ru = {
     open: "Open",
     close: "Close",
     accept: "I accept",
-    lastUpdated: "Revision of July 27, 2026 · reviewed weekly",
+    lastUpdated: "Revision of August 10, 2026 · reviewed weekly",
   },
 
   founder: {
@@ -1923,24 +1933,37 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   // Сохранённый/переданный в URL язык применяем ТОЛЬКО после гидрации (на клиенте).
   useEffect(() => {
-    // 1) выбор пользователя (запомненный) — высший приоритет, переживает перезагрузку
-    const saved = localStorage.getItem("celina_lang");
-    if (saved === "en" || saved === "ru") { setLangState(saved); return; }
+    // Доступ к localStorage бросает SecurityError при заблокированных cookie и
+    // QuotaExceededError в приватном режиме Safari. Без catch исключение из
+    // эффекта роняло бы всё дерево — белый экран вместо сайта.
+    try {
+      // 1) выбор пользователя (запомненный) — высший приоритет, переживает перезагрузку
+      const saved = localStorage.getItem("celina_lang");
+      if (saved === "en" || saved === "ru") { setLangState(saved); return; }
+    } catch { /* хранилище недоступно — язык не запомнен, идём дальше */ }
     // 2) ?lang=en|ru — только при ПЕРВОМ заходе (для ссылок/скриншотов); сразу запоминаем
     const q = new URLSearchParams(location.search).get("lang");
-    if (q === "en" || q === "ru") { localStorage.setItem("celina_lang", q); setLangState(q); }
+    if (q === "en" || q === "ru") {
+      try { localStorage.setItem("celina_lang", q); } catch { /* не сохранится — не страшно */ }
+      setLangState(q);
+    }
     // 3) иначе остаётся русский по умолчанию
   }, []);
   function setLang(l: Lang) {
-    if (typeof window !== "undefined") localStorage.setItem("celina_lang", l);
+    // переключение языка не должно падать, если хранилище недоступно:
+    // язык применяется в любом случае, просто не переживёт перезагрузку
+    if (typeof window !== "undefined") {
+      try { localStorage.setItem("celina_lang", l); } catch { /* приватный режим */ }
+    }
     setLangState(l);
   }
-  // заголовок вкладки и lang следуют за языком (RU → Селина, EN → Celina)
+  // заголовок вкладки и lang следуют за языком (RU → Селина, EN → Celina).
+  // Но если у страницы есть свой <Seo>, заголовок задаёт она: этот эффект —
+  // родительский и выполняется ПОСЛЕ дочернего <Head>, поэтому раньше он перетирал
+  // точный SEO-title дефолтным сразу после гидратации (см. lib/pageTitle.ts).
   useEffect(() => {
     document.documentElement.lang = lang;
-    document.title = lang === "en"
-      ? "Celina — Neighbors feeding neighbors"
-      : "Селина — Соседи кормят соседей";
+    if (!pageOwnsTitle()) document.title = DEFAULT_TITLE[lang];
   }, [lang]);
   return (
     <LangCtx.Provider value={{ lang, setLang, t: dicts[lang] }}>{children}</LangCtx.Provider>

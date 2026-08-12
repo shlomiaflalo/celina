@@ -47,8 +47,7 @@ export function GatheringsList() {
       {/* герой */}
       <div className="relative z-20 mb-6 overflow-hidden rounded-3xl">
         <picture>
-          <source srcSet="/images/red-square.webp" type="image/webp" />
-          <img src="/images/red-square.jpg" alt="" className="absolute inset-0 h-full w-full rounded-3xl object-cover" style={{ objectPosition: "center 42%" }} />
+                    <img src="/images/gatherings/tablespread.jpg" alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full rounded-3xl object-cover" />
         </picture>
         <div className="absolute inset-0 rounded-3xl" style={{ background: "rgba(224,134,12,0.30)" }} />
         <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-black/55 via-black/20 to-transparent" />

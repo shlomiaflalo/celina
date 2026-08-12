@@ -117,6 +117,24 @@ async function main() {
   const categories = [...catMap.entries()].map(([name, count]) => ({ name, slug: slugify(name), count }))
     .sort((a, b) => b.count - a.count);
 
+  // ── Предохранитель. ────────────────────────────────────────────────────
+  // Снимок уезжает в пререндер 102 страниц и в schema.org (aggregateRating,
+  // Review). Единственный законный источник — ПРОДАКШН-база. Шесть раз подряд
+  // снимок собирали на локальной сидированной базе, и на celinaeda.ru уезжали
+  // «Грузинский дворик 4.9/67» с отзывом от несуществующей Анны: выдуманная
+  // разметка на сайте, который продаёт доверие, и ровно то, за что Яндекс
+  // снимает с выдачи. Считаем: не пусто и не разрешено явно → падаем.
+  if (cookData.length > 0 && process.env.SEO_EXPORT_FROM_PROD !== "1") {
+    console.error(
+      `\n❌ Снимок собран НЕ на продакшн-базе: в нём ${cookData.length} поваров.\n` +
+      `   Локальная база сидирована демо-данными — они попадут в HTML и в\n` +
+      `   schema.org как настоящие повара с настоящими рейтингами.\n\n` +
+      `   Снимок с продакшна:  ssh на прод-сервер, база в /root/celina/data\n` +
+      `   Осознанно и правда с прода:  SEO_EXPORT_FROM_PROD=1 npm run seo:export\n`
+    );
+    process.exit(1);
+  }
+
   const out = { generatedAt: new Date().toISOString(), cooks: cookData, cities, categories };
 
   const here = dirname(fileURLToPath(import.meta.url));

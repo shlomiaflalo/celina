@@ -9,7 +9,9 @@
 import type { Lang } from "../i18n";
 
 export interface BlogBlock { h?: string; p: string[] }
-export interface BlogLocale { title: string; excerpt: string; body: BlogBlock[] }
+export interface BlogFaq { q: string; a: string }
+/** `faq` — вопрос-ответ внизу статьи; отдаётся ещё и как FAQPage-схема (Яндекс/Google). */
+export interface BlogLocale { title: string; excerpt: string; body: BlogBlock[]; faq?: BlogFaq[] }
 export interface BlogPost {
   slug: string;
   cover: string;        // путь к существующей картинке в /public
@@ -297,7 +299,7 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: "kak-my-proveryaem-domashnih-povarov",
-    cover: "/images/khachapuri.jpg",
+    cover: "/images/gatherings/homedinner.jpg",
     date: "2026-07-13",
     readMin: 6,
     tags: ["проверенные повара", "доверие", "верификация", "безопасность"],
@@ -383,7 +385,7 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: "plov-na-zakaz-gde-nayti-nastoyashchiy",
-    cover: "/images/red-square.jpg",
+    cover: "/images/dishes/plov.jpg",
     date: "2026-07-13",
     readMin: 6,
     tags: ["плов на заказ", "узбекская кухня", "домашняя еда", "горячее"],
@@ -558,6 +560,7 @@ export const BLOG_POSTS: BlogPost[] = [
     links: [
       { to: "/eda/moskva/vypechka", label: "Домашняя выпечка в Москве" },
       { to: "/eda/moskva", label: "Домашняя еда в Москве" },
+      { to: "/blog/yablochnyy-spas-chto-prigotovit", label: "Что пекут на Медовый, Яблочный и Ореховый Спас" },
       { to: "/login", label: "Печёте? Станьте поваром" },
       { to: "/blog", label: "Другие статьи" },
     ],
@@ -1096,6 +1099,7 @@ export const BLOG_POSTS: BlogPost[] = [
     tags: ["екатеринбург", "домашняя еда", "доставка", "город"],
     links: [
       { to: "/eda/ekaterinburg", label: "Домашняя еда в Екатеринбурге — страница города" },
+      { to: "/blog/domashnyaya-eda-v-chelyabinske", label: "Домашняя еда в Челябинске" },
       { to: "/blog/domashnyaya-vypechka-na-zakaz", label: "Домашняя выпечка на заказ" },
       { to: "/dostavka", label: "Доставка домашней еды" },
       { to: "/vstrechi", label: "Встречи за общим столом" },
@@ -1272,6 +1276,7 @@ export const BLOG_POSTS: BlogPost[] = [
     links: [
       { to: "/eda/ufa", label: "Домашняя еда в Уфе — страница города" },
       { to: "/blog/tatarskaya-kuhnya-echpochmaki-chak-chak", label: "Эчпочмаки и чак-чак: татарская кухня" },
+      { to: "/blog/domashnyaya-eda-v-chelyabinske", label: "Домашняя еда в Челябинске" },
       { to: "/blog/domashnyaya-eda-dlya-shkolnika", label: "Домашняя еда для школьника" },
       { to: "/dostavka", label: "Доставка домашней еды" },
       { to: "/obedy", label: "Домашние обеды с доставкой" },
@@ -1629,6 +1634,7 @@ export const BLOG_POSTS: BlogPost[] = [
     links: [
       { to: "/dostavka", label: "Доставка домашней еды" },
       { to: "/blog/chto-poest-v-zharu", label: "Что поесть в жару: лёгкая летняя еда" },
+      { to: "/blog/chto-prigotovit-iz-gribov", label: "Что приготовить из грибов: сезон и заготовки" },
       { to: "/zagotovki", label: "Домашние заготовки и соленья на заказ" },
       { to: "/blog/domashnyaya-vypechka-na-zakaz", label: "Домашняя выпечка на заказ" },
       { to: "/gatherings", label: "Соседские застолья" },
@@ -1764,6 +1770,177 @@ export const BLOG_POSTS: BlogPost[] = [
         { h: "What to put on the table: a proven set", p: ["The main is the centerpiece — one filling dish that's sure to be enough: plov from the cauldron, roast chicken or duck, cabbage rolls, stew in pots. Then salads and platters: olivier and vinegret, fresh vegetables, a meat-and-cheese board, pickles. And finger food between toasts: pirozhki, Ossetian pies, khachapuri, homemade baking. For dessert, a cake or chak-chak with tea. This set covers both a hearty table and a light buffet."] },
         { h: "Why homemade beats catering and the store", p: ["Store-bought salads in plastic and one-size-fits-all catering lose to a homemade table on the thing that matters — taste. A neighbor cook makes small batches, from their own ingredients, by family recipes, for the exact hour. Plus you know who cooked it: every cook has an open profile with a name, photo and neighbor reviews, and you can message them to adjust ingredients, spice or portions for your group."] },
         { h: "How to order food for a crowd on Celina", p: ["Open the feed, pick cooks nearby and build your table: on Celina you can order from several cooks at once — plov from one, baking and salads from another. Set the date and hour it should be ready and choose delivery or pickup. Payment is cash on receipt, no prepayment or fees during the pilot. Order a day or two ahead so cooks can make everything fresh for your evening. Gathering the neighbors? Check 'Gatherings' — sometimes a group is already forming near you."] },
+      ],
+    },
+  },
+  {
+    slug: "yablochnyy-spas-chto-prigotovit",
+    cover: "/images/apple-pie.jpg",
+    date: "2026-08-10",
+    readMin: 6,
+    tags: ["Яблочный Спас", "Медовый Спас", "Ореховый Спас", "август", "выпечка", "традиции"],
+    links: [
+      { to: "/vypechka", label: "Домашняя выпечка на заказ" },
+      { to: "/zagotovki", label: "Домашние заготовки: варенье и соленья" },
+      { to: "/eda-na-prazdnik", label: "Еда на праздник: стол на заказ" },
+      { to: "/blog/domashnyaya-vypechka-na-zakaz", label: "Домашняя выпечка на заказ: пироги и пирожки" },
+      { to: "/blog/zastolye-s-sosedyami-kak-organizovat", label: "Как организовать застолье с соседями" },
+      { to: "/blog/chto-prigotovit-iz-gribov", label: "Что приготовить из грибов в Успенский пост" },
+      { to: "/", label: "Повара рядом с вами" },
+    ],
+    ru: {
+      title: "Медовый, Яблочный и Ореховый Спас: что готовят в августе",
+      excerpt:
+        "Три Спаса подряд — 14, 19 и 29 августа. Что пекут на каждый, почему до Спаса не ели яблоки, каким получается стол в Успенский пост и где взять яблочный пирог, если печь некогда.",
+      body: [
+        { p: ["Август в России держится на трёх Спасах: Медовый — 14 августа, Яблочный — 19-го, Ореховый — 29-го. Это не про календарь, а про еду: в эти дни на столе появляются мёд и мак, яблочные пироги и первый хлеб из нового урожая. Ниже — что готовят на каждый Спас, что можно на стол в Успенский пост и как получить домашний пирог, если печь самому в этом году некогда."] },
+        { h: "Медовый Спас, 14 августа: мёд, мак и начало поста", p: ["Первый Спас в народе зовут ещё Маковеем или Маковым: в церкви освящают мёд нового сбора, мак и травы. Дома пекут то, что пахнет на всю кухню, — маковники и рулеты с маком, булочки, медовую коврижку, блины и оладьи с мёдом. Пресловутые «маковые головки» тут ни при чём: в рецептах — обычный пищевой мак с рынка, тот же, что в булочках.", "С этого же дня начинается Успенский пост — он идёт с 14 по 27 августа. Поэтому стол на Медовый Спас традиционно постный: тесто без яиц и молока, начинки из мака, яблок, ягоды и мёда. Это не про аскезу, а про то, почему выпечка августа именно такая — лёгкая, фруктовая, без крема."] },
+        { h: "Яблочный Спас, 19 августа: пироги, шарлотка и освящённые яблоки", p: ["Второй Спас — главный. По церковному календарю это Преображение Господне, в храмах освящают яблоки, груши и виноград, и по уставу в этот день разрешается рыба. По народной традиции до Спаса яблоки нового урожая не ели — а с 19-го начинали, и сразу помногу: пироги, шарлотка, слоёные штрудели, печёные яблоки с мёдом, пирожки с яблочной начинкой, компоты и первое яблочное варенье.", "Отсюда и поговорка «яблоку негде упасть»: к середине августа урожай идёт валом, и вопрос не «где взять яблоки», а «куда их деть». Классический ответ — испечь. Пирог с яблоками, шарлотка на скорую руку, рулет с корицей, а излишки — в сушку, в повидло и в банки на зиму.", "Если печёте сами, помните простое: для пирога берут кислые сорта (антоновка, симиренко) — сладкие расплываются и дают приторную начинку. Если не печёте — этот же пирог у соседа-повара выйдет вкуснее магазинного, потому что он делает две-три штуки, а не двести."] },
+        { h: "Ореховый Спас, 29 августа: хлеб и орехи", p: ["Третий Спас — Ореховый, он же Хлебный и Спас на полотне. К 29 августа Успенский пост уже закончился (27-го), поспевает лесной орех, а из зерна нового урожая пекут хлеб — отсюда второе имя. Стол в этот день самый простой и самый сытный за август: домашний хлеб и пироги, ореховая выпечка, мёд, что осталось от яблок. Заодно это последние тёплые выходные лета — повод собрать соседей за одним столом."] },
+        { h: "Что заказать у соседа-повара к Спасу", p: ["К Медовому — маковый рулет, коврижку, булочки с маком, блины с мёдом. К Яблочному — яблочный пирог, шарлотку, штрудель, пирожки с яблоком, печёные яблоки, а из банок — яблочное варенье и повидло. К Ореховому — домашний хлеб, пироги, ореховую выпечку, чак-чак и медовик, если пост уже позади.", "Отдельный сезонный запрос — «постное»: в дни поста повару можно прямо написать в чате «без яиц и молока», и он испечёт на постном тесте. Это тот случай, когда домашняя кухня удобнее любой кондитерской: там состав менять не станут, а сосед — сделает партию под вас.", "И житейский расклад: 19 августа в 2026-м — среда, будний день. Печь пирог вечером после работы соглашаются немногие, а стол при этом хочется. Проще заказать выпечку у того, кто и так завтра растапливает духовку."] },
+        { h: "Как заказать", p: ["Откройте Селину, выберите город и посмотрите поваров рядом: у многих в меню как раз выпечка. Не нашли нужного пирога — напишите в чат: к Спасу большинство поваров печёт по заказу, надо только предупредить за день-два. Выбирайте доставку от повара или самовывоз в паре минут от дома и укажите час, к которому нужно всё готовое.", "Оплата — наличными при получении, без предоплат; на время бесплатного пилота сервис не берёт комиссию, и деньги полностью получает повар. А если яблок в этом году, наоборот, некуда девать и вы всё равно печёте на всю семью — поставьте лишний пирог в меню: соседям он нужен ровно так же, как вам не нужен пятый."] },
+      ],
+      faq: [
+        { q: "Какого числа Спасы в 2026 году?", a: "Даты не меняются от года к году: Медовый Спас — 14 августа, Яблочный (Преображение Господне) — 19 августа, Ореховый (Хлебный) — 29 августа. В 2026 году это пятница, среда и суббота соответственно." },
+        { q: "Что готовят на Яблочный Спас?", a: "Всё яблочное: пироги и шарлотку, штрудель, пирожки с яблочной начинкой, печёные яблоки с мёдом, компоты, варенье и повидло на зиму. Для пирога лучше брать кислые сорта вроде антоновки — сладкие расплываются в начинке." },
+        { q: "Что пекут на Медовый Спас?", a: "Выпечку с мёдом и маком: маковые рулеты и маковники, булочки с маком, медовую коврижку, блины и оладьи с мёдом. В церкви в этот день освящают мёд нового сбора, мак и травы." },
+        { q: "Правда ли, что до Спаса нельзя есть яблоки?", a: "Это народная традиция, а не запрет: яблоки нового урожая не ели до Преображения, 19 августа, а с этого дня начинали. Сегодня её соблюдают по желанию — как повод дождаться и устроить из первого пирога маленький праздник." },
+        { q: "Постный ли стол на Спас?", a: "Медовый Спас открывает Успенский пост (14–27 августа), поэтому и он, и Яблочный приходятся на постные дни; в Преображение по уставу разрешается рыба. Ореховый Спас, 29 августа, — уже после поста, стол свободный." },
+        { q: "Можно ли заказать выпечку к Спасу на Селине?", a: "Да. Посмотрите поваров в своём городе — у многих выпечка есть в меню, а если нужного пирога нет, напишите в чат: к празднику пекут под заказ, предупредить лучше за день-два. Постный вариант без яиц и молока повар сделает по вашей просьбе. Оплата наличными при получении." },
+      ],
+    },
+    en: {
+      title: "The Three Saviour Feasts of August: Honey, Apple and Nut Spas",
+      excerpt:
+        "Russia's August runs on three feasts — 14, 19 and 29 August. What's baked for each, why apples weren't eaten before the Apple Spas, and where to get the pie if there's no time to bake.",
+      body: [
+        { p: ["Russian August rests on three Saviour feasts: Honey Spas on 14 August, Apple Spas on the 19th and Nut Spas on the 29th. They are less about the calendar than about food: honey and poppy seed, apple pies and the first bread from the new harvest."] },
+        { h: "Honey Spas, 14 August", p: ["The first feast is also called Makovey: honey from the new harvest, poppy seed and herbs are blessed in church. At home people bake poppy-seed rolls and buns, honey gingerbread, blini and oladyi with honey. The same day opens the Dormition Fast (14–27 August), which is why August baking is the way it is — light, fruity, no cream: dough without eggs or milk, fillings of poppy seed, apples, berries and honey."] },
+        { h: "Apple Spas, 19 August", p: ["The second feast is the big one — the Transfiguration. Apples, pears and grapes are blessed, and fish is permitted on the day. By folk tradition apples from the new harvest weren't eaten until the 19th — and from then on, generously: pies, sharlotka, strudel, apple pirozhki, baked apples with honey, compotes and the first apple jam. A baking note: use tart apples such as antonovka; sweet ones collapse into a cloying filling."] },
+        { h: "Nut Spas, 29 August", p: ["The third feast is also called Bread Spas. The fast has ended (on the 27th), hazelnuts ripen, and bread is baked from the new grain — hence the name. The table is the simplest and the most filling of the month: homemade bread and pies, nut baking, honey and whatever the apples left. It also falls on the last warm weekend of summer — a good reason to gather the neighbors."] },
+        { h: "What to order from a neighbor cook", p: ["For Honey Spas: poppy-seed rolls, honey gingerbread, blini with honey. For Apple Spas: apple pie, sharlotka, strudel, apple pirozhki, baked apples, plus apple jam from the jar shelf. For Nut Spas: homemade bread, pies, nut baking, chak-chak and medovik. During the fast you can simply message the cook 'no eggs or milk' and they'll bake on lean dough — a bakery won't change its recipe for you, a neighbor will.", "Open Celina, pick your city and look at the cooks nearby; if the pie you want isn't listed, ask in chat — most bake to order with a day or two of notice. Delivery or pickup, cash on receipt, no commission during the free pilot. And if it's your apples that have nowhere to go, list the spare pie: your neighbors need it as much as you don't need a fifth one."] },
+      ],
+      faq: [
+        { q: "When are the Spas feasts in 2026?", a: "The dates are fixed every year: Honey Spas on 14 August, Apple Spas (the Transfiguration) on 19 August, Nut Spas on 29 August — in 2026 a Friday, a Wednesday and a Saturday." },
+        { q: "What is cooked for Apple Spas?", a: "Everything apple: pies and sharlotka, strudel, apple pirozhki, baked apples with honey, compotes and jam for winter. Tart varieties like antonovka hold their shape best in a pie." },
+        { q: "Is the Spas table lean?", a: "Honey Spas opens the Dormition Fast (14–27 August), so it and Apple Spas fall on fast days, with fish permitted on the Transfiguration. Nut Spas on 29 August comes after the fast, so the table is unrestricted." },
+      ],
+    },
+  },
+  {
+    slug: "chto-prigotovit-iz-gribov",
+    cover: "/images/pirozhki.jpg",
+    date: "2026-08-11",
+    readMin: 7,
+    tags: ["грибы", "сезон", "заготовки", "постное", "август", "сентябрь"],
+    links: [
+      { to: "/zagotovki", label: "Домашние заготовки: соленья и варенье" },
+      { to: "/vypechka", label: "Домашняя выпечка на заказ" },
+      { to: "/blog/yablochnyy-spas-chto-prigotovit", label: "Медовый, Яблочный и Ореховый Спас" },
+      { to: "/blog/eda-na-dachu-i-piknik", label: "Еда на дачу и пикник" },
+      { to: "/blog/domashnyaya-eda-v-chelyabinske", label: "Домашняя еда в Челябинске: грузди и заготовки" },
+      { to: "/pravilnoe-pitanie", label: "Правильное питание на заказ" },
+      { to: "/eda-na-nedelyu", label: "Готовая еда на неделю" },
+      { to: "/", label: "Повара рядом с вами" },
+    ],
+    ru: {
+      title: "Что приготовить из грибов: сезон, блюда и заготовки",
+      excerpt:
+        "Тихая охота идёт: белые, лисички, подберёзовики, скоро опята. Что сделать с ведром грибов сегодня, что заморозить и высушить на зиму, почему грибы не закатывают герметично — и где взять грибной суп или пирог, если в лес вы не ходите.",
+      body: [
+        { p: ["Август — начало главной части грибного сезона. В средней полосе после тёплых дождей идут белые, подберёзовики и подосиновики, вовсю берут лисички, а к сентябрю пойдут опята. У этой поры два лица: одни возвращаются из леса с ведром и не знают, куда всё девать до ночи, другие грибы любят, но в лес не ходят — и покупают уже готовое. Ниже — и то, и другое: что приготовить из свежих грибов, как заготовить их на зиму, чего делать нельзя и что из грибного можно заказать у соседа-повара."] },
+        { h: "Сезон: что и когда идёт", p: ["Точных дат у грибов нет — всё решают дожди и тепло, и в каждом регионе свой календарь. Общая рамка для средней полосы такая: основной сбор растягивается с августа по октябрь, белые и подберёзовики идут волнами после дождей всю вторую половину лета и сентябрь, лисички держатся с середины лета до осени, опята — самая поздняя массовая волна, обычно сентябрь и начало октября. На юге сезон длиннее, на севере и в Сибири короче и раньше заканчивается.", "Практический вывод простой: грибы — продукт нескольких недель. Всё, что вы хотите есть зимой, надо сушить, морозить или солить сейчас, а не «потом, когда будет время». Именно поэтому в конце августа и в сентябре кухни в домах пахнут одинаково."] },
+        { h: "Что приготовить из свежих грибов сегодня", p: ["Первое и лучшее — жареные грибы с картошкой и луком. Это то блюдо, ради которого в лес и ходят: белые и подберёзовики дают вкус, лисички — плотность, а картошка забирает всё остальное. Второе по частоте — грибной суп: из свежих белых он получается прозрачным и ароматным, из сушёных — темнее и крепче, а если добавить перловку, выйдет уже не суп, а обед.", "Дальше идёт всё, что делают, когда грибов много: жульен в кокотницах или в формочках, грибная икра из ножек и мелочи, начинка для пирожков и пирогов, грибы в сметане, грибная подлива к гречке и картофельному пюре, вареники и пельмени с грибами, каша с грибами. Отдельно — блюда, где грибы играют вторым номером: солянка, жаркое в горшочках, курица с грибами, драники со сметаной и грибами.", "Одно правило на все блюда: грибы не любят спешки в кастрюле, но не любят и ожидания в холодильнике. Свежие лесные грибы перебирают и готовят в тот же день, максимум — на следующий; если разобрать сегодня некогда, лучше сразу отварить и убрать в морозилку, чем оставить ведро до выходных."] },
+        { h: "Заготовки: сушка, заморозка, соление", p: ["Сушка — классика для трубчатых: белые, подберёзовики и подосиновики сушат целыми или ломтиками, и зимой из горсти получается суп, который пахнет на всю квартиру. Хранят сушёное в стекле или тканевом мешочке в сухом месте — сырость грибам страшнее времени.", "Заморозка — самый простой способ и самый честный по вкусу. Морозят двумя путями: отваренными (отжать, разложить порциями) или уже обжаренными — второе занимает меньше места и зимой превращается в ужин за десять минут. Лисички чаще именно жарят и морозят: при сушке они становятся жёсткими и горчат.", "Соление и квашение — то, что раньше стояло в каждом погребе: грузди и волнушки холодным или горячим способом, солёные опята. Важная деталь: солёные грибы держат в открытой таре под гнётом и в холоде, а не закатывают под жестяную крышку.", "И то, чего делать не надо: закатывать грибы герметично. Домашние грибные консервы в закрученных банках — самая рискованная категория домашних заготовок, каждый сезон именно из-за них предупреждают о ботулизме. Возбудитель развивается без доступа воздуха и не выдаёт себя ни запахом, ни вкусом, а обычное проваривание на плите его токсин не всегда убирает. Поэтому в заготовках честный порядок такой: сушить, морозить, солить в открытой таре и хранить в холоде."] },
+        { h: "Безопасность без паники: три правила", p: ["Первое: не берите незнакомый гриб. Не «похож на съедобный», не «по фото в интернете» — а знаете точно. Самые тяжёлые отравления в России дают бледная поганка (её путают с сыроежкой и шампиньоном) и ложные опята.", "Второе: не собирайте вдоль трасс, у заводов и на свалках — грибы тянут в себя всё, что есть в почве, и хороший белый у обочины хуже плохого в лесу.", "Третье: не давайте лесные грибы маленьким детям и не ешьте сами помногу на ночь — это тяжёлая еда, даже когда всё правильно собрано. Это не запугивание, а те самые вещи, из-за которых сезон у кого-то заканчивается больницей."] },
+        { h: "Грибы и Успенский пост", p: ["С 14 по 27 августа идёт Успенский пост, и грибы в эти две недели — главная еда постного стола: они дают ту сытность и «мясной» вкус, которых в пост не хватает. Отсюда весь классический набор: постные пирожки с грибами и капустой, гречка с грибами и луком, грибной суп без сметаны, картошка с грибами, грибная икра на хлеб, вареники с картошкой и грибами.", "Если заказываете к посту у соседа-повара — так и напишите в чате: без яиц, молока и сметаны. Домашняя кухня подстраивается под просьбу, а магазинная витрина — нет. Подробнее про август и его праздники — в нашей статье про три Спаса."] },
+        { h: "Что из грибного заказать у соседа-повара", p: ["Грибы — как раз тот продукт, где домашняя кухня выигрывает у общепита с большим отрывом, потому что дело не в рецепте, а в сырье и в терпении: перебрать ведро, почистить, отварить, дождаться. Заказывают обычно грибной суп, жареные грибы с картошкой, жульен, пироги и пирожки с грибами, вареники и пельмени с грибной начинкой, грибную икру, подливу к гарниру, драники с грибами.", "Готового раздела «грибное» в меню нет: повара ставят такие блюда к остальным или пишут о них в описании кухни. Если не видите — просто спросите в чате, готовят ли в этом сезоне из грибов и из каких. Многие в августе и сентябре сами ходят в лес или берут у знакомых и охотно делают партию побольше.", "И обратная сторона: если это вы каждые выходные возвращаетесь с полным ведром, а дома уже некуда, — заведите профиль повара и поставьте в меню то, что и так готовите: суп, икру, пирожки. Соседям грибное ведро нужно ровно так же, как вам не нужно третье."] },
+        { h: "Как заказать", p: ["Откройте Селину, выберите город и посмотрите поваров рядом. Дальше как обычно: доставка от повара или самовывоз в паре минут ходьбы, время вы указываете сами. Оплата наличными при получении, без предоплат; на время бесплатного пилота сервис не берёт комиссию, и деньги полностью получает повар.", "Про сроки: грибное лучше заказывать на ближайшие дни, а не «на когда-нибудь». Сезон короткий, и то, что повар готовит из свежих лесных грибов в сентябре, в ноябре он будет делать уже из замороженных — вкусно, но это другая история."] },
+      ],
+      faq: [
+        { q: "Когда сезон грибов?", a: "Точных дат нет — всё зависит от дождей, тепла и региона. В средней полосе основной сбор идёт с августа по октябрь: белые и подберёзовики появляются волнами после дождей, лисички держатся с середины лета до осени, опята — самая поздняя массовая волна, обычно сентябрь и начало октября." },
+        { q: "Что приготовить из свежих грибов?", a: "Самое частое — жареные грибы с картошкой и луком и грибной суп. Дальше: жульен, грибная икра, начинка для пирожков и пирогов, грибы в сметане, подлива к гречке и пюре, вареники и пельмени с грибами, солянка, жаркое в горшочках." },
+        { q: "Как заготовить грибы на зиму?", a: "Три рабочих способа: сушка (лучше всего для белых, подберёзовиков и подосиновиков), заморозка отваренных или уже обжаренных грибов и соление в открытой таре под гнётом в холоде. Лисички при сушке жестковаты и горчат — их обычно жарят и морозят." },
+        { q: "Почему нельзя закатывать грибы в банки герметично?", a: "Домашние грибные консервы в закрученных банках — самая рискованная категория заготовок: возбудитель ботулизма развивается без доступа воздуха и не выдаёт себя ни запахом, ни вкусом. Безопаснее сушить, морозить или солить в открытой таре и держать в холоде." },
+        { q: "Сколько хранятся свежие лесные грибы?", a: "Очень недолго: их перебирают и готовят в тот же день, максимум на следующий. Если разобрать сегодня некогда, лучше сразу отварить и заморозить порциями, чем оставлять ведро до выходных." },
+        { q: "Можно ли заказать грибные блюда на Селине?", a: "Да, если повар в вашем городе готовит из грибов в этом сезоне. Отдельного раздела «грибное» в меню нет — блюда стоят вместе с остальными, поэтому проще спросить в чате. В Успенский пост (14–27 августа) сразу попросите постный вариант: без яиц, молока и сметаны." },
+      ],
+    },
+    en: {
+      title: "What to Cook with Mushrooms: Season, Dishes and Winter Stores",
+      excerpt:
+        "The quiet hunt is on: ceps, chanterelles, boletes, honey fungus next. What to do with a bucket today, what to freeze and dry for winter, why mushrooms are never sealed airtight — and where to get the soup or the pie if you don't go to the forest.",
+      body: [
+        { p: ["August opens the main stretch of the Russian mushroom season. After warm rain the ceps, birch and aspen boletes come up, chanterelles are in full swing, and by September the honey fungus follows. The season has two faces: some come home with a full bucket and no idea where to put it before nightfall, others love mushrooms but never go picking — and buy them ready-made."] },
+        { h: "The season", p: ["Mushrooms keep no calendar: rain and warmth decide, and every region differs. As a rough frame for central Russia, the main picking runs from August through October — ceps and boletes arrive in waves after rain, chanterelles hold from midsummer into autumn, and honey fungus is the last mass wave, usually September into early October. The practical conclusion: mushrooms are a product of a few weeks. Whatever you want to eat in winter must be dried, frozen or salted now."] },
+        { h: "What to cook today", p: ["First and best: mushrooms fried with potatoes and onion — the dish people go to the forest for. Then mushroom soup, clear and fragrant from fresh ceps, darker and stronger from dried ones. After that comes everything you make when there is too much: julienne, mushroom caviar from stalks and small pieces, filling for pies and pirozhki, mushrooms in sour cream, gravy for buckwheat and mashed potato, vareniki and pelmeni with mushrooms.", "One rule for all of it: fresh forest mushrooms are sorted and cooked the same day, next day at the latest. If there's no time today, boil and freeze them rather than leaving the bucket until the weekend."] },
+        { h: "Drying, freezing, salting — and what not to do", p: ["Dry the tubular ones: ceps and boletes, whole or sliced, kept in glass or cloth somewhere dry. Freeze either boiled and pressed or already fried — the fried version takes less space and becomes dinner in ten minutes. Chanterelles turn tough and bitter when dried, so they are usually fried and frozen. Salting (milk caps, saffron milk caps, honey fungus) is done in open containers under a weight, kept cold.", "What not to do: never seal mushrooms airtight in screw-top jars. Home-canned mushrooms are the riskiest category of preserving — botulinum develops without air and betrays itself by neither smell nor taste. Dry, freeze, or salt in open containers in the cold."] },
+        { h: "Safety in three rules", p: ["Never pick a mushroom you don't know — not 'looks edible', not 'matched a photo'. The death cap (confused with russulas and champignons) and false honey fungus cause the worst poisonings in Russia. Don't pick along motorways, near plants or on dumps: mushrooms absorb whatever is in the soil. And don't give forest mushrooms to small children or eat a lot of them late at night — it is heavy food even when everything was picked correctly."] },
+        { h: "Mushrooms and the Dormition Fast", p: ["The Dormition Fast runs 14–27 August, and mushrooms are the backbone of the lean table those two weeks: lean pirozhki with mushrooms and cabbage, buckwheat with mushrooms and onion, soup without sour cream, potatoes with mushrooms, mushroom caviar on bread. If you're ordering for the fast, just say so in chat: no eggs, no milk, no sour cream. A home kitchen adjusts; a shop display doesn't."] },
+        { h: "What to order from a neighbor cook", p: ["Mushrooms are where a home kitchen beats catering by a wide margin, because the work is in the sorting and the patience, not the recipe. People order mushroom soup, mushrooms fried with potatoes, julienne, pies and pirozhki with mushrooms, vareniki and pelmeni, mushroom caviar, gravy for a side dish.", "There's no separate 'mushroom' section in the menu — dishes sit with the rest, so just ask in chat whether the cook works with mushrooms this season. Open Celina, choose your city and look at the cooks nearby: delivery or pickup a couple of minutes away, cash on receipt, no commission during the free pilot. And if it's you coming back with a full bucket every weekend, list what you already cook — your neighbors need that bucket as much as you don't need a third one."] },
+      ],
+      faq: [
+        { q: "When is mushroom season in Russia?", a: "There are no fixed dates — rain, warmth and region decide. In central Russia the main picking runs from August to October: ceps and boletes come in waves after rain, chanterelles from midsummer into autumn, honey fungus last, usually September into early October." },
+        { q: "How do you store mushrooms for winter?", a: "Three working methods: drying (best for ceps and boletes), freezing them boiled or already fried, and salting in open containers under a weight kept cold. Chanterelles go tough and bitter when dried, so they are usually fried and frozen." },
+        { q: "Why should mushrooms never be canned in sealed jars?", a: "Home-canned mushrooms in screw-top jars are the riskiest category of preserving: botulinum develops without air and gives away no smell or taste. Dry, freeze or salt in open containers in the cold instead." },
+        { q: "Can I order mushroom dishes on Celina?", a: "Yes, if a cook in your city is working with mushrooms this season. There's no separate section for them — dishes sit alongside the rest, so ask in chat. During the Dormition Fast (14–27 August) ask for the lean version: no eggs, milk or sour cream." },
+      ],
+    },
+  },
+  {
+    slug: "domashnyaya-eda-v-chelyabinske",
+    cover: "/images/pelmeni.jpg",
+    date: "2026-08-12",
+    readMin: 5,
+    tags: ["челябинск", "южный урал", "домашняя еда", "доставка", "город"],
+    links: [
+      { to: "/eda/chelyabinsk", label: "Домашняя еда в Челябинске — страница города" },
+      { to: "/blog/domashnyaya-eda-v-ekaterinburge", label: "Домашняя еда в Екатеринбурге" },
+      { to: "/blog/chto-prigotovit-iz-gribov", label: "Что приготовить из грибов" },
+      { to: "/zagotovki", label: "Домашние заготовки: соленья и варенье" },
+      { to: "/obedy", label: "Домашние обеды с доставкой" },
+      { to: "/eda-na-nedelyu", label: "Готовая еда на неделю" },
+      { to: "/dostavka", label: "Доставка домашней еды" },
+    ],
+    ru: {
+      title: "Домашняя еда в Челябинске: пельмени, шаньги и обеды",
+      excerpt:
+        "Гид по домашней еде в Челябинске: уральские пельмени, шаньги, груздянка и домашние обеды от соседей-поваров — от ЧТЗ и Чурилово до Северо-Запада, Паркового и АМЗ.",
+      body: [
+        { p: ["Челябинск — большой рабочий город на Миассе, где обед всерьёз: смены длинные, зима долгая, и еда здесь ценится сытная и настоящая. Домашняя кухня тут не мода последних лет, а привычка — суп на кастрюлю, пельмени, которые лепят всей семьёй, банки на балконе к зиме. Рассказываем, как в Челябинске заказать домашнюю еду: не «домашнюю» из цеха, а приготовленную соседом в вашем же районе."] },
+        { h: "Как это работает", p: ["На Селине готовят проверенные соседи-повара. Откройте страницу города, посмотрите, кто готовит рядом — на ЧТЗ, в Чурилово, на Северо-Западе, в Парковом, на АМЗ, в Ленинском или в центре у Кировки, — выберите блюда и оформите заказ с доставкой или самовывозом. Повар живёт в паре кварталов, поэтому обед не едет через весь город по проспекту Ленина: между плитой и вашим столом — минуты.", "Каждый повар проходит проверку личности по документам, у блюд открыт состав, а оплата — наличными при получении: сначала видите заказ, потом платите. Во время пилота сервис не берёт комиссий — вся сумма достаётся повару."] },
+        { h: "Что заказывают в Челябинске", p: ["Южноуральская домашняя классика — та, которой кормят после смены и в мороз. Первое место у пельменей: на Урале их лепят помногу и морозят впрок, и разница между домашними и магазинными здесь очевидна каждому. Рядом — шаньги с картошкой и творогом к чаю, наваристые щи и борщ на всю кастрюлю, груздянка из солёных груздей, котлеты с пюре, драники, домашние пироги и пирожки.", "Челябинская область граничит с Башкирией, и на столе это видно: эчпочмаки, беляши, бешбармак с домашней лапшой, чак-чак к чаю здесь такие же «свои», как пельмени. У многих семей это кухня бабушки, а не «национальный ресторан», — и готовят её дома именно так.", "Отдельная челябинская история — обед на смену. Заводской и сменный график плохо дружит с готовкой: домой приходят поздно, а есть надо горячее и вовремя. Поэтому здесь часто берут не разовый ужин, а несколько контейнеров сразу — суп, второе, котлеты — и разогревают в течение недели."] },
+        { h: "Август: сады, грузди и банки", p: ["Вторая половина августа на Южном Урале — самое хлопотное время года на кухне. С садов везут кабачки, огурцы, вишню, смородину и облепиху, в лесу идут грузди, которые на Урале солят целыми вёдрами, а на плите с утра до ночи стоит таз. У кого-то сад есть, у кого-то нет — и как раз здесь соседская кухня выручает обе стороны.", "Если сад ваш и урожай уже некуда девать, поставьте в меню то, что и так делаете: солёные грузди, аджику, варенье, компоты, лечо. Если сада нет — закажите банку у соседки: домашние заготовки в Челябинске расходятся быстрее, чем появляются. Как заготавливать грибы и почему их не закатывают герметично, мы разобрали в отдельной статье; про соленья и варенье — на странице заготовок.", "Ещё одна августовская тема — Успенский пост с 14 по 27 августа. Постное меню домашняя кухня собирает без проблем: грибной суп, пирожки с капустой, гречка с грибами, вареники с картошкой. Просто напишите повару в чате: без яиц, молока и сметаны."] },
+        { h: "Скоро школа", p: ["К сентябрю в Челябинске возвращается вечный родительский вопрос: чем кормить ребёнка в учебные дни, если сами вы на работе до семи. Договориться с соседом-поваром об обедах на учебную неделю — рабочий вариант: у ребёнка горячий суп и котлета вместо булки из буфета, а у вас на одну заботу меньше. Что заказывать и как договариваться — в нашем гиде про домашнюю еду для школьника."] },
+        { h: "С чего начать", p: ["Загляните на страницу «Домашняя еда в Челябинске», посмотрите поваров рядом и закажите первый обед. Если в вашем районе поваров пока нет — сервис только запускается: оставьте заявку или расскажите о Селине соседке, чьи пельмени и шаньги знает весь подъезд. С неё в вашем доме всё и начнётся.", "И если готовите вы сами и делаете это хорошо — заведите профиль повара. На ЧТЗ, в Парковом и Чурилово людей много, кухонь мало, а желающих съесть нормальный домашний суп в среду вечером — весь дом."] },
+      ],
+      faq: [
+        { q: "Как заказать домашнюю еду в Челябинске?", a: "Откройте страницу «Домашняя еда в Челябинске» на Селине, посмотрите поваров рядом с вашим районом — ЧТЗ, Северо-Запад, Парковый, Чурилово, АМЗ, Ленинский, центр, — добавьте блюда в корзину и оформите заказ. Доступны доставка от повара и самовывоз, оплата — наличными при получении." },
+        { q: "Сколько стоит домашняя еда в Челябинске?", a: "Цену ставит сам повар, и она обычно ниже ресторанной при большей порции: вы платите за еду, а не за зал и официантов. Во время бесплатного пилота Селина не берёт комиссию, поэтому вся сумма достаётся повару и наценки сервиса в цене нет." },
+        { q: "Есть ли доставка домашних обедов на неделю?", a: "Да, это один из самых частых запросов в городе со сменным графиком. С поваром договариваются на несколько контейнеров сразу — суп, второе, гарнир — и забирают их одним заказом. Подробнее — на странице «Готовая еда на неделю»." },
+        { q: "Безопасно ли заказывать еду у домашнего повара?", a: "Каждый повар на Селине проходит проверку личности по документам и подтверждает санитарные правила, у блюд открыт состав, а с поваром можно поговорить в чате до заказа — спросить про аллергены, специи и способ приготовления. Оплата при получении делает первый заказ спокойным." },
+        { q: "Можно ли заказать в Челябинске башкирскую и татарскую кухню?", a: "Да, если повар рядом с вами её готовит: эчпочмаки, беляши, бешбармак и чак-чак на Южном Урале — домашняя, а не ресторанная еда. Отдельного раздела в меню нет, поэтому проще спросить в чате или посмотреть описание кухни повара." },
+        { q: "Как стать домашним поваром в Челябинске?", a: "Заведите профиль повара, пройдите проверку личности и поставьте в меню то, что вы и так готовите: пельмени, шаньги, супы, пироги, заготовки. Во время пилота сервис не берёт комиссию — повар получает всю сумму заказа." },
+      ],
+    },
+    en: {
+      title: "Homemade Food in Chelyabinsk: Pelmeni, Shangi and Lunches",
+      excerpt:
+        "A guide to home-cooked food in Chelyabinsk: Ural pelmeni, shangi, salted milk caps and weekday lunches from neighbor cooks — from ChTZ and Churilovo to the North-West, Parkovy and AMZ.",
+      body: [
+        { p: ["Chelyabinsk is a big working city on the Miass, where lunch is taken seriously: the shifts are long, the winter longer, and food is expected to be filling and real. Home cooking here isn't a recent fashion but a habit — a pot of soup, pelmeni folded by the whole family, jars lined up on the balcony for winter. Here's how to order real homemade food in Chelyabinsk: cooked by a neighbor in your own district, not 'homestyle' out of a plant."] },
+        { h: "How it works", p: ["On Celina, verified neighbor cooks do the cooking. Open the city page, see who cooks nearby — in ChTZ, Churilovo, the North-West, Parkovy, AMZ, Leninsky or the centre by Kirovka — pick dishes and order with delivery or pickup. The cook lives a couple of blocks away, so lunch doesn't travel the length of Prospekt Lenina: minutes between the stove and your table.", "Every cook passes identity verification, dishes list their ingredients, and payment is cash on receipt: first you see the order, then you pay. No commissions during the pilot — the cook keeps the full amount."] },
+        { h: "What people order in Chelyabinsk", p: ["The South Ural home classics are the ones that feed you after a shift and in a hard frost. Pelmeni come first: in the Urals they are made in bulk and frozen ahead, and the gap between homemade and shop-bought is obvious to everyone here. Alongside them: shangi with potato or curd for tea, big-pot shchi and borscht, gruzdyanka soup from salted milk caps, cutlets with mash, potato pancakes, pies and pirozhki.", "The Chelyabinsk region borders Bashkortostan, and the table shows it: echpochmak, belyash, beshbarmak with hand-rolled noodles and chak-chak for tea are as much 'ours' here as pelmeni — grandmother's cooking rather than restaurant cuisine.", "One local pattern stands out: lunch for the shift. Factory and shift schedules don't leave room for cooking, so people often order not one dinner but several containers at once — soup, a main, cutlets — and reheat them through the week."] },
+        { h: "August: gardens, milk caps and jars", p: ["Late August is the busiest kitchen season in the South Urals. Courgettes, cucumbers, cherries, currants and sea buckthorn come in from the dacha gardens, milk caps are out in the forest — salted here by the bucket — and a basin sits on the stove from morning to night.", "If the garden is yours and the harvest has nowhere left to go, list what you already make: salted mushrooms, adjika, jam, compote, lecho. If you have no garden, order a jar from a neighbor. We covered mushroom preserving — and why mushrooms are never sealed airtight — in a separate article.", "The Dormition Fast runs 14–27 August, and a home kitchen handles a lean menu easily: mushroom soup, cabbage pirozhki, buckwheat with mushrooms, potato vareniki. Just tell the cook in chat: no eggs, milk or sour cream."] },
+        { h: "School is coming", p: ["By September the old parental question returns: what does the child eat on school days if you're at work until seven. Arranging weekday lunches with a neighbor cook works well — hot soup and a cutlet instead of a canteen bun, and one worry less for you."] },
+        { h: "Where to start", p: ["Open the 'Homemade food in Chelyabinsk' page, look at the cooks nearby and order your first meal. If your district has none yet, the service is only launching: leave a request, or tell the neighbor whose pelmeni and shangi the whole stairwell knows about Celina.", "And if you're the one who cooks well — set up a cook profile. In ChTZ, Parkovy and Churilovo there are plenty of people, few kitchens, and a whole building that would like a proper home-cooked soup on a Wednesday evening."] },
+      ],
+      faq: [
+        { q: "How do I order homemade food in Chelyabinsk?", a: "Open the 'Homemade food in Chelyabinsk' page on Celina, look at the cooks near your district — ChTZ, North-West, Parkovy, Churilovo, AMZ, Leninsky, the centre — add dishes to the cart and place the order. Delivery from the cook and pickup are both available, payment is cash on receipt." },
+        { q: "What does home-cooked food cost in Chelyabinsk?", a: "The cook sets the price, and it is usually below restaurant level for a larger portion: you pay for the food, not for a dining room and waiters. During the free pilot Celina takes no commission, so there is no service markup in the price." },
+        { q: "Can I get a week of lunches delivered?", a: "Yes — it's one of the most common requests in a shift-work city. People arrange several containers at once with a cook — soup, a main, a side — and collect them in one order." },
+        { q: "Is it safe to order from a home cook?", a: "Every cook on Celina passes document-based identity verification and confirms the hygiene rules, dishes list their ingredients, and you can talk to the cook in chat before ordering — about allergens, spice level or how something is made. Cash on receipt keeps the first order low-risk." },
+        { q: "Can I order Bashkir and Tatar dishes in Chelyabinsk?", a: "Yes, if a cook near you makes them: echpochmak, belyash, beshbarmak and chak-chak are home food in the South Urals, not restaurant food. There's no separate menu section, so ask in chat or check the cook's kitchen description." },
       ],
     },
   },

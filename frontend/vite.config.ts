@@ -96,8 +96,8 @@ export default defineConfig({
       const blogSlugToImg = new Map(BLOG_POSTS.map((p) => [p.slug, p.cover]));
       const imageFor = (u: string): string | null => {
         if (u.startsWith("/blog/")) return blogSlugToImg.get(u.slice(6)) ?? null;
-        if (u.startsWith("/eda/") && !u.slice(5).includes("/")) return citySlugToImg.get(u.slice(5)) ?? "/images/red-square.jpg";
-        if (u === "/" || ["/gatherings", "/dostavka", "/vypit-vmeste", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/about", "/story", "/manifest"].includes(u)) return "/images/red-square.jpg";
+        if (u.startsWith("/eda/") && !u.slice(5).includes("/")) return citySlugToImg.get(u.slice(5)) ?? "/images/og-default.jpg";
+        if (u === "/" || ["/gatherings", "/dostavka", "/vypit-vmeste", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/about", "/story", "/manifest"].includes(u)) return "/images/og-default.jpg";
         return null;
       };
       const body = urls

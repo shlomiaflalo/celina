@@ -15,7 +15,7 @@ export function ErrorState({ onRetry }: { onRetry?: () => void }) {
   return (
     <div className="flex flex-col items-center gap-3 py-16 text-center">
       <AlertIcon size={40} />
-      <p className="max-w-xs text-sm font-medium text-white drop-shadow">{t.common.loadError}</p>
+      <p className="max-w-xs text-sm font-medium text-[#e0860c]">{t.common.loadError}</p>
       <Button onClick={onRetry ?? (() => location.reload())}>{t.common.retry}</Button>
     </div>
   );
@@ -73,7 +73,7 @@ export function EmptyState({
     <div className="flex flex-col items-center gap-3 py-16 text-center">
       {/* без opacity: на оранжевом фоне иконка должна быть чисто белой */}
       {icon && <div>{icon}</div>}
-      <p className="font-medium text-white drop-shadow">{title}</p>
+      <p className="font-medium text-[#e0860c]">{title}</p>
       {actionLabel && onAction && <Button onClick={onAction}>{actionLabel}</Button>}
     </div>
   );

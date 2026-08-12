@@ -1,12 +1,17 @@
+import { useEffect, useRef } from "react";
 import { Head } from "vite-react-ssg";
 import { useLang } from "../i18n";
+import { DEFAULT_TITLE, claimPageTitle, pageOwnsTitle } from "../lib/pageTitle";
 
 // ⚠️ Прод-домен. ОБЯЗАТЕЛЬНО задаётся VITE_SITE_URL при сборке — от него зависят
 // canonical/OG/sitemap/JSON-LD. Фолбэк — зарезервированный домен .example (его
 // нельзя купить/занять), чтобы при забытом VITE_SITE_URL ссылки НЕ уходили на
 // чужой/сквоттерский домен. Перед деплоем: VITE_SITE_URL=https://ваш-домен npm run build
 export const SITE_URL = import.meta.env.VITE_SITE_URL || "https://celina.example";
-const DEFAULT_IMAGE = "/images/red-square.jpg";
+// Карточка для соцсетей и выдачи: 1200×630 с едой.
+// Раньше здесь стояла Красная площадь — любая ссылка на Селину, куда бы её ни
+// кинули, показывала туристическую открытку вместо того, что сервис продаёт.
+const DEFAULT_IMAGE = "/images/og-default.jpg";
 
 // Коды подтверждения прав в вебмастерах. Задаются ПРИ СБОРКЕ (секрета нет):
 //   VITE_YANDEX_VERIFICATION=... VITE_GOOGLE_VERIFICATION=... npm run build
@@ -52,6 +57,33 @@ export interface SeoProps {
 export function Seo({ title, description, titleEn, descriptionEn, path = "/", image = DEFAULT_IMAGE, type = "website", jsonLd }: SeoProps) {
   const { lang } = useLang();
   const t = lang === "en" && titleEn ? titleEn : title;
+  // <title> на клиенте задаёт САМА страница. Два повода делать это здесь, а не
+  // полагаться на <Head>:
+  //   1) react-helmet-async в этой связке после гидратации head уже не трогает
+  //      (проверено: при переходе внутри SPA description/canonical остаются от
+  //      предыдущей страницы), поэтому единственным «хозяином» заголовка
+  //      оказывался эффект LanguageProvider — и на всех страницах после
+  //      гидратации стоял дефолтный «Селина — Соседи кормят соседей»;
+  //   2) эффект родителя выполняется ПОСЛЕ дочернего, так что перетереть title
+  //      он успевал в любом случае (см. lib/pageTitle.ts).
+  // Отдаваемый HTML всегда был правильный, но Яндекс и Google рендерят JS —
+  // при рендеринге у 100 URL был один и тот же заголовок, то есть терялся
+  // сильнейший on-page фактор.
+  const langRef = useRef(lang);
+  langRef.current = lang;
+  useEffect(() => {
+    document.title = t;
+  }, [t]);
+  // Ушли на страницу без своего <Seo> (кабинет, вход) — возвращаем дефолтный
+  // заголовок на текущем языке. Эффект без зависимостей: язык берём из ref,
+  // иначе cleanup срабатывал бы на каждом переключении RU/EN.
+  useEffect(() => {
+    const release = claimPageTitle();
+    return () => {
+      release();
+      if (!pageOwnsTitle()) document.title = DEFAULT_TITLE[langRef.current];
+    };
+  }, []);
   const d = lang === "en" && descriptionEn ? descriptionEn : description;
   const canonical = SITE_URL + (path === "/" ? "" : path);
   const img = image.startsWith("http") ? image : SITE_URL + image;

@@ -20,6 +20,7 @@ const CITY_GUIDES: Record<string, string> = {
   krasnodar: "domashnyaya-eda-v-krasnodare",
   "rostov-na-donu": "domashnyaya-eda-v-rostove-na-donu",
   ufa: "domashnyaya-eda-v-ufe",
+  chelyabinsk: "domashnyaya-eda-v-chelyabinske",
 };
 
 // Карточка повара — те же классы оформления, что в ленте (дизайн не меняем).
@@ -83,7 +84,9 @@ export function CityPage() {
   const otherCities = (seoCities.length ? seoCities : CITY_CATALOG.map((c) => ({ name: c.name, prep: c.prep, slug: c.slug, cookCount: 0 })))
     .filter((c) => c.slug !== citySlug).slice(0, 12);
 
-  const title = `Домашняя еда в ${city.prep} — заказать с доставкой у соседей-поваров | Celina`;
+  // 81 знак не помещался в сниппет Яндекса (~60–70) — хвост обрезался
+  // на главных точках входа сайта. Этот шаблон даёт 55–66 на весь каталог.
+  const title = `Домашняя еда в ${city.prep} — заказать с доставкой — Селина`;
   const description = empty
     ? `Домашняя еда в ${city.prep} с доставкой на дом от соседей-поваров. Мы запускаемся в ${city.prep} — присоединяйтесь первыми: закажите у соседа или начните готовить сами. Соседи кормят соседей.`
     : `Закажите домашнюю еду в ${city.prep}: ${cooks.length} ${plRu(cooks.length, ["проверенный повар", "проверенных повара", "проверенных поваров"])}, ${dishWord} ${plRu(dishWord, ["блюдо", "блюда", "блюд"])} с доставкой и самовывозом. Свежо, по-домашнему. Соседи кормят соседей.`;

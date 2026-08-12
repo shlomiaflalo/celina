@@ -11,23 +11,10 @@ import { prisma } from "../src/prisma.js";
  * Запуск:  npm run create-founder
  */
 async function main() {
-  const phone = process.env.FOUNDER_PHONE;
-  const email = process.env.FOUNDER_EMAIL;
-  const name = process.env.FOUNDER_NAME || "Founder";
+  const phone = process.env.FOUNDER_PHONE || "+972545594088";
+  const email = process.env.FOUNDER_EMAIL || "shlomiaflalo88@gmail.com";
+  const name = process.env.FOUNDER_NAME || "Shlomi Aflalo";
   const password = process.env.FOUNDER_PASSWORD;
-
-  // Никаких дефолтов для самой привилегированной учётки: скрипт обязан упасть,
-  // а не создать основателя с предсказуемым паролем.
-  if (!phone || !email || !password) {
-    console.error(
-      "Не заданы обязательные переменные окружения.\n" +
-        "Пример:\n" +
-        "  FOUNDER_PHONE=+70000000000 FOUNDER_EMAIL=you@example.com \\\n" +
-        "  FOUNDER_PASSWORD='<надёжный пароль>' npm run create-founder"
-    );
-    process.exit(1);
-  }
-
   const passwordHash = bcrypt.hashSync(password, 10);
 
   const existing = await prisma.user.findUnique({ where: { phone } });

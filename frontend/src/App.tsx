@@ -12,6 +12,7 @@ import { COOK_ACTIVATION_FEE_ENABLED } from "./config";
 import { Seo, siteJsonLd } from "./components/Seo";
 import { Metrica } from "./components/Metrica";
 import { CookieConsent } from "./components/CookieConsent";
+import { DayThemeProvider } from "./theme/DayThemeProvider";
 import { IdleLogout } from "./components/IdleLogout";
 import type { Role } from "./types";
 
@@ -108,7 +109,13 @@ function Providers() {
   useEffect(() => {
     const ref = new URLSearchParams(window.location.search).get("ref")?.toUpperCase().trim();
     // сохраняем только валидный код — испорченная ссылка не должна ломать будущую регистрацию
-    if (ref && /^[A-Z0-9]{1,16}$/.test(ref)) localStorage.setItem("celina_ref", ref);
+    try {
+      if (ref && /^[A-Z0-9]{1,16}$/.test(ref)) localStorage.setItem("celina_ref", ref);
+    } catch {
+      /* приватный режим Safari / блокировка хранилища: реферал просто не запомнится.
+         Без catch исключение из эффекта роняло бы всё дерево — белый экран у того,
+         кто пришёл по реферальной ссылке. */
+    }
   }, []);
   // при каждом переходе на новую страницу прокручиваем наверх — иначе новая
   // страница (например вход) открывается с прежней позиции прокрутки.
@@ -121,6 +128,7 @@ function Providers() {
       <AuthProvider>
         <RealtimeProvider>
           <CartProvider>
+            <DayThemeProvider />
             <Metrica />
             <CookieConsent />
             <IdleLogout />

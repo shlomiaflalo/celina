@@ -44,6 +44,16 @@ const dishSchema = z.object({
   ingredients: z.string().max(500).nullable().optional(),
   allergens: z.array(z.string()).optional(),
   isAvailable: z.boolean().default(true),
+  // время готовки партии («готовлю в четверг к 18:00»); null — готовлю по заказу.
+  // Ограничиваем двумя неделями вперёд: дальше это уже не предзаказ, а обещание.
+  cookAt: z
+    .string()
+    .datetime()
+    .nullable()
+    .optional()
+    .refine((v) => !v || new Date(v).getTime() < Date.now() + 14 * 24 * 3600_000, {
+      message: "Время готовки — не дальше двух недель вперёд",
+    }),
 });
 
 async function myCookProfileId(userId: string): Promise<string | null> {
@@ -77,10 +87,11 @@ dishesRouter.post(
     if (!verified) return res.status(403).json({ error: "Опубликовать блюдо можно только после верификации" });
     if (photoCount(data) < 1) return res.status(400).json({ error: "Добавьте хотя бы одно фото блюда" });
 
-    const { tags, photos, allergens, ...rest } = data;
+    const { tags, photos, allergens, cookAt, ...rest } = data;
     const dish = await prisma.dish.create({
       data: {
         ...rest,
+        cookAt: cookAt ? new Date(cookAt) : null,
         tags: arrayToCsv(tags),
         allergens: arrayToCsv(allergens),
         photos: arrayToCsv(photos),
@@ -109,11 +120,13 @@ dishesRouter.put(
     if (data.photos !== undefined && photoCount(data) < 1) {
       return res.status(400).json({ error: "Добавьте хотя бы одно фото блюда" });
     }
-    const { tags, photos, allergens, ...rest } = data;
+    const { tags, photos, allergens, cookAt, ...rest } = data;
     const updated = await prisma.dish.update({
       where: { id: req.params.id },
       data: {
         ...rest,
+        // не передан — не трогаем; null — повар снял время и готовит по заказу
+        ...(cookAt !== undefined ? { cookAt: cookAt ? new Date(cookAt) : null } : {}),
         ...(tags ? { tags: arrayToCsv(tags) } : {}),
         ...(allergens ? { allergens: arrayToCsv(allergens) } : {}),
         ...(photos

@@ -54,10 +54,22 @@ export function BlogPost() {
       { name: L.title, path: `/blog/${post.slug}` },
     ]),
   ];
+  // вопрос-ответ статьи — отдельной схемой: Яндекс и Google показывают её в выдаче
+  if (L.faq?.length) {
+    jsonLd.push({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: L.faq.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    });
+  }
 
   return (
     <div className="mx-auto max-w-2xl">
-      <Seo title={`${L.title} | Celina`} description={L.excerpt} path={`/blog/${post.slug}`} type="article" image={post.cover} jsonLd={jsonLd} />
+      <Seo title={`${L.title} — Селина`} description={L.excerpt} path={`/blog/${post.slug}`} type="article" image={post.cover} jsonLd={jsonLd} />
 
       <Link to="/blog" className="text-sm font-medium text-white/90 hover:underline">← {t.blog.title}</Link>
 
@@ -79,6 +91,20 @@ export function BlogPost() {
             ))}
           </section>
         ))}
+
+        {L.faq && L.faq.length > 0 && (
+          <section className="mt-8">
+            <h2 className="mb-3 text-xl font-bold drop-shadow">{lang === "en" ? "Frequently asked questions" : "Частые вопросы"}</h2>
+            <div className="space-y-2.5">
+              {L.faq.map((f, i) => (
+                <details key={i} className="rounded-2xl bg-white/10 p-4 ring-1 ring-white/20">
+                  <summary className="cursor-pointer font-semibold">{f.q}</summary>
+                  <p className="mt-2 text-sm leading-relaxed text-white/85">{f.a}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* внутренние ссылки статьи — перелинковка на города/категории/блюда (SEO) */}
         {liveLinks.length > 0 && (

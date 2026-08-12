@@ -11,7 +11,10 @@ import { cityImage } from "../../lib/cityImage";
 import { haversineM } from "../../lib/cityCoords";
 import { useAuth } from "../../auth/AuthContext";
 import { VerifiedBadge } from "../../components/VerifiedBadge";
-import { useT, useTr } from "../../i18n";
+import { useT, useTr, useLang } from "../../i18n";
+import { FirstCookInvite } from "../../components/FirstCookInvite";
+import { StorefrontPreview } from "../../components/StorefrontPreview";
+import { TODAY } from "../../theme/dayTheme";
 
 /** Человекочитаемое расстояние: «1.2 км» / «350 м» — БЕЗ знака «~» (решение основателя). */
 function fmtDist(m: number, kmLabel: string, mLabel: string): string {
@@ -23,9 +26,37 @@ function fmtDist(m: number, kmLabel: string, mLabel: string): string {
   return `${Math.round(m / 10) * 10} ${mLabel}`;
 }
 
+/**
+ * Две строки первого экрана, которых нет в общем словаре: они существуют
+ * только здесь и меняются вместе с этим экраном.
+ *
+ * «Наличными при получении» — самый сильный аргумент сервиса и первый вопрос
+ * повара: деньги через Селину не проходят вообще. Раньше это лежало
+ * примечанием в глубине страницы.
+ *
+ * Шкала расстояния — про то, чем Селина отличается от доставки: не «привезут
+ * из тёмной кухни за 40 минут», а «готовят в соседнем подъезде».
+ */
+const STRIP = {
+  ru: {
+    // На 375px полная строка занимала три ряда — 160 px первого экрана ради
+    // одной мысли. Короткая версия несёт ту же мысль в один ряд.
+    cashRailShort: "Наличными при получении · 0% комиссии",
+    cashRail: "Оплата наличными при получении · 0% комиссии · деньги через сервис не проходят",
+    walk: ["ваш подъезд", "дом напротив", "соседний двор", "10 минут пешком"],
+  },
+  en: {
+    cashRailShort: "Cash on delivery · 0% commission",
+    cashRail: "Cash on delivery · 0% commission · money never passes through us",
+    walk: ["your building", "across the street", "the next courtyard", "10 minutes on foot"],
+  },
+};
+
 export function Feed() {
   const t = useT();
   const tr = useTr();
+  const { lang } = useLang();
+  const c = lang === "en" ? STRIP.en : STRIP.ru;
   const navigate = useNavigate();
   const { user } = useAuth();
   const [cooks, setCooks] = useState<CookProfile[] | null>(null);
@@ -155,34 +186,33 @@ export function Feed() {
         />
       )}
 
-      {/* герой-баннер: Красная площадь (Москва) с радугой.
-          во время поиска снимаем overflow-hidden и z-20 (фон уходит под затемнение,
-          а строка поиска с подсказками поднимается над ним) */}
-      <div className={`relative mb-6 rounded-3xl ${dimActive ? "" : "z-20 overflow-hidden"}`}>
-        {/* webp с jpg-фолбэком — LCP-элемент, чем легче тем лучше */}
-        <picture>
-          <source srcSet="/images/red-square.webp" type="image/webp" />
-          <img
-            src="/images/red-square.jpg"
-            alt=""
-            {...{ fetchpriority: "high" }}
-            decoding="async"
-            className="absolute inset-0 h-full w-full rounded-3xl object-cover"
-            style={{ objectPosition: "center 42%" }}
-          />
-        </picture>
-        {/* фирменный оранжевый оттенок 30% — фото остаётся хорошо видно */}
-        <div className="absolute inset-0 rounded-3xl" style={{ background: "rgba(224,134,12,0.30)" }} />
-        {/* лёгкое затемнение слева — чтобы белый заголовок читался */}
-        <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-black/55 via-black/20 to-transparent" />
-        <div className="relative px-6 py-10 sm:px-10 sm:py-14">
-          {/* визуальный заголовок героя; семантический H1 главной — в HomeSeoSection
-              (два H1 на странице размывают релевантность для Яндекса) */}
-          <div className="max-w-md text-3xl font-bold text-white drop-shadow sm:text-4xl">
-            {t.feed.title}
-          </div>
-          <p className="mt-1 text-white/85">{t.tagline}</p>
-          <div className="mt-5 max-w-xl">
+      {/* Первый экран.
+          Красной площади здесь больше нет. Туристическая открытка с радугой
+          не имела отношения ни к еде, ни к тому, что делает сервис, а её
+          153 КБ грузились приоритетом high на всех 102 пререндеренных
+          страницах — включая 101 ту, где картинки нет вовсе.
+          Порядок сознательный: сначала то, ради чего человек пришёл (поиск),
+          потом ответ на первый вопрос повара («кто держит мои деньги» —
+          никто, наличными в руки), и только потом прилавок. */}
+      {/* Рейка приклеена к шапке. Колонка <main> несёт py-6, и полоса висела
+          на 24 px ниже — узкая полоска муки между белой шапкой и оранжевым
+          читалась как щель в вёрстке. -mt-6 гасит ровно этот отступ. */}
+      <div className="bleed band-solid -mt-6 mb-5 px-4 py-2 text-center text-[12px] font-extrabold uppercase tracking-[.06em] sm:text-[13px] sm:tracking-[.07em]">
+        <span className="sm:hidden">{c.cashRailShort}</span>
+        <span className="hidden sm:inline">{c.cashRail}</span>
+      </div>
+
+      <div className={`relative mb-6 ${dimActive ? "" : "z-20"}`}>
+        <div className="relative">
+          <div className="t-h1 max-w-2xl text-[#e0860c]">{t.feed.title}</div>
+          <p className="mt-1 max-w-xl text-[#e0860c]/75 sm:t-lead sm:mt-2">{t.tagline}</p>
+          {/* реплика дня: повод, по которому сайт сегодня так выглядит */}
+          {TODAY.line && (
+            <p className="mt-2 max-w-xl text-sm font-medium text-[#e0860c] sm:mt-3 sm:text-base">
+              {lang === "en" ? TODAY.line.en : TODAY.line.ru}
+            </p>
+          )}
+          <div className="mt-4 max-w-xl">
             <div className={`relative ${dimActive ? "z-40" : "z-30"}`}>
               <input
                 value={q}
@@ -190,9 +220,9 @@ export function Feed() {
                 onFocus={() => setFocused(true)}
                 onBlur={() => { blurTimer.current = setTimeout(() => setFocused(false), 150); }}
                 onKeyDown={onKey}
-                placeholder={t.feed.aiPlaceholder}
+                placeholder={TODAY.placeholder ? (lang === "en" ? TODAY.placeholder.en : TODAY.placeholder.ru) : t.feed.aiPlaceholder}
                 aria-label={t.feed.aiPlaceholder}
-                className="w-full truncate rounded-2xl border-0 bg-white/95 py-3.5 pl-4 pr-28 text-sm shadow-lg outline-none ring-orange-300 focus:ring-2"
+                className="w-full truncate rounded-xl border border-[var(--hairline)] bg-white py-3.5 pl-4 pr-28 shadow-[var(--e2)] outline-none"
               />
               <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full bg-[#e0860c] px-2.5 py-1 text-xs font-semibold text-white">
                 {t.feed.aiBadge}
@@ -242,7 +272,18 @@ export function Feed() {
                 {parsed.keyword && <Crit>{parsed.keyword}</Crit>}
               </div>
             )}
-          </div>
+                    </div>
+
+          {/* Шкала «как близко». Не карта и не число — четыре слова, которые
+              объясняют модель быстрее любого текста. */}
+          <ul className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-semibold text-[#e0860c]/70 sm:mt-4 sm:text-sm">
+            {c.walk.map((w, i) => (
+              <li key={w} className="flex items-center gap-2">
+                {i > 0 && <span aria-hidden className="text-[#e0860c]/35">·</span>}
+                {w}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
@@ -268,28 +309,30 @@ export function Feed() {
       </div>
 
       {cooks === null ? (
-        // идёт загрузка списка — лёгкий скелет карточек (страница уже видна)
-        <div className="grid gap-4 sm:grid-cols-2">
-          {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="overflow-hidden rounded-3xl bg-white/80 ring-1 ring-orange-100">
-              <div className="h-44 animate-pulse bg-orange-100/70" />
-              <div className="space-y-2 p-4">
-                <div className="h-4 w-2/3 animate-pulse rounded bg-orange-100/70" />
-                <div className="h-3 w-1/3 animate-pulse rounded bg-orange-100/60" />
-              </div>
-            </div>
-          ))}
-        </div>
+        // Пока список едет — прилавок, а не четыре серых прямоугольника.
+        //
+        // Это ещё и то, что видит краулер: страница собирается статикой, а на
+        // сборке API нет, поэтому в готовый HTML главной попадает ровно эта
+        // ветка. Раньше туда уезжал скелет — Яндекс индексировал главную с
+        // четырьмя пульсирующими заглушками вместо еды. Теперь в разметке
+        // двенадцать настоящих блюд, и первый экран остаётся едой даже с
+        // выключенным JS.
+        <StorefrontPreview />
       ) : filtered.length === 0 ? (
         cooks.length === 0 ? (
-          // на площадке пока НЕТ ни одного повара (запуск): честное приглашение
-          // без иконки (разбитая тарелка читалась бы как «ошибка», а тут всё в
-          // порядке — просто рано). Чистый тёплый текст + призыв.
-          <EmptyState
-            title={t.feed.noCooksYet}
-            actionLabel={user ? undefined : t.feed.becomeCook}
-            onAction={user ? undefined : () => navigate("/login")}
-          />
+          // Поваров в ленте ещё нет. Раньше здесь стояло «мы только открылись,
+          // станьте первым» — фраза про НАС, а читает её повар и слышит «тут
+          // никого нет». Заменено на блок, который объясняет ей выгоду прийти
+          // именно сейчас (см. FirstCookInvite).
+          //
+          // Сначала еда, потом текст: сверху витрина-пример (StorefrontPreview),
+          // чтобы страница не выглядела мёртвой в первую же секунду. Карточки
+          // помечены «Пример» и не являются предложением — выдуманных поваров,
+          // рейтингов и цен на сайте нет.
+          <>
+            <StorefrontPreview />
+            <FirstCookInvite />
+          </>
         ) : (
           <p className="">{t.feed.empty}</p>
         )

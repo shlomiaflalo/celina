@@ -1,4 +1,4 @@
-# Celina: System Architecture
+# Celina — System Architecture
 
 > A platform connecting private home cooks with buyers. Target market: Russia. Interface in Russian.
 
@@ -8,8 +8,8 @@
 
 A two-sided marketplace for home-cooked food:
 
-- **Cook (Повар / Cook)**, a private individual who cooks at home, sets up a virtual "kitchen", uploads a menu with dishes, receives orders and manages them.
-- **Buyer (Покупатель / Buyer)**, discovers nearby cooks, browses menus, orders dishes, pays, and tracks the order.
+- **Cook (Повар / Cook)** — a private individual who cooks at home, sets up a virtual "kitchen", uploads a menu with dishes, receives orders and manages them.
+- **Buyer (Покупатель / Buyer)** — discovers nearby cooks, browses menus, orders dishes, pays, and tracks the order.
 
 The platform is the intermediary: discovery, ordering, payment, rating, and trust.
 
@@ -35,8 +35,8 @@ The split: `backend/` and `frontend/` are separate, communicating via REST API.
 
 ## 3. Roles and Permissions (Roles)
 
-- `BUYER`, buyer.
-- `COOK`, cook. Every cook also owns a `CookProfile`.
+- `BUYER` — buyer.
+- `COOK` — cook. Every cook also owns a `CookProfile`.
 - A user could in the future be both (same account, two modes). In the first phase we separate by `role`.
 
 ---
@@ -83,21 +83,21 @@ Review (rating)
 
 ## 5. Buyer Pages (Buyer)
 
-1. **Home / discovery (Лента)**, nearby cooks and dishes, search, filtering by category/cuisine.
-2. **Cook profile (Профиль повара)**, kitchen description, rating, the full menu.
-3. **Dish page (Блюдо)**, photo, description, price, prep time, add to cart.
-4. **Cart (Корзина)**, item summary, delivery/pickup selection, scheduling.
-5. **Checkout (Оформление заказа)**, address, payment method, confirmation.
-6. **Order tracking (Заказ)**, real-time status.
-7. **My orders (Мои заказы)**, history + leaving a rating.
+1. **Home / discovery (Лента)** — nearby cooks and dishes, search, filtering by category/cuisine.
+2. **Cook profile (Профиль повара)** — kitchen description, rating, the full menu.
+3. **Dish page (Блюдо)** — photo, description, price, prep time, add to cart.
+4. **Cart (Корзина)** — item summary, delivery/pickup selection, scheduling.
+5. **Checkout (Оформление заказа)** — address, payment method, confirmation.
+6. **Order tracking (Заказ)** — real-time status.
+7. **My orders (Мои заказы)** — history + leaving a rating.
 
 ## 6. Cook Pages (Cook)
 
-1. **Dashboard (Панель)**, incoming orders, "accepting orders" toggle (online), today's earnings.
-2. **Menu management (Меню)**, dish CRUD: add/edit/delete, availability, stock.
-3. **Orders (Заказы)**, accept/decline, advancing status (accepted→cooking→ready→delivered).
-4. **My kitchen (Моя кухня)**, profile editing, photos, delivery areas, delivery fees.
-5. **Earnings (Доходы)**, sales summary, ratings received.
+1. **Dashboard (Панель)** — incoming orders, "accepting orders" toggle (online), today's earnings.
+2. **Menu management (Меню)** — dish CRUD: add/edit/delete, availability, stock.
+3. **Orders (Заказы)** — accept/decline, advancing status (accepted→cooking→ready→delivered).
+4. **My kitchen (Моя кухня)** — profile editing, photos, delivery areas, delivery fees.
+5. **Earnings (Доходы)** — sales summary, ratings received.
 
 ---
 
@@ -156,8 +156,8 @@ celina/
 
 ## 9. Build Phases (Roadmap)
 
-- **Phase 0, foundation (here):** data model, backend with API, seed with Russian data, frontend skeleton with routing and i18n.
-- **Phase 1:** buyer pages, discovery, cook profile, dish, cart, order.
-- **Phase 2:** cook pages, dashboard, menu management, orders.
+- **Phase 0 — foundation (here):** data model, backend with API, seed with Russian data, frontend skeleton with routing and i18n.
+- **Phase 1:** buyer pages — discovery, cook profile, dish, cart, order.
+- **Phase 2:** cook pages — dashboard, menu management, orders.
 - **Phase 3:** real authentication (OTP), photos, payments.
 - **Phase 4:** ratings, notifications, migration to PostgreSQL for production.

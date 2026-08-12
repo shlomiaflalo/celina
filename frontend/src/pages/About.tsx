@@ -22,8 +22,6 @@ export function About() {
       <div className="mb-6 overflow-hidden rounded-3xl shadow-xl ring-1 ring-white/30">
         {playing ? (
           <video
-            // видео не входит в публичный репозиторий (23 МБ, не код);
-            // положите свой файл в frontend/public/celina.mp4
             src="/celina.mp4"
             className="h-[50vh] w-full bg-black object-cover"
             autoPlay
@@ -39,7 +37,7 @@ export function About() {
             aria-label={t.about.playVideo}
             className="group relative block h-[50vh] w-full"
           >
-            <img src="/images/red-square.jpg" alt="" className="h-full w-full object-cover" />
+            <img src="/images/og-default.jpg" alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
             <span className="absolute inset-0 bg-black/30 transition group-hover:bg-black/20" />
             <span className="absolute inset-0 flex items-center justify-center">
               <span className="flex h-20 w-20 items-center justify-center rounded-full bg-white/90 shadow-lg transition group-hover:scale-105">

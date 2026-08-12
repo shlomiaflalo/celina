@@ -22,16 +22,16 @@ export function HomeSeoSection() {
   const topCooks = [...seoCooks].sort((a, b) => b.rating - a.rating).slice(0, 6);
 
   const linkCls =
-    "rounded-full bg-white/90 px-3.5 py-1.5 text-sm font-medium text-[#e0860c] ring-1 ring-orange-100 transition hover:bg-white";
+    "rounded-full bg-white/90 px-3.5 py-1.5 text-sm font-medium text-[#e0860c] border border-[var(--hairline)] transition hover:bg-white";
 
   return (
-    <section className="mt-10 border-t border-white/25 pt-8 text-white">
-      <h1 className="text-2xl font-bold drop-shadow sm:text-3xl">{t.homeSeo.h1}</h1>
-      <p className="mt-2 max-w-3xl leading-relaxed text-white/90">{t.homeSeo.intro}</p>
+    <section className="mt-14 border-t border-[var(--hairline)] pt-10 text-[#e0860c]">
+      <h1 className="t-h2">{t.homeSeo.h1}</h1>
+      <p className="mt-2 max-w-3xl leading-relaxed text-[#e0860c]/85">{t.homeSeo.intro}</p>
 
       {seoCities.length > 0 && (
-        <div className="mt-6">
-          <h2 className="mb-2 text-lg font-semibold drop-shadow">{t.homeSeo.byCity}</h2>
+        <div className="mt-8">
+          <h2 className="t-h3 mb-2">{t.homeSeo.byCity}</h2>
           <div className="flex flex-wrap gap-2">
             {seoCities.map((c) => (
               <Link key={c.slug} to={`/eda/${c.slug}`} className={linkCls}>
@@ -43,8 +43,8 @@ export function HomeSeoSection() {
       )}
 
       {seoCategories.length > 0 && (
-        <div className="mt-6">
-          <h2 className="mb-2 text-lg font-semibold drop-shadow">{t.homeSeo.byCategory}</h2>
+        <div className="mt-8">
+          <h2 className="t-h3 mb-2">{t.homeSeo.byCategory}</h2>
           <div className="flex flex-wrap gap-2">
             {seoCategories.map((cat) => (
               <Link key={cat.slug} to={`/eda/${seoCities[0]?.slug ?? "moskva"}/${cat.slug}`} className={linkCls}>
@@ -56,8 +56,8 @@ export function HomeSeoSection() {
       )}
 
       {dishes.length > 0 && (
-        <div className="mt-6">
-          <h2 className="mb-2 text-lg font-semibold drop-shadow">{t.homeSeo.popularDishes}</h2>
+        <div className="mt-8">
+          <h2 className="t-h3 mb-2">{t.homeSeo.popularDishes}</h2>
           <div className="flex flex-wrap gap-2">
             {dishes.map((d) => (
               <Link key={d.slug} to={`/blyudo/${d.slug}`} className={linkCls}>
@@ -69,8 +69,8 @@ export function HomeSeoSection() {
       )}
 
       {topCooks.length > 0 && (
-        <div className="mt-6">
-          <h2 className="mb-2 text-lg font-semibold drop-shadow">{t.homeSeo.verifiedCooks}</h2>
+        <div className="mt-8">
+          <h2 className="t-h3 mb-2">{t.homeSeo.verifiedCooks}</h2>
           <div className="flex flex-wrap gap-2">
             {topCooks.map((c) => (
               <Link key={c.id} to={`/cooks/${c.id}`} className={linkCls}>
@@ -81,18 +81,18 @@ export function HomeSeoSection() {
         </div>
       )}
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-3">
+      <div className="mt-10 grid gap-4 sm:grid-cols-3">
         {[t.homeSeo.why1, t.homeSeo.why2, t.homeSeo.why3].map((w, i) => (
-          <div key={i} className="rounded-2xl bg-white/10 p-4 ring-1 ring-white/20">
+          <div key={i} className="card p-4">
             <h3 className="font-semibold">{w.title}</h3>
-            <p className="mt-1 text-sm text-white/85">{w.text}</p>
+            <p className="mt-1 text-sm text-[#e0860c]/80">{w.text}</p>
           </div>
         ))}
       </div>
 
       {/* Полезные разделы — внутренняя перелинковка на новые SEO-лендинги */}
-      <div className="mt-6">
-        <h2 className="mb-2 text-lg font-semibold drop-shadow">{t.homeSeo.usefulTitle}</h2>
+      <div className="mt-8">
+        <h2 className="t-h3 mb-2">{t.homeSeo.usefulTitle}</h2>
         <div className="flex flex-wrap gap-2">
           {t.homeSeo.usefulLinks.map((l) => (
             <Link key={l.to} to={l.to} className={linkCls}>
@@ -103,27 +103,27 @@ export function HomeSeoSection() {
       </div>
 
       {/* Как это работает — 3 шага (для покупателя) */}
-      <div className="mt-10">
-        <h2 className="mb-3 text-lg font-semibold drop-shadow">{t.homeSeo.howTitle}</h2>
+      <div className="mt-12">
+        <h2 className="t-h3 mb-3">{t.homeSeo.howTitle}</h2>
         <div className="grid gap-4 sm:grid-cols-3">
           {t.homeSeo.steps.map((s, i) => (
-            <div key={i} className="rounded-2xl bg-white/10 p-4 ring-1 ring-white/20">
-              <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-bold text-[#e0860c]">{i + 1}</div>
+            <div key={i} className="card p-4">
+              <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#e0860c] text-sm font-bold text-white">{i + 1}</div>
               <h3 className="font-semibold">{s.title}</h3>
-              <p className="mt-1 text-sm text-white/85">{s.text}</p>
+              <p className="mt-1 text-sm text-[#e0860c]/80">{s.text}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Частые вопросы + FAQPage-разметка (расширенный сниппет в Яндексе/Google) */}
-      <div className="mt-10">
-        <h2 className="mb-3 text-lg font-semibold drop-shadow">{t.homeSeo.faqTitle}</h2>
+      <div className="mt-12">
+        <h2 className="t-h3 mb-3">{t.homeSeo.faqTitle}</h2>
         <div className="space-y-2.5">
           {t.homeSeo.faqs.map((f, i) => (
-            <details key={i} className="rounded-2xl bg-white/10 p-4 ring-1 ring-white/20">
-              <summary className="cursor-pointer font-semibold marker:text-white/70">{f.q}</summary>
-              <p className="mt-2 text-sm leading-relaxed text-white/85">{f.a}</p>
+            <details key={i} className="card p-4">
+              <summary className="cursor-pointer font-semibold marker:text-[#e0860c]/60">{f.q}</summary>
+              <p className="mt-2 text-sm leading-relaxed text-[#e0860c]/80">{f.a}</p>
             </details>
           ))}
         </div>

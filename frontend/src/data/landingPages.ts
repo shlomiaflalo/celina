@@ -302,6 +302,7 @@ export const VYPECHKA_PAGE: LandingData = {
   path: "/vypechka",
   serviceType: "Домашняя выпечка и торты на заказ",
   related: [
+    { to: "/blog/yablochnyy-spas-chto-prigotovit", label_ru: "Медовый, Яблочный и Ореховый Спас: что готовят", label_en: "Honey, Apple and Nut Spas: what people bake" },
     { to: "/blog/domashnyaya-vypechka-na-zakaz", label_ru: "Домашняя выпечка на заказ: как это работает", label_en: "How homemade baking to order works" },
     { to: "/blog/menyu-na-den-rozhdeniya-bez-gotovki", label_ru: "Меню на день рождения без готовки", label_en: "Birthday menu without cooking" },
     { to: "/eda-na-prazdnik", label_ru: "Еда на праздник: праздничный стол на заказ", label_en: "Party food: a celebration table to order" },
@@ -565,7 +566,9 @@ export const ZAGOTOVKI_PAGE: LandingData = {
   path: "/zagotovki",
   serviceType: "Домашние заготовки, соленья и варенье на заказ",
   related: [
+    { to: "/blog/chto-prigotovit-iz-gribov", label_ru: "Что приготовить из грибов: сезон и заготовки", label_en: "What to cook with mushrooms: season and stores" },
     { to: "/blog/eda-na-dachu-i-piknik", label_ru: "Еда на дачу и пикник", label_en: "Food for the dacha and picnic" },
+    { to: "/blog/yablochnyy-spas-chto-prigotovit", label_ru: "Медовый, Яблочный и Ореховый Спас: что готовят", label_en: "Honey, Apple and Nut Spas: what people bake" },
     { to: "/eda-na-prazdnik", label_ru: "Еда на праздник: стол на заказ", label_en: "Party food to order" },
     { to: "/blog/gde-zakazat-nastoyashchiy-borshch", label_ru: "Где заказать настоящий борщ", label_en: "Where to order real borscht" },
     { to: "/obedy", label_ru: "Домашние обеды с доставкой", label_en: "Home-cooked lunches delivered" },

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { useCart } from "../cart/CartContext";
 import { LangSwitch } from "./LangSwitch";
@@ -8,9 +8,23 @@ import { NotificationBell } from "./NotificationBell";
 import { Fab } from "./Fab";
 import { PrivacyLink } from "./LegalModal";
 import { VerifiedBadge } from "./VerifiedBadge";
+import { BowlMark } from "./Logo";
 import { ConfirmModal } from "./ui";
 import { ToastHost, toast } from "./Toast";
 import { useT, useLang } from "../i18n";
+
+/**
+ * Маршруты, переведённые на бумажную подложку.
+ *
+ * Зачем список, а не «переключили и всё». В проекте 186 классов text-white в
+ * 44 файлах: они написаны в расчёте на оранжевую заливку страницы и на муке
+ * становятся невидимыми. Переводить всё разом — это один деплой, на котором
+ * половина сайта пустая. Поэтому на бумагу выходят по маршруту за шаг, а всё
+ * остальное продолжает нести исторический оранжевый на <main> и выглядит
+ * ровно как вчера. Каждый следующий шаг добавляет сюда одну регулярку;
+ * когда список покроет всё, и он, и .band-brand отсюда уедут.
+ */
+const PAPER: RegExp[] = [/^\/$/];
 
 export function Layout() {
   const t = useT();
@@ -18,6 +32,8 @@ export function Layout() {
   const { user, logout } = useAuth();
   const { count } = useCart();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const paper = PAPER.some((re) => re.test(pathname));
   const [showLogout, setShowLogout] = useState(false);
   const isCook = user?.role === "COOK";
 
@@ -66,22 +82,29 @@ export function Layout() {
       >
         {t.common.skipToContent}
       </a>
-      <header className="sticky top-0 z-50 border-b border-orange-100 bg-white shadow-sm">
+      <header className="sticky top-0 z-50 border-b border-[var(--hairline)] bg-white shadow-[var(--e1)]">
         <div className="mx-auto max-w-5xl px-4">
           <div className="flex items-center gap-3 py-2">
-            <Link to="/" className="shrink-0">
+            {/* На 375px полное слово занимает 112 px из 375, и «Застолья»
+                выдавливается за край. До 420px оставляем только знак — тарелку
+                с паром, тот же логотип; дальше слово возвращается. */}
+            <Link to="/" className="shrink-0" aria-label="Celina">
+              <span className="block min-[420px]:hidden"><BowlMark size={30} /></span>
               {/* логотип следует за языком: RU (по умолчанию) → Селина, EN → Celina */}
               <img
                 src={lang === "en" ? "/images/logo.png" : "/images/logo-ru.png"}
                 alt="Celina"
                 draggable={false}
-                className="relative -top-[2px] h-[18px] w-auto select-none"
+                className="relative -top-[1px] hidden h-[24px] w-auto select-none min-[420px]:block sm:h-[26px] md:h-[30px]"
               />
             </Link>
 
-            {/* десктоп: меню в строку. min-w-0 + overflow-x-auto: при тесной
-                панели меню прокручивается, а имя и «Выйти» всегда остаются видимыми */}
-            <nav className="ml-1 hidden min-w-0 items-center gap-1 overflow-x-auto md:flex">{navItems}</nav>
+            {/* Меню в ту же строку, что и логотип, на ВСЕХ ширинах. Раньше на
+                телефоне оно уезжало во вторую строку, и шапка съедала 190 px
+                из 812 — четверть экрана до того, как человек увидит хоть одно
+                блюдо. min-w-0 + overflow-x-auto: при тесноте меню
+                прокручивается, а «Войти» и имя остаются на месте. */}
+            <nav className="ml-1 flex min-w-0 flex-1 items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">{navItems}</nav>
 
             {user && (
               <div className="hidden flex-1 truncate px-2 text-center text-sm font-medium  xl:block">
@@ -91,7 +114,7 @@ export function Layout() {
 
             {/* min-w-0 (вместо shrink-0): даёт имени сжиматься с многоточием,
                 а не выталкиваться за край экрана при тесной панели */}
-            <div className="ml-auto flex min-w-0 items-center gap-2 sm:gap-3">
+            <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
               <LangSwitch />
               {user && <NotificationBell />}
               {user && !isCook && (
@@ -136,8 +159,6 @@ export function Layout() {
             </div>
           </div>
 
-          {/* мобайл: меню второй строкой, прокрутка */}
-          <nav className="-mx-1 flex gap-1 overflow-x-auto pb-2 md:hidden">{navItems}</nav>
         </div>
       </header>
 
@@ -156,8 +177,12 @@ export function Layout() {
         </div>
       )}
 
-      <main id="main" className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
-        <Outlet />
+      {/* <main> больше не колонка, а полотно: секции внутри вправе выходить
+          на всю ширину окна через .bleed. Колонка 1024px переехала внутрь. */}
+      <main id="main" className={`flex w-full flex-1 flex-col ${paper ? "" : "band-brand"}`}>
+        <div className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
+          <Outlet />
+        </div>
       </main>
 
       {/* нижний сервисный бар — в потоке, прижат к низу контента (не перекрывает экран) */}

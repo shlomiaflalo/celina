@@ -76,10 +76,11 @@ function securityHeaders(req: import("express").Request, res: import("express").
     [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' https://mc.yandex.ru",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "media-src 'self' https: blob:",
-      "font-src 'self' data: https://fonts.gstatic.com",
+      // шрифт свой, с нашего домена — оба домена Google больше не нужны
+      "font-src 'self' data:",
       "connect-src 'self' https: wss:",
       "frame-src https://mc.yandex.ru",
       "object-src 'none'",
@@ -128,7 +129,9 @@ export function createApp() {
   // Старые iPhone/Android падают молча (напр. SyntaxError бандла) — без этого
   // эндпоинта такие устройства невозможно диагностировать. Пишем в stdout →
   // docker logs. Тело уже ограничено 2mb выше; дополнительно режем до 800 байт.
-  app.post("/api/client-log", (req, res) => {
+  // Лимит щедрый (одно устройство редко шлёт больше пары маяков), но без него
+  // открытый эндпоинт позволяет забить stdout/диск VPS логами — сайт ляжет.
+  app.post("/api/client-log", rateLimit({ windowMs: 15 * 60_000, max: 40 }), (req, res) => {
     try {
       const s = JSON.stringify(req.body).slice(0, 800);
       console.error(`[client-error] ${req.ip} ${s}`);
@@ -196,10 +199,80 @@ export function createApp() {
     app.get(/^\/(?!api\/|uploads\/)[^.]*$/, (req, res, next) => {
       const rel = req.path.replace(/\/+$/, ""); // /blog/ → /blog
       if (!rel) return next(); // корень → общий static (index.html)
+      // Повара и блюда — всегда за базой, даже если пререндер лежит рядом.
+      // Иначе старый снимок «тенью» отдаёт 200 с карточкой повара, которого
+      // в базе уже нет: /cooks/<id> показывал «Грузинский дворик», пока
+      // /api/cooks/<id> честно отвечал 404. Обработчики ниже знают правду.
+      if (/^\/(cooks|blyudo)\//.test(rel)) return next();
       const file = path.resolve(dist, "." + rel + ".html");
       if (!file.startsWith(dist + path.sep)) return next(); // защита от обхода каталога
       if (!existsSync(file)) return next();
       res.sendFile(file);
+    });
+
+    // Повара и блюда: правду знает база, не снимок.
+    //
+    // Оба обработчика стоят ДО express.static намеренно. Раньше они стояли
+    // после, и пререндер из снимка перехватывал запрос: /cooks/<id> отдавал
+    // 200 с «Грузинским двориком» и его рейтингом 4.9, пока /api/cooks/<id>
+    // отвечал 404. Мёртвый URL с выдуманной разметкой в индексе — ровно то,
+    // за что Яндекс наказывает, и ровно то, чего Селина не может себе
+    // позволить. Теперь снимок такие страницы не создаёт, а порядок
+    // маршрутов гарантирует, что не создаст и в следующий раз.
+    //
+    // Заодно это чинит обратный случай: повар, зарегистрированный ПОСЛЕ
+    // сборки, отдаётся с живыми OG-тегами, а не пустой карточкой в Telegram.
+    app.get("/cooks/:id", async (req, res) => {
+      const indexPath = path.resolve(FRONTEND_DIST, "index.html");
+      try {
+        const c = await prisma.cookProfile.findUnique({
+          where: { id: req.params.id },
+          include: { dishes: { where: { isAvailable: true }, take: 5 } },
+        });
+        if (!c) return res.status(404).sendFile(indexPath); // мёртвый URL → настоящий 404
+        const base = process.env.SITE_URL || `${req.protocol}://${req.get("host")}`;
+        const url = `${base}/cooks/${c.id}`;
+        const photo = c.dishes.find((d) => d.photoUrl)?.photoUrl ?? null;
+        const img = photo ? (photo.startsWith("http") ? photo : base + photo) : `${base}/images/og-default.jpg`;
+        const title = `${c.kitchenName} — домашняя еда${c.city ? ` · ${c.city}` : ""} | Celina`;
+        const desc = ((c.bio && c.bio.trim()) ||
+          `Закажите домашнюю еду у повара «${c.kitchenName}»${c.city ? ` в ${c.city}` : ""} на Celina — соседи кормят соседей.`
+        ).slice(0, 200);
+        const html = injectOg(readFileSync(indexPath, "utf8"), { title, desc, img, url });
+        res.set("Content-Type", "text/html; charset=utf-8").send(html);
+      } catch {
+        res.sendFile(indexPath);
+      }
+    });
+
+    // Блюдо: слаг вида «hinkali-5-sht-n0j7nb» — последние 6 знаков это хвост id
+    // (см. slugify в backend/src/scripts/export-seo-data.ts).
+    app.get("/blyudo/:slug", async (req, res) => {
+      const indexPath = path.resolve(FRONTEND_DIST, "index.html");
+      try {
+        const tail = req.params.slug.slice(-6);
+        const dish = tail.length === 6
+          ? await prisma.dish.findFirst({
+              where: { id: { endsWith: tail }, isAvailable: true },
+              include: { cookProfile: { select: { id: true, kitchenName: true, city: true } } },
+            })
+          : null;
+        if (!dish) return res.status(404).sendFile(indexPath);
+        const base = process.env.SITE_URL || `${req.protocol}://${req.get("host")}`;
+        const url = `${base}/blyudo/${req.params.slug}`;
+        const img = dish.photoUrl
+          ? (dish.photoUrl.startsWith("http") ? dish.photoUrl : base + dish.photoUrl)
+          : `${base}/images/og-default.jpg`;
+        const where = dish.cookProfile?.city ? ` в ${dish.cookProfile.city}` : "";
+        const title = `${dish.title} на заказ${where} — домашняя еда | Селина`;
+        const desc = ((dish.description && dish.description.trim()) ||
+          `${dish.title} от домашнего повара${where}. Заказывайте на Селине — соседи кормят соседей.`
+        ).slice(0, 200);
+        const html = injectOg(readFileSync(indexPath, "utf8"), { title, desc, img, url });
+        res.set("Content-Type", "text/html; charset=utf-8").send(html);
+      } catch {
+        res.sendFile(indexPath);
+      }
     });
 
     app.use(express.static(dist, { extensions: ["html"], maxAge: 0 }));
@@ -223,7 +296,7 @@ export function createApp() {
         const url = `${base}/gatherings/${g.id}`;
         const img = g.coverUrl
           ? (g.coverUrl.startsWith("http") ? g.coverUrl : base + g.coverUrl)
-          : `${base}/images/red-square.jpg`;
+          : `${base}/images/og-default.jpg`;
         const dateStr = new Date(g.startsAt).toLocaleDateString("ru-RU", { day: "numeric", month: "long" });
         const title = `${g.title} — застолье${g.city ? ` · ${g.city}` : ""} | Celina`;
         const desc = (g.description ||
@@ -236,39 +309,22 @@ export function createApp() {
       }
     });
 
-    // Динамические OG-теги для страницы повара (созданные ПОСЛЕ сборки не
-    // пререндерятся → без этого соцпревью пустое). Пререндеренные повара из
-    // снимка обслуживаются express.static выше — туда мы не доходим.
-    app.get("/cooks/:id", async (req, res) => {
-      const indexPath = path.resolve(FRONTEND_DIST, "index.html");
-      try {
-        const c = await prisma.cookProfile.findUnique({
-          where: { id: req.params.id },
-          include: { dishes: { where: { isAvailable: true }, take: 5 } },
-        });
-        if (!c) return res.status(404).sendFile(indexPath); // мёртвый URL → настоящий 404
-        const base = process.env.SITE_URL || `${req.protocol}://${req.get("host")}`;
-        const url = `${base}/cooks/${c.id}`;
-        const photo = c.dishes.find((d) => d.photoUrl)?.photoUrl ?? null;
-        const img = photo ? (photo.startsWith("http") ? photo : base + photo) : `${base}/images/red-square.jpg`;
-        const title = `${c.kitchenName} — домашняя еда${c.city ? ` · ${c.city}` : ""} | Celina`;
-        const desc = ((c.bio && c.bio.trim()) ||
-          `Закажите домашнюю еду у повара «${c.kitchenName}»${c.city ? ` в ${c.city}` : ""} на Celina — соседи кормят соседей.`
-        ).slice(0, 200);
-        const html = injectOg(readFileSync(indexPath, "utf8"), { title, desc, img, url });
-        res.set("Content-Type", "text/html; charset=utf-8").send(html);
-      } catch {
-        res.sendFile(indexPath);
-      }
-    });
-
     // SPA-фолбэк для динамических маршрутов (кроме /api и /uploads).
-    // /blyudo, /eda, /blog пререндерятся исчерпывающе из снимка: промах = мёртвый
-    // URL → отдаём 404 (SPA сам покажет страницу 404), а не 200 с контентом главной
-    // (soft-404 → краулер плодит дубли главной по несуществующим slug).
+    //
+    // Список белый, а не чёрный. Раньше 404 отдавали только промахи по
+    // /blyudo, /eda и /blog, а всё остальное — опечатка, старая ссылка из
+    // мессенджера, путь, придуманный скрапером, переименованный маршрут —
+    // получало 200 с заголовком главной и canonical=https://celinaeda.ru.
+    // NotFound.tsx ставит noindex, но только когда доедет JS; краулер видит
+    // 200 и дубль главной. Яндекс к soft-404 строже Google и сам такие URL из
+    // индекса не выкинет: ему нужен код ответа.
+    //
+    // Здесь перечислены клиентские маршруты, у которых пререндера нет и быть
+    // не должно (они за авторизацией). Все они уже Disallow в robots.txt, так
+    // что их 200 поиску безразличен. Всё, чего в списке нет, — мёртвый URL.
+    const SPA_ROUTES = /^\/(cart|profile|orders|cook|verify|founder|login|invite|gatherings|story|manifest)(\/|$)/;
     app.get(/^\/(?!api\/|uploads\/).*/, (req, res) => {
-      const prerendered = /^\/(blyudo|eda|blog)\//.test(req.path);
-      res.status(prerendered ? 404 : 200).sendFile(path.resolve(FRONTEND_DIST, "index.html"));
+      res.status(SPA_ROUTES.test(req.path) ? 200 : 404).sendFile(path.resolve(FRONTEND_DIST, "index.html"));
     });
   }
 

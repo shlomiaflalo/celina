@@ -24,6 +24,12 @@ Allow: /cooks/
 Disallow: /verify
 Disallow: /founder
 Disallow: /login
-Clean-param: lang /
+# Параметры, которые НЕ меняют содержимое страницы. Без них Яндекс заводит
+# отдельный URL на каждую реферальную ссылку (?ref=CODE из App.tsx), на каждый
+# поисковый запрос (?q= — его же публикует SearchAction в Seo.tsx) и на каждую
+# метку кампании. Для сервиса, который растёт репостами, это означает сотни
+# дублей главной. Директива только для Яндекса; Google закрыт абсолютными
+# self-canonical. Лимит Яндекса — 500 знаков на строку, укладываемся.
+Clean-param: lang&ref&q&from&utm_source&utm_medium&utm_campaign&utm_content&utm_term&yclid&_openstat&gclid /
 
 Sitemap: https://celinaeda.ru/sitemap.xml

@@ -7,6 +7,7 @@ import { Spinner, Badge, Button, ErrorState } from "../../components/ui";
 import { DeleteButton } from "../../components/DeleteButton";
 import { PlateIcon, VideoIcon, CameraIcon, AlertIcon } from "../../components/icons";
 import { useT, useTr } from "../../i18n";
+import { toLocalInput } from "../../lib/cookAt";
 
 const CATEGORIES = ["супы", "горячее", "салаты", "выпечка", "десерты"];
 // Категории, попадающие под обязательную маркировку «Честный знак» (с 01.03.2026
@@ -27,6 +28,7 @@ const empty = {
   portions: 0,
   prepTimeMin: 30,
   isAvailable: true,
+  cookAt: "" as string, // datetime-local; пусто = готовлю по заказу
 };
 
 export function Menu() {
@@ -110,6 +112,8 @@ export function Menu() {
       ingredients: editing.ingredients ?? null,
       allergens: editing.allergens ?? [],
       isAvailable: editing.isAvailable ?? true,
+      // datetime-local отдаёт время БЕЗ зоны — превращаем в ISO как местное
+      cookAt: editing.cookAt ? new Date(editing.cookAt).toISOString() : null,
     };
     try {
       if (editing.id) await api.put(`/dishes/${editing.id}`, payload);
@@ -202,6 +206,29 @@ export function Menu() {
             <input className={`${input} sm:col-span-2`} maxLength={DISH_MAX.ingredients} placeholder={`${t.cook.ingredients} — ${t.cook.ingredientsHint}`} aria-label={t.cook.ingredients} value={editing.ingredients ?? ""} onChange={(e) => setEditing({ ...editing, ingredients: e.target.value })} />
           </div>
 
+          {/* Когда повар готовит партию. Пусто — готовит по заказу, как раньше. */}
+          <div>
+            <div className="mb-1.5 text-sm font-medium">{t.cook.cookAtLabel}</div>
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                className={input + " sm:w-auto"}
+                type="datetime-local"
+                value={editing.cookAt || ""}
+                onChange={(e) => setEditing({ ...editing, cookAt: e.target.value })}
+              />
+              {editing.cookAt && (
+                <button
+                  type="button"
+                  onClick={() => setEditing({ ...editing, cookAt: "" })}
+                  className="rounded-xl border border-orange-200 px-3 py-2 text-sm font-medium text-[#e0860c] transition hover:bg-orange-50"
+                >
+                  {t.cook.cookAtClear}
+                </button>
+              )}
+            </div>
+            <p className="mt-1 text-xs text-[#e0860c]/70">{t.cook.cookAtHint}</p>
+          </div>
+
           {/* аллергены */}
           <div className="mt-3">
             <div className="mb-1.5 text-sm font-medium">{t.cook.allergens}</div>
@@ -271,7 +298,7 @@ export function Menu() {
               </div>
             </div>
             <div className="mt-3 flex gap-2">
-              <Button variant="ghost" onClick={() => setEditing(d)}>{t.cook.editDish}</Button>
+              <Button variant="ghost" onClick={() => setEditing({ ...d, cookAt: toLocalInput(d.cookAt) } as any)}>{t.cook.editDish}</Button>
               {/* единый стиль удаления (как у кухни и застолья): белая кнопка
                   с текстом цвета логотипа + подтверждение + сообщение об успехе */}
               <DeleteButton

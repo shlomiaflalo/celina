@@ -30,13 +30,12 @@ async function main() {
   await prisma.cookProfile.deleteMany();
   await prisma.user.deleteMany();
 
-  // ОСНОВАТЕЛЬ — доступ к панели и одобрению верификаций.
-  // Реквизиты берутся из окружения; значения ниже — только для локальной разработки.
+  // ОСНОВАТЕЛЬ — доступ к панели и одобрению верификаций (только Шломи)
   await prisma.user.create({
     data: {
-      phone: process.env.FOUNDER_PHONE || "+70000000000",
-      email: process.env.FOUNDER_EMAIL || "founder@example.com",
-      name: process.env.FOUNDER_NAME || "Founder",
+      phone: "+972545594088",
+      email: "shlomiaflalo88@gmail.com",
+      name: "Shlomi Aflalo — Founder",
       passwordHash: pw(process.env.FOUNDER_PASSWORD || "change-me-in-env"),
       role: "BUYER",
       isFounder: true,

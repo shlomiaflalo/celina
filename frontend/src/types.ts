@@ -42,6 +42,8 @@ export interface Dish {
   ingredients?: string | null;
   allergens?: string[];
   isAvailable: boolean;
+  /** Когда повар готовит эту партию. null — готовит по заказу. ISO-строка. */
+  cookAt?: string | null;
 }
 
 export interface Review {

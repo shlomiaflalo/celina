@@ -12,7 +12,7 @@ export function NotFound() {
     <div className="flex min-h-[68vh] flex-col items-center justify-center px-6 py-16 text-center text-white">
       {/* несуществующие URL не должны индексироваться как дубли главной (soft-404) */}
       <Head>
-        <title>{`404 — ${t.notFound.title} | Celina`}</title>
+        <title>{`404 — ${t.notFound.title} — Селина`}</title>
         <meta name="robots" content="noindex, follow" />
       </Head>
       <style>{`

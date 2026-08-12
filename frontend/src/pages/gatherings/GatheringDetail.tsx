@@ -82,7 +82,7 @@ export function GatheringDetail() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <Seo title={`${g.title} — застолье${g.city ? ` в ${cityPrepOf(g.city)}` : ""} | Celina`} description={(g.description || `Соседское застолье ${g.title} на Celina.`).slice(0, 200)} path={`/gatherings/${g.id}`} type="article" image={g.coverUrl || undefined} jsonLd={jsonLd} />
+      <Seo title={`${g.title} — застолье${g.city ? ` в ${cityPrepOf(g.city)}` : ""} — Селина`} description={(g.description || `Соседское застолье ${g.title} на Celina.`).slice(0, 200)} path={`/gatherings/${g.id}`} type="article" image={g.coverUrl || undefined} jsonLd={jsonLd} />
 
       <Link to="/gatherings" className="text-sm font-medium text-white/90 hover:underline">← {t.gatherings.back}</Link>
 

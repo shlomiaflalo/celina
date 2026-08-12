@@ -185,17 +185,18 @@ export function Login() {
       {/* ── Правая сторона: форма ── */}
       <div className="flex items-center justify-center p-6 sm:p-10">
         <div className="w-full max-w-sm animate-fade-up">
-          {/* 1) переключатель языка — на оранжевом фоне → белый (не коричневый) */}
+          {/* 1) переключатель языка. Правая половина теперь на бумаге, а не на
+                 оранжевом — белый здесь был бы невидим. */}
           <div className="mb-3 flex justify-center sm:mb-4">
-            <LangSwitch tone="light" />
+            <LangSwitch />
           </div>
           {/* 2) логотип следует за языком: RU (по умолчанию) → Селина, EN → Celina */}
           <div className="mb-4 flex justify-center sm:mb-6">
             <img
-              src={lang === "en" ? "/images/logo-white.png" : "/images/logo-ru-white.png"}
+              src={lang === "en" ? "/images/logo.png" : "/images/logo-ru.png"}
               alt={lang === "en" ? "Celina" : "Селина"}
               draggable={false}
-              className="h-auto w-[160px] select-none drop-shadow sm:w-[184px]"
+              className="h-auto w-[160px] select-none sm:w-[184px]"
             />
           </div>
 
@@ -212,9 +213,11 @@ export function Login() {
                 🔒 {t.auth.autoLogout}
               </p>
             )}
-            <p className="mb-4 rounded-xl bg-orange-50/70 px-3 py-2 text-sm leading-snug ">
-              {t.auth.valueProp}
-            </p>
+            {mode === "login" && (
+              <p className="mb-4 rounded-xl bg-orange-50/70 px-3 py-2 text-sm leading-snug ">
+                {t.auth.valueProp}
+              </p>
+            )}
 
             <form onSubmit={submit} className="space-y-3">
               {mode === "register" && (
@@ -242,10 +245,16 @@ export function Login() {
                     ))}
                   </select>
 
-                  {/* адрес доставки — НЕОБЯЗАТЕЛЬНО при регистрации: можно
-                      добавить сейчас или позже, при первом заказе (корзина) */}
-                  <div className="rounded-xl border border-orange-100 bg-orange-50/40 p-3">
-                    <p className="mb-2 text-xs font-medium text-[#e0860c]/80">{t.auth.addressOptional}</p>
+                  {/* Адрес доставки НЕОБЯЗАТЕЛЕН: его можно добавить позже, при
+                      первом заказе. Развёрнутым этот блок занимал 208 px из 708 —
+                      почти треть формы уходила на то, что можно пропустить, и
+                      регистрация переставала помещаться в экран телефона.
+                      Свёрнутый — 44 px, и порядок полей не меняется. */}
+                  <details className="group rounded-xl border border-orange-100 bg-orange-50/40 p-3 [&[open]>summary]:mb-2">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-xs font-medium text-[#e0860c]/80">
+                      <span>{t.auth.addressOptional}</span>
+                      <span aria-hidden className="text-base leading-none transition-transform group-open:rotate-45">+</span>
+                    </summary>
                     <button
                       type="button"
                       onClick={detectLocation}
@@ -297,7 +306,7 @@ export function Login() {
                         )}
                       </>
                     )}
-                  </div>
+                  </details>
                 </>
               )}
               <input className={input} type="tel" inputMode="tel" placeholder={t.auth.phone} value={form.phone} aria-label={t.auth.phone}

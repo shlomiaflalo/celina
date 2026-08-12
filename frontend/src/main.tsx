@@ -9,9 +9,14 @@ import "./index.css";
 // заберёт свежий HTML с новыми хешами. Защита от цикла: не чаще раза в 30 сек.
 if (typeof window !== "undefined") {
   window.addEventListener("vite:preloadError", (e) => {
-    const last = Number(sessionStorage.getItem("celina:chunk-reload") || 0);
+    // sessionStorage недоступен при заблокированных cookie / в приватном режиме и
+    // бросает исключение. Без catch падал бы сам обработчик — preventDefault() не
+    // сработал бы и телефон получил бы ровно тот вечный спиннер, от которого
+    // защищается этот код. Нет хранилища → перезагружаем без защиты от цикла.
+    let last = 0;
+    try { last = Number(sessionStorage.getItem("celina:chunk-reload") || 0); } catch { /* приватный режим */ }
     if (Date.now() - last > 30_000) {
-      sessionStorage.setItem("celina:chunk-reload", String(Date.now()));
+      try { sessionStorage.setItem("celina:chunk-reload", String(Date.now())); } catch { /* приватный режим */ }
       e.preventDefault(); // ошибку обработали сами — не роняем приложение
       window.location.reload();
     }

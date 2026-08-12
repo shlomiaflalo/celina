@@ -37,7 +37,7 @@ export function Invite() {
 
   return (
     <div className="mx-auto max-w-2xl text-white drop-shadow-sm">
-      <Seo title="Пригласить друзей | Celina" description="Пригласите соседей на Celina — соседи кормят соседей." path="/invite" />
+      <Seo title="Пригласить друзей — Селина" description="Пригласите соседей на Celina — соседи кормят соседей." path="/invite" />
       <h1 className="text-2xl font-bold sm:text-3xl">{t.invite.title}</h1>
       <p className="mt-1 text-white/90">{t.invite.subtitle}</p>
 
