@@ -1,6 +1,6 @@
 # Celina
 
-Marketplace for home-cooked food, built for the Russian market. Live in production at [celinaeda.ru](https://celinaeda.ru).
+Marketplace for home-cooked food, built for the Russian market. Founded January 2026 in Amsterdam, launched June 2026, live in production at [celinaeda.ru](https://celinaeda.ru).
 
 Verified home cooks sell to neighbours in their own city. Delivery or pickup, cash on handover, identity verification for every cook, composition and allergens on every dish, reviews only from real orders.
 
@@ -10,12 +10,12 @@ I built all of it myself: product, backend, frontend, infrastructure, SEO and th
 
 | What | Amount |
 |---|---|
-| TypeScript (backend + frontend) | 20,856 lines |
+| TypeScript (backend + frontend) | 24,124 lines |
 | REST route modules | 14 |
-| React pages | 40 |
-| Prerendered URLs | 100 |
+| React pages | 43 |
+| Prerendered URLs | 108 |
 | Legal sections (RU + EN) | 92 |
-| Blog articles (RU + EN) | 45 |
+| Blog articles (RU + EN) | 49 |
 
 TypeScript on both sides. Node, Express and Prisma with SQLite on the server. React 18, Vite and Tailwind on the client, prerendered with `vite-react-ssg`. One Docker image serves the API and the prerendered frontend from the same origin, so the client uses relative `/api` paths and there is no CORS setup to get wrong.
 
@@ -71,7 +71,7 @@ cd frontend && npm install && npm run dev
 
 The product is finished and running: ordering, delivery tracking, identity verification, gatherings, reviews, the operator dashboard and the legal layer all work end to end.
 
-The marketplace side is early. The free pilot is open and the first cooks are being signed up. Worth saying plainly, since finished code and a finished business are different things.
+Celina launched in Russia in June 2026 and is onboarding its first cooks. The platform is complete; the marketplace is in its early days — worth saying plainly, since finished code and a mature marketplace are different things.
 
 ## Also here
 
