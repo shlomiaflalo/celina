@@ -224,13 +224,32 @@ export function CityPage() {
           честно копим спрос по районам вместо «пустой витрины» */}
       {empty ? (
         <>
+          {/* Развилка по ЮРИСДИКЦИИ, а не по числу поваров.
+              Раньше «нет поваров» означало «список ожидания» одинаково для
+              Москвы и для Ташкента. Но в Москве регистрация повара ОТКРЫТА:
+              человек, готовый начать прямо сейчас, попадал в строку базы
+              вместо аккаунта — а это единственный органический вход, до
+              которого домашний повар вообще доходит. */}
           {copy && (
             <div className="card mb-4 p-5">
               <h2 className="t-h3 mb-2">Готовите дома?</h2>
               <p className="leading-relaxed">{copy.cook}</p>
+              {country.operates && (
+                <div className="mt-4 flex flex-wrap items-center gap-3">
+                  <Link
+                    to="/login?mode=register&role=cook"
+                    className="inline-flex items-center gap-2 rounded-xl bg-[#e0860c] px-5 py-2.5 font-semibold text-white shadow-sm transition hover:brightness-105 active:scale-95"
+                  >
+                    Открыть витрину в {city.prep}
+                  </Link>
+                  <Link to="/povaram" className="text-sm font-medium underline underline-offset-4">
+                    Как это работает для повара
+                  </Link>
+                </div>
+              )}
             </div>
           )}
-          <WaitlistForm city={city.name} />
+          <WaitlistForm city={city.name} allowsContact={country.allowsContact} />
           {/* Дисклеймер обязателен на каждой странице вне России: страница
               на русском языке, названная по чужому городу, иначе читается
               как предложение услуги в этой стране. */}

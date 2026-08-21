@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite-react-ssg build",
+    "build": "node scripts/check-links.mjs && tsc -b && vite-react-ssg build",
     "preview": "vite preview"
   },
   "dependencies": {

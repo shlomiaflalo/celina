@@ -9,6 +9,7 @@ import { CITY_CATALOG, CITY_CATALOG_SLUGS } from "./src/lib/cityCatalog"; // п�
 import { CITY_CONTENT } from "./src/data/cityContent";
 import { COUNTRY_CONTENT } from "./src/data/countryContent";
 import { COUNTRIES } from "./src/lib/cityCatalog";
+import { CITY_CONTENT_SLUGS, COUNTRY_CONTENT_SLUGS } from "./src/data/contentIndex";
 import cityImages from "./src/lib/cityImages.json";
 
 // домен для sitemap/canonical — ОБЯЗАТЕЛЬНО задаётся VITE_SITE_URL при сборке.
@@ -35,9 +36,26 @@ function loadSeo(): SeoSnap {
 
 // статические публичные маршруты + ТОЛЬКО непустые комбинации город/категория
 // (пустые комбинации = «тонкие» дорвей-страницы, которые Яндекс штрафует — их не пререндерим)
+// Индекс слагов существует, чтобы главная не тащила 220 КБ прозы ради
+// проверки «есть ли текст». Цена этого — два источника правды, поэтому
+// расхождение обязано ронять сборку, а не тихо выкидывать город из sitemap.
+function assertContentIndexInSync(): void {
+  const cityKeys = Object.keys(CITY_CONTENT).sort().join(",");
+  const cityIdx = [...CITY_CONTENT_SLUGS].sort().join(",");
+  if (cityKeys !== cityIdx) {
+    throw new Error("[content] src/data/contentIndex.ts разошёлся с cityContent.ts — пересоберите индекс");
+  }
+  const coKeys = Object.keys(COUNTRY_CONTENT).sort().join(",");
+  const coIdx = [...COUNTRY_CONTENT_SLUGS].sort().join(",");
+  if (coKeys !== coIdx) {
+    throw new Error("[content] src/data/contentIndex.ts разошёлся с countryContent.ts — пересоберите индекс");
+  }
+}
+
 function publicRoutes(): string[] {
+  assertContentIndexInSync();
   const seo = loadSeo();
-  const staticRoutes = ["/", "/about", "/manifest", "/contact", "/privacy", "/story", "/blog", "/gatherings", "/dostavka", "/vypit-vmeste", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/halal"];
+  const staticRoutes = ["/", "/about", "/manifest", "/contact", "/privacy", "/story", "/blog", "/gatherings", "/dostavka", "/vypit-vmeste", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/halal", "/povaram"];
   const blogRoutes = BLOG_POSTS.map((p) => `/blog/${p.slug}`);
   const citySlugByName = new Map(seo.cities.map((c) => [c.name, c.slug]));
   const catSlugByName = new Map(seo.categories.map((c) => [c.name, c.slug]));
@@ -97,7 +115,7 @@ export default defineConfig({
       const lastmod = new Date().toISOString().slice(0, 10); // дата сборки — сигнал свежести для Яндекса
       const escUrl = (s: string) => s.replace(/&/g, "&amp;");
       // денежные лендинги (доставка/застолья) и город — высокий приоритет
-      const MONEY = new Set(["/dostavka", "/vypit-vmeste", "/gatherings", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/halal"]);
+      const MONEY = new Set(["/dostavka", "/vypit-vmeste", "/gatherings", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/halal", "/povaram"]);
       const priority = (u: string) =>
         u === "/" ? "1.0"
         : MONEY.has(u) ? "0.9"

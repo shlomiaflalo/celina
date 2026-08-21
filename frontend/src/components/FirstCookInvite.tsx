@@ -76,16 +76,19 @@ export function FirstCookInvite() {
 
         <div className="mt-6 flex flex-wrap gap-2.5">
           <Link
-            to="/login"
+            to="/login?mode=register&role=cook"
             className="inline-flex items-center gap-2 rounded-xl bg-[#e0860c] px-6 py-3 font-semibold text-white shadow-sm transition hover:brightness-105 active:scale-95"
           >
             <PlateIcon size={18} /> {c.ctaCook}
           </Link>
+          {/* Вторая кнопка ведёт на /povaram, а не в контакты: человек, который
+              дочитал этот блок, хочет подробностей про налоги, время и цену, а
+              не форму обратной связи. */}
           <Link
-            to="/kontakty"
+            to="/povaram"
             className="inline-flex items-center gap-2 rounded-xl border border-orange-200 px-5 py-3 font-medium text-[#e0860c] transition hover:bg-orange-50 active:scale-95"
           >
-            {c.ctaAsk}
+            {c.ctaMore}
           </Link>
         </div>
         <p className="mt-3 flex items-start gap-1.5 text-xs leading-relaxed text-[#e0860c]/75">
@@ -117,7 +120,7 @@ const RU = {
   sub:
     "Селина — витрина для домашнего повара: соседи видят ваши блюда, состав и отзывы и заказывают у вас напрямую. Без аренды, без посредников, без переписки «а из чего это?» с каждым новым человеком.",
   points: [
-    { big: "0%", t: "комиссия на пилоте", d: "Цену ставите вы. Всё, что платит клиент, остаётся у вас." },
+    { big: "0%", t: "комиссия сейчас", d: "Цену ставите вы. Всё, что платит клиент, остаётся у вас." },
     { big: "3–5", t: "блюд, чтобы начать", d: "Не нужно собирать большое меню и держать всё в наличии." },
     { big: "₽", t: "наличными в руки", d: "Расчёт при передаче заказа. Деньги через сервис не проходят." },
   ],
@@ -126,7 +129,7 @@ const RU = {
     them: "Похожие сервисы",
     us: "Селина",
     rows: [
-      ["Комиссия с заказа", "19% (15% сервис + 4% эквайринг)", "0% на время пилота"],
+      ["Комиссия с заказа", "19% (15% сервис + 4% эквайринг)", "0% сейчас"],
       ["Меню на старте", "минимум 30 блюд", "3–5 блюд"],
       ["Дегустация", "3–6 порций за свой счёт", "не нужна"],
       ["Проверка кухни", "видеотур по критериям сервиса", "самодекларация правил"],
@@ -138,7 +141,7 @@ const RU = {
   firstText:
     "Скажу прямо: поваров в вашем районе пока нет. Именно поэтому у первого — ноль конкурентов, все первые заказы района и отзывы, которые копятся ему, пока остальные раздумывают. Через полгода это место будет занято.",
   ctaCook: "Стать поваром",
-  ctaAsk: "Задать вопрос",
+  ctaMore: "Как это работает для повара",
   riskFree: "Без вложений и без обязательств: можно завести витрину, попробовать и уйти в любой момент. Налог самозанятого вы платите сами, Селина ничего не удерживает.",
   buyerTitle: "А если вы пришли поесть?",
   buyerText:
@@ -152,7 +155,7 @@ const EN = {
   sub:
     "Celina is a storefront for a home cook: neighbours see your dishes, ingredients and reviews, and order from you directly. No rent, no middlemen, no re-explaining what is in the dish to every new person.",
   points: [
-    { big: "0%", t: "commission in the pilot", d: "You set the price. Whatever the customer pays stays with you." },
+    { big: "0%", t: "commission right now", d: "You set the price. Whatever the customer pays stays with you." },
     { big: "3–5", t: "dishes to start", d: "No need to build a large menu or keep everything in stock." },
     { big: "₽", t: "cash on handover", d: "Paid when you hand the order over. Money never passes through us." },
   ],
@@ -161,7 +164,7 @@ const EN = {
     them: "Similar services",
     us: "Celina",
     rows: [
-      ["Commission per order", "19% (15% service + 4% acquiring)", "0% during the pilot"],
+      ["Commission per order", "19% (15% service + 4% acquiring)", "0% right now"],
       ["Menu at launch", "at least 30 dishes", "3–5 dishes"],
       ["Tasting", "3–6 portions at your own cost", "not required"],
       ["Kitchen check", "video tour to their criteria", "self-declaration of the rules"],
@@ -173,7 +176,7 @@ const EN = {
   firstText:
     "Plainly: there are no cooks in your area yet. That is exactly why the first one has no competition, gets every first order in the district, and collects the reviews while everyone else is still thinking about it. In six months that place is taken.",
   ctaCook: "Become a cook",
-  ctaAsk: "Ask a question",
+  ctaMore: "How it works for a cook",
   riskFree: "No investment and no commitment: set up a storefront, try it, leave whenever you like. You pay your own self-employed tax; Celina withholds nothing.",
   buyerTitle: "Here to eat instead?",
   buyerText:

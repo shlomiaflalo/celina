@@ -103,7 +103,7 @@ export function Manifest() {
         <Link to="/" className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 font-semibold text-[#e0860c] shadow-sm transition hover:bg-orange-50 active:scale-95">
           {c.ctaFeed} →
         </Link>
-        <Link to="/login" className="inline-flex items-center gap-2 rounded-xl border border-white/60 px-5 py-2.5 font-semibold text-white transition hover:bg-white/10 active:scale-95">
+        <Link to="/login?mode=register&role=cook" className="inline-flex items-center gap-2 rounded-xl border border-white/60 px-5 py-2.5 font-semibold text-white transition hover:bg-white/10 active:scale-95">
           {c.ctaCook} →
         </Link>
       </div>

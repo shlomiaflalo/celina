@@ -177,6 +177,7 @@ const ru = {
     ],
     usefulTitle: "Полезное",
     usefulLinks: [
+      { to: "/povaram", label: "Готовить дома и продавать соседям" },
       { to: "/dostavka", label: "Доставка домашней еды" },
       { to: "/vypit-vmeste", label: "Посиделки у соседа" },
       { to: "/gatherings", label: "Застолья с соседями" },
@@ -184,11 +185,11 @@ const ru = {
     ],
     faqTitle: "Частые вопросы о домашней еде",
     faqs: [
-      { q: "Безопасно ли заказывать домашнюю еду у частных поваров?", a: "Каждый повар проходит проверку личности по видео и документу и подтверждает санитарные правила. Рейтинги и честные отзывы соседей помогают выбрать проверенную кухню." },
+      { q: "Безопасно ли заказывать домашнюю еду у частных поваров?", a: "Каждый повар проходит проверку личности по видео и документу и подтверждает, что соблюдает санитарные правила. Состав и аллергены указаны у каждого блюда, а оставить отзыв сможет только тот, кто действительно сделал заказ." },
       { q: "Как оплатить заказ?", a: "На этапе бесплатного запуска оплата — наличными при получении, напрямую повару, без комиссий и банковских карт." },
       { q: "Есть ли доставка домашней еды?", a: "Да. Выберите доставку от повара по вашему городу или самовывоз у повара — как удобнее." },
       { q: "Как стать поваром на Celina?", a: "Зарегистрируйтесь как повар, пройдите проверку личности и безопасности пищи, добавьте блюда с фотографиями — и принимайте заказы от соседей." },
-      { q: "В каких городах работает Celina?", a: "Мы запускаемся по городам России и растём по мере появления новых домашних поваров. Посмотрите, кто уже готовит рядом с вами." },
+      { q: "В каких городах работает Celina?", a: "Селина работает в России с июня 2026 года. Сейчас в городах идёт набор первых поваров — откройте страницу своего города и посмотрите, кто готовит рядом." },
     ],
   },
 
@@ -436,7 +437,7 @@ const ru = {
     value1: "100%",
     value1Label: "поваров проходят проверку",
     value2: "0 ₽",
-    value2Label: "комиссия на время пилота",
+    value2Label: "комиссия сейчас",
     value3: "1 мин",
     value3Label: "на регистрацию: телефон, имя, город",
     cooks: "поваров",
@@ -463,7 +464,7 @@ const ru = {
     trustFoodTitle: "Безопасность еды",
     trustFoodText: "Повара принимают санитарные нормы, показывают кухню и указывают состав и аллергены.",
     trustPayTitle: "Оплата наличными",
-    trustPayText: "На время пилота оплата — наличными при получении, напрямую повару. Без комиссий и без карт.",
+    trustPayText: "Сейчас оплата — наличными при получении, напрямую повару. Без комиссий и без карт.",
     howTitle: "Как это работает",
     how1Title: "Найдите соседа-повара",
     how1Text: "Откройте ленту и выберите домашние блюда рядом с вами.",
@@ -613,7 +614,7 @@ const ru = {
   about: {
     title: "О нас",
     playVideo: "Смотреть видео",
-    intro: "Celina (Селина) — это маркетплейс домашней еды в России, который превращает обычный район в одну большую домашнюю кухню. Мы соединяем талантливых домашних поваров с соседями, которые соскучились по настоящей еде — той, что готовят дома, с душой и по семейным рецептам, а не на фабрике и не на ресторанном конвейере. Закажите борщ, пельмени, сырники, грузинскую кухню или домашнюю выпечку у проверенного повара в нескольких минутах от дома — с доставкой или самовывозом. Наш девиз прост: соседи кормят соседей.",
+    intro: "Celina (Селина) — это маркетплейс домашней еды в России, который превращает обычный район в одну большую домашнюю кухню. Мы соединяем талантливых домашних поваров с соседями, которые соскучились по настоящей еде — той, что готовят дома, с душой и по семейным рецептам, а не на фабрике и не на ресторанном конвейере. Закажите борщ, пельмени, сырники, грузинскую кухню или домашнюю выпечку у проверенного повара в нескольких минутах от дома — с доставкой или самовывозом. Над Celina идёт работа с января 2026 года из Амстердама, а сервис запущен в России в июне 2026 года. Наш девиз прост: соседи кормят соседей.",
     whatTitle: "Что мы делаем",
     what: "Celina устроена просто и по-человечески. Найдите повара рядом, посмотрите его блюда, фотографии и историю, выберите понравившееся, оформите заказ и получите свежую домашнюю еду с доставкой или самовывозом — всё это занимает пару минут. Каждый повар проходит проверку личности и подтверждает санитарные правила, а честные отзывы и рейтинги соседей помогают вам всегда знать, у кого вы заказываете. Удобный поиск показывает кухни именно в вашем городе и районе, а поддержка готова помочь на каждом шаге. А когда хочется не просто поесть, а собраться — позовите соседей за общий стол: на Celina можно создавать и находить застолья и посиделки, чтобы знакомиться ближе через еду.",
     whyTitle: "Почему в России",
@@ -632,7 +633,7 @@ const ru = {
     forWho: "Celina — для тех, кто ценит домашнюю еду и хочет заказывать её у проверенных соседей-поваров, а не у фабрики или безликого сервиса. И для домашних поваров по всей России, которые мечтают превратить любимое дело в стабильный доход — без аренды, посредников и витрины в центре города. Если вы любите готовить или любите вкусно поесть по-домашнему — это место для вас.",
     linkedinCompany: "Celina в LinkedIn",
     ctaTitle: "Готовы попробовать?",
-    ctaText: "Найдите домашнего повара рядом с вами уже сегодня и закажите настоящую домашнюю еду — или начните готовить и зарабатывать на Celina. Соседи уже кормят соседей: присоединяйтесь.",
+    ctaText: "Селина работает в России с июня 2026 года. Готовите дома — откройте свою витрину и станьте поваром своего района: первым достаются все заказы рядом. Хотите заказывать — найдите повара рядом или отметьте свой район.",
     ctaButton: "Найти повара рядом",
   },
 
@@ -746,6 +747,12 @@ const ru = {
     needBioConsent: "Отметьте согласие на обработку биометрических данных",
     gateTitle: "Требуется верификация",
     gateText: "Подтвердите личность, чтобы заказывать еду и присоединяться к встречам соседей.",
+    // У повара последствие другое и оно жёстче: до верификации сервер не
+    // показывает её кухню в каталоге вообще (cooks.routes.ts, dishes.routes.ts)
+    // и не даёт выйти в онлайн. Она невидима и не может получить ни одного
+    // заказа — а интерфейс до сих пор говорил ей про «заказывать еду».
+    gateTitleCook: "Кухня не видна соседям",
+    gateTextCook: "Пока личность не подтверждена, ваша витрина не появляется в ленте и в поиске, а заказы принимать нельзя. Это занимает несколько минут.",
     goVerify: "Пройти верификацию",
     notVerified: "Не подтверждён",
     videoReady: "Видео загружено",
@@ -815,6 +822,8 @@ const ru = {
     districtPlaceholder: "Район или улица (необязательно)",
     contactPlaceholder: "E-mail или телефон — сообщим о запуске (необязательно)",
     submit: "Записаться в список",
+    failed: "Не удалось отправить — проверьте соединение и попробуйте ещё раз.",
+    privacyNoteAnon: "Мы не спрашиваем имя, телефон и e-mail и не сохраняем IP — форма собирает только обезличенную статистику спроса по районам. О запуске объявим на этой странице.",
     privacyNote: "Только чтобы сообщить о запуске в вашем районе. Без спама.",
     doneTitle: "Вы в списке!",
     doneFirst: "Вы одни из первых в городе {city}. Позовите соседей — район откроется тем быстрее, чем больше желающих.",
@@ -841,7 +850,7 @@ const ru = {
   founder: {
     nav: "Панель",
     title: "Панель основателя",
-    subtitle: "Метрики пилота в реальном времени",
+    subtitle: "Метрики сервиса в реальном времени",
     gmv: "Оборот (GMV), ₽",
     paidGmv: "Оплачено картой, ₽",
     aov: "Средний чек, ₽",
@@ -905,6 +914,15 @@ const ru = {
 
   // Подписи для скринридеров на кнопках-иконках (×, ▶, ★, +, −).
   // Визуально не отображаются — только aria-label, дизайн не меняется.
+  deleteAccount: {
+    open: "Удалить аккаунт",
+    title: "Удалить аккаунт",
+    what: "Селфи-видео и фото документа будут удалены с сервера, а имя, телефон, e-mail и адрес — обезличены. Войти в аккаунт больше не получится, действие необратимо.",
+    kept: "Ваши прошлые заказы останутся у второй стороны: повар не должен потерять свою историю из-за вашего решения. За ними не будет вашего имени.",
+    password: "Текущий пароль",
+    confirm: "Удалить навсегда",
+    failed: "Не удалось удалить аккаунт. Попробуйте ещё раз.",
+  },
   a11y: {
     // Календарь выбора даты и времени (DateTimePicker). Компонент уже
     // ссылался на эти ключи, а их здесь не было — сборка падала на типах.
@@ -1083,10 +1101,11 @@ const en: typeof ru = {
     steps: [
       { title: "Find a cook nearby", text: "Open the feed and pick a home cook in your city — by dish, cuisine, or distance from you." },
       { title: "Choose your dishes", text: "See photos, ingredients and price, add to the cart — you can order from several cooks at once." },
-      { title: "Delivery or pickup", text: "The cook brings your order, or pick it up yourself. During the free launch, payment is cash on delivery." },
+      { title: "Delivery or pickup", text: "The cook brings your order, or pick it up yourself. Right now, payment is cash on delivery." },
     ],
     usefulTitle: "Useful",
     usefulLinks: [
+      { to: "/povaram", label: "Cook at home and sell to neighbours" },
       { to: "/dostavka", label: "Homemade food delivery" },
       { to: "/vypit-vmeste", label: "Get-togethers at a neighbor's" },
       { to: "/gatherings", label: "Neighbor gatherings" },
@@ -1095,10 +1114,10 @@ const en: typeof ru = {
     faqTitle: "Frequently asked questions about homemade food",
     faqs: [
       { q: "Is it safe to order homemade food from private cooks?", a: "Every cook passes identity verification by video and document and confirms sanitary rules. Ratings and honest neighbor reviews help you choose a trusted kitchen." },
-      { q: "How do I pay for an order?", a: "During the free launch, payment is cash on delivery — directly to the cook, with no fees or bank cards." },
+      { q: "How do I pay for an order?", a: "Right now, payment is cash on delivery — directly to the cook, with no fees or bank cards." },
       { q: "Is there delivery of homemade food?", a: "Yes. Choose delivery by the cook within your city or pickup from the cook — whatever suits you." },
       { q: "How do I become a cook on Celina?", a: "Register as a cook, pass identity and food-safety verification, add dishes with photos — and start taking orders from neighbors." },
-      { q: "Which cities does Celina operate in?", a: "We're launching city by city across Russia and growing as new home cooks join. See who's already cooking near you." },
+      { q: "Which cities does Celina operate in?", a: "Celina has been operating in Russia since June 2026. Cooks are joining city by city — open your city page to see who cooks nearby." },
     ],
   },
 
@@ -1118,7 +1137,7 @@ const en: typeof ru = {
     km: "km",
     favorites: "Favorites",
     empty: "Nothing tasty found — try another search.",
-    noCooksYet: "We just opened — no cooks nearby yet. Be the first!",
+    noCooksYet: "No cooks in your neighborhood yet — be the first to cook here.",
     becomeCook: "Become a cook",
   },
 
@@ -1325,11 +1344,11 @@ const en: typeof ru = {
     scroll: "Learn more",
     statsTitle: "Celina grows every day",
     valueTitle: "Why Celina",
-    valuePilotNote: "We just launched — be among the first",
+    valuePilotNote: "Open your home kitchen to the neighborhood",
     value1: "100%",
     value1Label: "of cooks pass verification",
     value2: "0 ₽",
-    value2Label: "commission during the pilot",
+    value2Label: "commission right now",
     value3: "1 min",
     value3Label: "to sign up: phone, name, city",
     cooks: "cooks",
@@ -1356,7 +1375,7 @@ const en: typeof ru = {
     trustFoodTitle: "Food safety",
     trustFoodText: "Cooks accept hygiene standards, show their kitchen, and list ingredients and allergens.",
     trustPayTitle: "Cash payment",
-    trustPayText: "During the pilot you pay cash on delivery, directly to the cook. No fees, no cards.",
+    trustPayText: "Right now you pay cash on delivery, directly to the cook. No fees, no cards.",
     howTitle: "How it works",
     how1Title: "Find a neighbor cook",
     how1Text: "Open the feed and pick homemade dishes near you.",
@@ -1501,7 +1520,7 @@ const en: typeof ru = {
   about: {
     title: "About",
     playVideo: "Play video",
-    intro: "Celina is a homemade-food marketplace in Russia that turns an ordinary neighborhood into one big home kitchen. We connect talented home cooks with neighbors who miss real food — the kind made at home, with soul and family recipes, not in a factory or on a restaurant conveyor belt. Order borscht, pelmeni, syrniki, Georgian cuisine, or home baking from a verified cook minutes from your door — with delivery or pickup. Our motto is simple: neighbors feeding neighbors.",
+    intro: "Celina is a homemade-food marketplace in Russia that turns an ordinary neighborhood into one big home kitchen. We connect talented home cooks with neighbors who miss real food — the kind made at home, with soul and family recipes, not in a factory or on a restaurant conveyor belt. Order borscht, pelmeni, syrniki, Georgian cuisine, or home baking from a verified cook minutes from your door — with delivery or pickup. Celina has been in the making since January 2026 in Amsterdam, and the service launched in Russia in June 2026. Our motto is simple: neighbors feeding neighbors.",
     whatTitle: "What we do",
     what: "Celina is simple and human by design. Find a cook nearby, browse their dishes, photos and story, pick what you love, place your order, and get fresh homemade food by delivery or pickup — all in a couple of minutes. Every cook passes identity verification and confirms food-safety rules, while honest reviews and ratings from neighbors help you always know who you're ordering from. Smart search shows kitchens right in your city and neighborhood, and support is there at every step. And when you'd rather gather than just eat — invite neighbors to a shared table: on Celina you can create and find gatherings and get-togethers, growing closer through food.",
     whyTitle: "Why Russia",
@@ -1520,7 +1539,7 @@ const en: typeof ru = {
     forWho: "Celina is for anyone who values homemade food and wants to order it from verified neighbor-cooks instead of a factory or a faceless service. And for home cooks across Russia who dream of turning what they love into steady income — without rent, middlemen, or a storefront downtown. If you love to cook, or love to eat real home cooking, this is the place for you.",
     linkedinCompany: "Celina on LinkedIn",
     ctaTitle: "Ready to try?",
-    ctaText: "Find a home cook near you today and order real homemade food — or start cooking and earning on Celina. Neighbors are already feeding neighbors: join them.",
+    ctaText: "Celina has been operating in Russia since June 2026. If you cook at home — open your storefront and become your neighborhood's cook: the first ones get all the orders nearby. If you want to order — find a cook near you or mark your district.",
     ctaButton: "Find a cook nearby",
   },
 
@@ -1633,6 +1652,8 @@ const en: typeof ru = {
     needBioConsent: "Please give consent to process biometric data",
     gateTitle: "Verification required",
     gateText: "Verify your identity to order food and join neighbors' meetups.",
+    gateTitleCook: "Your kitchen is not visible yet",
+    gateTextCook: "Until your identity is verified your storefront does not appear in the feed or in search, and you cannot take orders. It takes a few minutes.",
     goVerify: "Verify now",
     notVerified: "Not verified",
     videoReady: "Video uploaded",
@@ -1702,6 +1723,8 @@ const en: typeof ru = {
     districtPlaceholder: "District or street (optional)",
     contactPlaceholder: "E-mail or phone — we'll tell you at launch (optional)",
     submit: "Join the list",
+    failed: "Could not send — check your connection and try again.",
+    privacyNoteAnon: "We ask for no name, phone or e-mail and store no IP — the form collects anonymous demand statistics by district only. Any launch will be announced on this page.",
     privacyNote: "Only to notify you when your area launches. No spam.",
     doneTitle: "You're on the list!",
     doneFirst: "You're one of the first in {city}. Invite neighbors — the more people waiting, the sooner your area opens.",
@@ -1726,7 +1749,7 @@ const en: typeof ru = {
   founder: {
     nav: "Founder",
     title: "Founder dashboard",
-    subtitle: "Live pilot metrics",
+    subtitle: "Live service metrics",
     gmv: "GMV, ₽",
     paidGmv: "Paid by card, ₽",
     aov: "Avg order value, ₽",
@@ -1788,6 +1811,15 @@ const en: typeof ru = {
 
   common: { skipToContent: "Skip to content", loading: "Loading…", error: "Error", rub: "₽", all: "All", guest: "Guest", loadError: "Couldn't load. Check your connection and try again.", retry: "Refresh", backToFeed: "Go to feed", cancel: "Cancel", ok: "Got it" },
 
+  deleteAccount: {
+    open: "Delete account",
+    title: "Delete account",
+    what: "Your selfie video and document photo will be erased from the server, and your name, phone, e-mail and address anonymised. You will not be able to sign in again; this cannot be undone.",
+    kept: "Your past orders stay with the other side: a cook should not lose their own history because of your decision. Your name will not be attached to them.",
+    password: "Current password",
+    confirm: "Delete permanently",
+    failed: "Could not delete the account. Please try again.",
+  },
   a11y: {
     datePicker: "Date and time picker",
     prevMonth: "Previous month",

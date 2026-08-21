@@ -87,7 +87,11 @@ export function CountryPage() {
         </div>
       )}
 
-      <WaitlistForm city={cities[0]?.name ?? country.name} />
+      {/* Раньше здесь стоял cities[0].name — то есть заявка из Самарканда
+          записывалась как «Ташкент», а из Гомеля как «Минск». Карта спроса,
+          ради которой эти страницы и существуют, показывала бы один город на
+          всю страну. На хабе страны город не угадываем: пишем страну. */}
+      <WaitlistForm city={country.name} allowsContact={country.allowsContact} />
 
       <div className="mt-10">
         <h2 className="t-h2 mb-3">Частые вопросы</h2>

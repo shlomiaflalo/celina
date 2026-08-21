@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Navigate, Link } from "react-router-dom";
+import { useNavigate, Navigate, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { toast } from "../components/Toast";
 import { PasswordField } from "../components/PasswordField";
@@ -25,8 +25,20 @@ export function Login() {
   const { lang } = useLang();
   const { login, register, user } = useAuth();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "register">("login");
-  const [role, setRole] = useState<"BUYER" | "COOK">("BUYER");
+  // Экран открывается в том состоянии, в котором его позвали.
+  //
+  // До этого он всегда открывался как «Вход» с ролью «Покупатель», куда бы
+  // человек ни нажал. То есть женщина, которая только что решила попробовать
+  // продавать свои пироги и нажала «Стать поваром», видела форму входа в
+  // аккаунт, которого у неё нет, в роли покупателя — и между её решением и
+  // аккаунтом оставалось ещё три правильных клика, каждый из которых можно
+  // не сделать. Ссылки-приглашения для повара несут ?mode=register&role=cook.
+  const [params] = useSearchParams();
+  const wantsCook = params.get("role") === "cook";
+  const [mode, setMode] = useState<"login" | "register">(
+    params.get("mode") === "register" || wantsCook ? "register" : "login"
+  );
+  const [role, setRole] = useState<"BUYER" | "COOK">(wantsCook ? "COOK" : "BUYER");
   const [form, setForm] = useState({
     phone: "",
     password: "",

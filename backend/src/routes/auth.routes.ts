@@ -10,6 +10,7 @@ import { csvToArray, arrayToCsv } from "../lib/serialize.js";
 import type { Role } from "../lib/enums.js";
 import { genCode, deliver, mask, registerFailedAttempt, clearAttempts } from "../lib/otp.js";
 import { verifyAddressInCity } from "../lib/geo.js";
+import { deleteAccount } from "../lib/deleteAccount.js";
 import { createSession, countActiveSessions, activeSessions, MAX_DEVICES, deviceLabel } from "../lib/session.js";
 import { pickLang } from "../i18n/errorMessages.js";
 import { uniqueReferralCode } from "../lib/referral.js";
@@ -523,3 +524,39 @@ function sanitize(user: any) {
   }
   return rest;
 }
+
+/**
+ * DELETE /api/auth/me — удаление аккаунта самим пользователем.
+ *
+ * Политика конфиденциальности обещает эту возможность в настройках профиля, а
+ * ст. 21 152-ФЗ делает её обязанностью при отзыве согласия. Требуем текущий
+ * пароль: удаление необратимо, и одного украденного или забытого на чужом
+ * телефоне токена для него мало.
+ *
+ * Основателя не удаляем: это единственный доступ к панели и к одобрению
+ * верификаций, и снести его случайным нажатием нельзя.
+ */
+authRouter.delete(
+  "/me",
+  requireAuth,
+  rateLimit({ windowMs: 60 * 60_000, max: 5 }),
+  asyncHandler(async (req, res) => {
+    const parsed = z.object({ password: z.string().min(1) }).safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: "Введите пароль" });
+
+    const me = await prisma.user.findUnique({
+      where: { id: req.user!.userId },
+      select: { id: true, passwordHash: true, isFounder: true },
+    });
+    if (!me) return res.status(404).json({ error: "Аккаунт не найден" });
+    if (me.isFounder) {
+      return res.status(403).json({ error: "Аккаунт основателя нельзя удалить из профиля" });
+    }
+    if (!verifyPassword(parsed.data.password, me.passwordHash)) {
+      return res.status(400).json({ error: "Неверный пароль" });
+    }
+
+    const { mode } = await deleteAccount(me.id);
+    res.json({ ok: true, mode });
+  })
+);

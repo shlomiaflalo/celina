@@ -61,6 +61,16 @@ export function StorefrontPreview() {
         <div className="counter-grid">
           {DISHES.map((d, i) => (
             <div key={d.f} className="counter-tile">
+              <picture>
+              {/* webp сначала, jpg запасным. make-tiles.mjs собирает оба
+                  формата, но srcSet ссылался только на jpg — 36 webp-файлов
+                  лежали в сборке и никем не запрашивались. На первом экране
+                  это 12 картинок и лишние ~46 КБ на 360w. */}
+              <source
+                type="image/webp"
+                srcSet={`/images/tiles/${d.f}-240.webp 240w, /images/tiles/${d.f}-360.webp 360w, /images/tiles/${d.f}-540.webp 540w`}
+                sizes="(min-width:1280px) 17vw, (min-width:1024px) 25vw, (min-width:640px) 33vw, 50vw"
+              />
               <img
                 src={`/images/tiles/${d.f}-360.jpg`}
                 srcSet={`/images/tiles/${d.f}-240.jpg 240w, /images/tiles/${d.f}-360.jpg 360w, /images/tiles/${d.f}-540.jpg 540w`}
@@ -76,8 +86,9 @@ export function StorefrontPreview() {
                 decoding="async"
                 className="block aspect-square w-full object-cover"
               />
+              </picture>
               <div className="relative p-2.5">
-                <Link to="/login" className="pricetag" aria-label={c.tagAria}>
+                <Link to="/login?mode=register&role=cook" className="pricetag" aria-label={c.tagAria}>
                   {c.yourPrice}
                 </Link>
                 <div className="truncate font-semibold text-[#e0860c]">{lang === "en" ? d.en : d.ru}</div>

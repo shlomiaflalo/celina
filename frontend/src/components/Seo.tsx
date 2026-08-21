@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Head } from "vite-react-ssg";
 import { useLang } from "../i18n";
 import { DEFAULT_TITLE, claimPageTitle, pageOwnsTitle } from "../lib/pageTitle";
+import { applyPageHead, claimPageHead, clearPageHead, pageOwnsHead } from "../lib/pageHead";
 
 // ⚠️ Прод-домен. ОБЯЗАТЕЛЬНО задаётся VITE_SITE_URL при сборке — от него зависят
 // canonical/OG/sitemap/JSON-LD. Фолбэк — зарезервированный домен .example (его
@@ -88,6 +89,24 @@ export function Seo({ title, description, titleEn, descriptionEn, path = "/", im
   const canonical = SITE_URL + (path === "/" ? "" : path);
   const img = image.startsWith("http") ? image : SITE_URL + image;
   const blocks = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+  // Остальной head — по той же причине, что и заголовок: react-helmet-async после
+  // гидратации теги не обновляет, и при переходе внутри SPA description, canonical,
+  // hreflang, OG/Twitter и JSON-LD оставались от предыдущей страницы. Яндекс рендерит
+  // JS и ходит по внутренним ссылкам, то есть мог увидеть у страницы чужой canonical
+  // (сигнал «это дубль») и чужую разметку. Подробности — в lib/pageHead.ts.
+  const blocksKey = JSON.stringify(blocks);
+  useEffect(() => {
+    applyPageHead({ title: t, description: d, canonical, image: img, type, jsonLd: JSON.parse(blocksKey) });
+  }, [t, d, canonical, img, type, blocksKey]);
+  // Ушли на страницу без своего <Seo> — снимаем теги, возвращаясь к базовому
+  // index.html (там ни description, ни canonical, ни OG нет).
+  useEffect(() => {
+    const release = claimPageHead();
+    return () => {
+      release();
+      if (!pageOwnsHead()) clearPageHead();
+    };
+  }, []);
   return (
     <Head>
       <html lang={lang} />
@@ -210,7 +229,14 @@ export const siteJsonLd: object[] = [
     slogan: "Соседи кормят соседей",
     description: "Маркетплейс домашней еды в России: заказывайте блюда у проверенных соседей-поваров с доставкой и самовывозом.",
     email: "celinarussia.support@gmail.com",
-    foundingDate: "2026",
+    // Селина основана в январе 2026, публично запущена в июне 2026 в Амстердаме
+    // (штаб-квартира — Амстердам; рынок, который обслуживаем, — Россия).
+    foundingDate: "2026-01",
+    foundingLocation: {
+      "@type": "Place",
+      name: "Amsterdam",
+      address: { "@type": "PostalAddress", addressLocality: "Amsterdam", addressCountry: "NL" },
+    },
     areaServed: { "@type": "Country", name: "Россия" },
     // привязка соцпрофилей к бренду → узнавание сущности и панель знаний в Яндексе/Google
     sameAs: [

@@ -4,6 +4,7 @@ import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { Button, Spinner, ConfirmModal } from "../components/ui";
 import { SessionsManager } from "../components/SessionsManager";
+import { DeleteAccount } from "../components/DeleteAccount";
 import { BuyerIcon, CookIcon } from "../components/icons";
 import { RU_CITIES } from "../lib/ruCities";
 import { cityCoords } from "../lib/cityCoords";
@@ -148,6 +149,11 @@ export function Profile() {
       {/* Устройства и безопасность: список сессий + удалённый выход */}
       <div className="mt-5">
         <SessionsManager />
+
+        {/* Политика конфиденциальности обещает удаление аккаунта именно здесь,
+            в настройках профиля (LegalContent.tsx), и ст. 21 152-ФЗ делает это
+            обязанностью. До сих пор обещание было, а кнопки не было. */}
+        <DeleteAccount />
       </div>
 
       <ConfirmModal

@@ -26,9 +26,6 @@ import { CookProfilePage } from "./pages/buyer/CookProfilePage";
 import { About } from "./pages/About";
 import { Contact } from "./pages/Contact";
 import { Story } from "./pages/Story";
-import { CityPage } from "./pages/seo/CityPage";
-import { CategoryCityPage } from "./pages/seo/CategoryCityPage";
-import { DishPage } from "./pages/seo/DishPage";
 import { GatheringDetail } from "./pages/gatherings/GatheringDetail";
 
 // Тяжёлые публичные страницы (блог 230KB, политика 185KB, лендинги 47KB) —
@@ -159,12 +156,15 @@ export const routes: RouteObject[] = [
           { path: "/", element: <Home /> },
           { path: "/cooks/:id", element: <CookProfilePage /> },
           // программные SEO-страницы (города и категории×город) — пререндерятся из снимка
-          { path: "/eda/:citySlug", element: <CityPage /> },
+          // Лениво, как и прочие SEO-страницы. Статический импорт затягивал
+          // cityContent.ts (180 КБ прозы про районы) в ОБЩИЙ чанк, то есть
+          // каждый посетитель главной скачивал тексты всех 36 городов.
+          { path: "/eda/:citySlug", lazy: async () => ({ Component: (await import("./pages/seo/CityPage")).CityPage }) },
           // Хаб страны. /strana/, а не сегмент внутри /eda/: /eda/kz/almaty
           // совпал бы с уже существующим /eda/:citySlug/:categorySlug.
           { path: "/strana/:countrySlug", lazy: async () => ({ Component: (await import("./pages/seo/CountryPage")).CountryPage }) },
-          { path: "/eda/:citySlug/:categorySlug", element: <CategoryCityPage /> },
-          { path: "/blyudo/:dishSlug", element: <DishPage /> },
+          { path: "/eda/:citySlug/:categorySlug", lazy: async () => ({ Component: (await import("./pages/seo/CategoryCityPage")).CategoryCityPage }) },
+          { path: "/blyudo/:dishSlug", lazy: async () => ({ Component: (await import("./pages/seo/DishPage")).DishPage }) },
           // SEO-лендинги под конкретные поисковые интенты (доставка / посиделки)
           { path: "/dostavka", lazy: async () => ({ Component: (await import("./pages/seo/Dostavka")).Dostavka }) },
           { path: "/vypit-vmeste", lazy: async () => ({ Component: (await import("./pages/seo/VypitVmeste")).VypitVmeste }) },
@@ -175,6 +175,8 @@ export const routes: RouteObject[] = [
           { path: "/pravilnoe-pitanie", lazy: async () => ({ Component: (await import("./pages/seo/PravilnoePitanie")).PravilnoePitanie }) },
           { path: "/eda-na-prazdnik", lazy: async () => ({ Component: (await import("./pages/seo/EdaNaPrazdnik")).EdaNaPrazdnik }) },
           { path: "/zagotovki", lazy: async () => ({ Component: (await import("./pages/seo/Zagotovki")).Zagotovki }) },
+          // единственный лендинг для повара, а не для покупателя
+          { path: "/povaram", lazy: async () => ({ Component: (await import("./pages/seo/Povaram")).Povaram }) },
           { path: "/halal", lazy: async () => ({ Component: (await import("./pages/seo/Halal")).Halal }) },
           // застолья (социальный слой) — список и детали публичны, создание за входом
           { path: "/gatherings", lazy: async () => ({ Component: (await import("./pages/gatherings/GatheringsList")).GatheringsList }) },

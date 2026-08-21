@@ -157,7 +157,7 @@ export function LandingSections() {
           <div className="grid gap-4 sm:grid-cols-3">
             {steps.map((st, i) => (
               <div key={st.title} className="rounded-3xl glass-card p-6">
-                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#e0860c] text-lg font-bold text-[#e0860c]">{i + 1}</div>
+                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#e0860c] text-lg font-bold text-white">{i + 1}</div>
                 <div className="mb-1 font-bold text-[#e0860c]">{st.title}</div>
                 <p className="text-sm leading-relaxed">{st.text}</p>
               </div>

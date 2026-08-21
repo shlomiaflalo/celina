@@ -2,8 +2,7 @@ import { Link } from "react-router-dom";
 import { Head } from "vite-react-ssg";
 import { seoCities, seoCategories, seoCooks } from "../lib/seoData";
 import { CITY_CATALOG, COUNTRIES } from "../lib/cityCatalog";
-import { CITY_CONTENT } from "../data/cityContent";
-import { COUNTRY_CONTENT } from "../data/countryContent";
+import { CITY_CONTENT_SLUGS, COUNTRY_CONTENT_SLUGS } from "../data/contentIndex";
 import { useT, useTr } from "../i18n";
 
 /**
@@ -41,7 +40,7 @@ export function HomeSeoSection() {
           поваров), и показываем только те, у кого есть свой текст. */}
       {(() => {
         const byCountry = Object.values(COUNTRIES)
-          .map((co) => ({ co, cities: CITY_CATALOG.filter((c) => c.country === co.code && c.slug in CITY_CONTENT) }))
+          .map((co) => ({ co, cities: CITY_CATALOG.filter((c) => c.country === co.code && CITY_CONTENT_SLUGS.has(c.slug)) }))
           .filter((g) => g.cities.length > 0);
         if (byCountry.length === 0) return null;
         return (
@@ -49,7 +48,7 @@ export function HomeSeoSection() {
             {byCountry.map(({ co, cities }) => (
               <div key={co.code}>
                 <h2 className="t-h3 mb-2">
-                  {co.slug in COUNTRY_CONTENT ? (
+                  {COUNTRY_CONTENT_SLUGS.has(co.slug) ? (
                     <Link to={`/strana/${co.slug}`} className="underline-offset-4 hover:underline">
                       {t.homeSeo.foodIn} {tr(co.prep)}
                     </Link>

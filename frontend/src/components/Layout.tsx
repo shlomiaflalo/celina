@@ -165,8 +165,10 @@ export function Layout() {
       {user && !user.isVerified && (
         <div className="border-b border-orange-200 bg-orange-50">
           <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-2 px-4 py-2.5 text-sm">
-            <span className="font-semibold text-[#e0860c]">{t.verify.gateTitle}.</span>
-            <span className="font-medium text-[#e0860c]">{t.verify.gateText}</span>
+            {/* Повару говорим про ЕЁ последствие: до верификации кухни нет в
+                каталоге и заказов не будет. Покупателю — про его. */}
+            <span className="font-semibold text-[#e0860c]">{isCook ? t.verify.gateTitleCook : t.verify.gateTitle}.</span>
+            <span className="font-medium text-[#e0860c]">{isCook ? t.verify.gateTextCook : t.verify.gateText}</span>
             <Link
               to="/verify"
               className="ml-auto whitespace-nowrap rounded-full bg-[#e0860c] px-3.5 py-1.5 text-xs font-semibold text-white hover:opacity-90"
@@ -225,6 +227,9 @@ export function Layout() {
           <span className="inline-block h-4 w-px bg-white/40" />
           <Link to="/blog" className="hover:underline">{t.blog.nav}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
+          {/* Единственная ссылка сайта для повара — в подвале, то есть на всех 108
+              страницах. Без неё /povaram достижим только с главной. */}
+          <Link to="/povaram" className="hover:underline">Готовить и продавать</Link>
           <Link to="/about" className="hover:underline">{t.contact.aboutNav}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
           <Link to="/manifest" className="hover:underline">{t.contact.manifestNav}</Link>

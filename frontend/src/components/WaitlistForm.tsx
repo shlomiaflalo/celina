@@ -10,17 +10,30 @@ import { useT } from "../i18n";
  * После записи — виральный момент: позовите соседей, чтобы район открылся
  * быстрее. Никаких выдуманных счётчиков — показываем только реальное число.
  */
-export function WaitlistForm({ city }: { city: string }) {
+/**
+ * Поле контакта показывается ТОЛЬКО там, где мы этот контакт действительно
+ * храним. Сервер не сохраняет ни контакт, ни IP за пределами России, Беларуси
+ * и Армении — так форма вообще не попадает под казахстанский закон 94-V и
+ * узбекский ЗРУ-547, вместо того чтобы попадать и иметь оправдание.
+ *
+ * Но поле при этом рендерилось всем и обещало «сообщим о запуске». Житель
+ * Ташкента вводил e-mail, видел экран «спасибо» — и его контакт молча
+ * выбрасывался. Обещание, которое сервис не может выполнить, здесь хуже
+ * отсутствующего поля: это ровно то, чего Селина не делает нигде больше.
+ */
+export function WaitlistForm({ city, allowsContact = true }: { city: string; allowsContact?: boolean }) {
   const t = useT();
   const [role, setRole] = useState<"EATER" | "COOK">("EATER");
   const [district, setDistrict] = useState("");
   const [contact, setContact] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<{ cityCount: number } | null>(null);
+  const [failed, setFailed] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
+    setFailed(false);
     try {
       const r = await api.post<{ ok: boolean; cityCount: number }>("/waitlist", {
         city, role,
@@ -29,7 +42,11 @@ export function WaitlistForm({ city }: { city: string }) {
       });
       setDone({ cityCount: r.cityCount });
     } catch {
-      setDone({ cityCount: 0 }); // не блокируем UX, если запрос не прошёл
+      // Раньше здесь показывался экран «спасибо». То есть при упавшем запросе
+      // человек уходил уверенным, что записался, а заявки не было. Для
+      // страниц, где список ожидания — единственное действие, это худший из
+      // возможных исходов: и заявка потеряна, и сказана неправда.
+      setFailed(true);
     } finally {
       setBusy(false);
     }
@@ -81,8 +98,16 @@ export function WaitlistForm({ city }: { city: string }) {
 
       <div className="mt-3 space-y-2">
         <input className={field} placeholder={t.waitlist.districtPlaceholder} aria-label={t.waitlist.districtPlaceholder} value={district} onChange={(e) => setDistrict(e.target.value)} />
-        <input className={field} placeholder={t.waitlist.contactPlaceholder} aria-label={t.waitlist.contactPlaceholder} value={contact} onChange={(e) => setContact(e.target.value)} />
+        {allowsContact && (
+          <input className={field} placeholder={t.waitlist.contactPlaceholder} aria-label={t.waitlist.contactPlaceholder} value={contact} onChange={(e) => setContact(e.target.value)} />
+        )}
       </div>
+
+      {failed && (
+        <p role="alert" className="mt-3 rounded-xl bg-orange-50 px-3 py-2 text-sm font-semibold text-[#e0860c]">
+          {t.waitlist.failed}
+        </p>
+      )}
 
       <button
         type="submit"
@@ -91,7 +116,7 @@ export function WaitlistForm({ city }: { city: string }) {
       >
         {busy ? "…" : t.waitlist.submit}
       </button>
-      <p className="mt-2 text-center text-xs text-[#e0860c]/60">{t.waitlist.privacyNote}</p>
+      <p className="mt-2 text-center text-xs text-[#e0860c]/60">{allowsContact ? t.waitlist.privacyNote : t.waitlist.privacyNoteAnon}</p>
     </form>
   );
 }
