@@ -221,6 +221,7 @@ export const siteJsonLd: object[] = [
   {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": SITE_URL + "/#organization",
     name: "Celina",
     alternateName: ["Селина", "Celina — соседи кормят соседей"],
     url: SITE_URL,
@@ -266,3 +267,8 @@ export const siteJsonLd: object[] = [
     },
   },
 ];
+
+/** Та же организация (тот же @id), что и на главной — для страницы «О нас».
+ *  Профильная страница компании несёт данные об организации, дате основания
+ *  (foundingDate 2026-01) и штаб-квартире (Амстердам), а не только главная. */
+export const aboutJsonLd: object[] = [siteJsonLd[0]];

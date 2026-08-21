@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useT } from "../i18n";
-import { Seo } from "../components/Seo";
+import { Seo, aboutJsonLd } from "../components/Seo";
 import { CheckIcon } from "../components/icons";
 
 const LINKEDIN_COMPANY = "https://www.linkedin.com/company/celina-food/";
@@ -17,6 +17,7 @@ export function About() {
         description="Celina — маркетплейс домашней еды в России. Заказывайте блюда у проверенных соседей-поваров и зовите соседей за общий стол. Свежо, по-домашнему, с душой."
         path="/about"
         type="article"
+        jsonLd={aboutJsonLd}
       />
       {/* видео сверху: тяжёлый файл (23MB) грузим только по клику — постер до этого */}
       <div className="mb-6 overflow-hidden rounded-3xl shadow-xl ring-1 ring-white/30">
