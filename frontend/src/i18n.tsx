@@ -906,6 +906,13 @@ const ru = {
   // Подписи для скринридеров на кнопках-иконках (×, ▶, ★, +, −).
   // Визуально не отображаются — только aria-label, дизайн не меняется.
   a11y: {
+    // Календарь выбора даты и времени (DateTimePicker). Компонент уже
+    // ссылался на эти ключи, а их здесь не было — сборка падала на типах.
+    datePicker: "Выбор даты и времени",
+    prevMonth: "Предыдущий месяц",
+    nextMonth: "Следующий месяц",
+    hours: "Часы",
+    minutes: "Минуты",
     close: "Закрыть",
     playVideo: "Смотреть видео",
     photo: (n: number) => `Фото ${n}`,
@@ -1782,6 +1789,11 @@ const en: typeof ru = {
   common: { skipToContent: "Skip to content", loading: "Loading…", error: "Error", rub: "₽", all: "All", guest: "Guest", loadError: "Couldn't load. Check your connection and try again.", retry: "Refresh", backToFeed: "Go to feed", cancel: "Cancel", ok: "Got it" },
 
   a11y: {
+    datePicker: "Date and time picker",
+    prevMonth: "Previous month",
+    nextMonth: "Next month",
+    hours: "Hours",
+    minutes: "Minutes",
     close: "Close",
     playVideo: "Play video",
     photo: (n: number) => `Photo ${n}`,

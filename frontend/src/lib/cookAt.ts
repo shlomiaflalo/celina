@@ -43,8 +43,12 @@ export function describeCookAt(
   const diffMs = d.getTime() - now.getTime();
   const time = hhmm(d);
 
-  // уже прошло — партия готова, дальше решает наличие порций
+  // уже прошло. «Уже приготовлено» честно только в тот же день: партию, сваренную
+  // вчера или неделю назад, нельзя выдавать за свежую — это ровно тот обман, ради
+  // защиты от которого поле и вводилось. Со сменой суток подпись просто исчезает,
+  // и блюдо снова выглядит как «готовлю под заказ», пока повар не назначит новую партию.
   if (diffMs < 0) {
+    if (!sameDay(d, now)) return { kind: "none" };
     return { kind: "passed", text: lang === "en" ? "Cooked today" : "Уже приготовлено" };
   }
 
@@ -70,7 +74,18 @@ export function describeCookAt(
     };
   }
 
-  // дальше — по дню недели: «в четверг» читается легче, чем «14.08»
+  // Дальше недели день недели становится двусмысленным: «в четверг» за 10 дней
+  // до партии читается как ближайший четверг, и покупатель ждёт еду не в тот день.
+  // Для таких дат называем число — двусмысленности нет.
+  if (diffMs >= 7 * 24 * 3600_000) {
+    const date = d.toLocaleDateString(lang === "en" ? "en-GB" : "ru-RU", { day: "numeric", month: "long" });
+    return {
+      kind: "scheduled",
+      text: lang === "en" ? `Cooking on ${date} by ${time}` : `Готовлю ${date} к ${time}`,
+    };
+  }
+
+  // в пределах недели — по дню недели: «в четверг» читается легче, чем «14.08»
   if (lang === "en") {
     const wd = d.toLocaleDateString("en-GB", { weekday: "long" });
     return { kind: "scheduled", text: `Cooking on ${wd} by ${time}` };

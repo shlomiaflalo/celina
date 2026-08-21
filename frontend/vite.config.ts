@@ -6,6 +6,9 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { BLOG_POSTS } from "./src/data/blogPosts"; // чистые данные (без зависимостей) → безопасно для конфига
 import { CITY_CATALOG, CITY_CATALOG_SLUGS } from "./src/lib/cityCatalog"; // приоритетные города — рендерим всегда, даже без поваров
+import { CITY_CONTENT } from "./src/data/cityContent";
+import { COUNTRY_CONTENT } from "./src/data/countryContent";
+import { COUNTRIES } from "./src/lib/cityCatalog";
 import cityImages from "./src/lib/cityImages.json";
 
 // домен для sitemap/canonical — ОБЯЗАТЕЛЬНО задаётся VITE_SITE_URL при сборке.
@@ -34,7 +37,7 @@ function loadSeo(): SeoSnap {
 // (пустые комбинации = «тонкие» дорвей-страницы, которые Яндекс штрафует — их не пререндерим)
 function publicRoutes(): string[] {
   const seo = loadSeo();
-  const staticRoutes = ["/", "/about", "/manifest", "/contact", "/privacy", "/story", "/blog", "/gatherings", "/dostavka", "/vypit-vmeste", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki"];
+  const staticRoutes = ["/", "/about", "/manifest", "/contact", "/privacy", "/story", "/blog", "/gatherings", "/dostavka", "/vypit-vmeste", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/halal"];
   const blogRoutes = BLOG_POSTS.map((p) => `/blog/${p.slug}`);
   const citySlugByName = new Map(seo.cities.map((c) => [c.name, c.slug]));
   const catSlugByName = new Map(seo.categories.map((c) => [c.name, c.slug]));
@@ -51,12 +54,25 @@ function publicRoutes(): string[] {
     }
   }
   // города: приоритетный список ВСЕГДА + любые города из каталога с поварами (без дублей)
-  const cityRoutes = [...new Set([...CITY_CATALOG_SLUGS, ...cityHasCooks])].map((cs) => `/eda/${cs}`);
+  // ГЕЙТ ПРОТИВ ДОРВЕЕВ: город попадает в маршруты и в sitemap только если у
+  // него есть СВОЙ текст в data/cityContent.ts. Замерено до расширения:
+  // страница без поваров отдавала 270 слов, а minsk.html и gomel.html
+  // различались на 2 байта из 22 127 — то есть кластер уже был кольцом
+  // почти одинаковых страниц. Семнадцать зарубежных городов в той же форме
+  // утащили бы за собой и работающие лендинги. Тот же приём репозиторий уже
+  // применяет строкой ниже к парам город×категория — города просто забыли.
+  const cityRoutes = [...new Set([...CITY_CATALOG_SLUGS, ...cityHasCooks])]
+    .filter((cs) => cityHasCooks.has(cs) || cs in CITY_CONTENT)
+    .map((cs) => `/eda/${cs}`);
+  // Хабы стран — только те, у кого есть свой текст.
+  const countryRoutes = Object.values(COUNTRIES)
+    .filter((c) => c.slug in COUNTRY_CONTENT)
+    .map((c) => `/strana/${c.slug}`);
   const catCityRoutes = [...validCombos].map((combo) => `/eda/${combo}`);
   // страницы поваров и блюд: пререндерятся из снимка (реальный HTML + schema)
   const cookRoutes = seo.cooks.map((c) => `/cooks/${c.id}`);
   const dishRoutes = seo.cooks.flatMap((c) => c.dishes.map((d) => `/blyudo/${d.slug}`));
-  return [...staticRoutes, ...blogRoutes, ...cityRoutes, ...catCityRoutes, ...cookRoutes, ...dishRoutes];
+  return [...staticRoutes, ...countryRoutes, ...blogRoutes, ...cityRoutes, ...catCityRoutes, ...cookRoutes, ...dishRoutes];
 }
 
 export default defineConfig({
@@ -81,23 +97,39 @@ export default defineConfig({
       const lastmod = new Date().toISOString().slice(0, 10); // дата сборки — сигнал свежести для Яндекса
       const escUrl = (s: string) => s.replace(/&/g, "&amp;");
       // денежные лендинги (доставка/застолья) и город — высокий приоритет
-      const MONEY = new Set(["/dostavka", "/vypit-vmeste", "/gatherings", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki"]);
+      const MONEY = new Set(["/dostavka", "/vypit-vmeste", "/gatherings", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/halal"]);
       const priority = (u: string) =>
         u === "/" ? "1.0"
         : MONEY.has(u) ? "0.9"
         : u.startsWith("/cooks/") ? "0.8"
-        : u.startsWith("/eda/") ? "0.8"
+        : u.startsWith("/strana/") ? "0.7"
+        : u.startsWith("/eda/") ? (hasCooks.has(cityOf(u)) ? "0.8" : "0.5")
         : u.startsWith("/blog/") ? "0.6"
         : u.startsWith("/blyudo/") ? "0.6"
         : "0.5";
-      const fresh = (u: string) => (u.startsWith("/cooks/") || u.startsWith("/eda/") || u.startsWith("/blyudo/") ? "daily" : "weekly");
+      // Честность про свежесть. Страница города без единого повара — это
+      // статичная страница со списком ожидания, она не меняется ежедневно.
+      // Поисковик сверяет заявленный changefreq с наблюдаемым и перестаёт
+      // доверять источнику, который систематически обещает больше, чем
+      // делает. Пока поваров нет, /eda/ — monthly; появятся — daily.
+      // loadSeo() здесь свой: snapshot в область видимости onFinished не
+      // приходит, а publicRoutes() держит его внутри себя.
+      const snap = loadSeo();
+      const slugByName = new Map(snap.cities.map((c) => [c.name, c.slug]));
+      const hasCooks = new Set(snap.cooks.map((c) => slugByName.get(c.city)).filter(Boolean) as string[]);
+      const cityOf = (u: string) => (u.startsWith("/eda/") ? u.slice(5).split("/")[0] : "");
+      const fresh = (u: string) => {
+        if (u.startsWith("/cooks/") || u.startsWith("/blyudo/")) return "daily";
+        if (u.startsWith("/eda/")) return hasCooks.has(cityOf(u)) ? "daily" : "monthly";
+        return "weekly";
+      };
       // картинка для маршрута — для image-sitemap (еда ищется по фото; важный канал CTR)
       const citySlugToImg = new Map(CITY_CATALOG.map((c) => [c.slug, (cityImages as Record<string, string>)[c.name]]));
       const blogSlugToImg = new Map(BLOG_POSTS.map((p) => [p.slug, p.cover]));
       const imageFor = (u: string): string | null => {
         if (u.startsWith("/blog/")) return blogSlugToImg.get(u.slice(6)) ?? null;
         if (u.startsWith("/eda/") && !u.slice(5).includes("/")) return citySlugToImg.get(u.slice(5)) ?? "/images/og-default.jpg";
-        if (u === "/" || ["/gatherings", "/dostavka", "/vypit-vmeste", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/about", "/story", "/manifest"].includes(u)) return "/images/og-default.jpg";
+        if (u === "/" || ["/gatherings", "/dostavka", "/vypit-vmeste", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/halal", "/about", "/story", "/manifest"].includes(u)) return "/images/og-default.jpg";
         return null;
       };
       const body = urls

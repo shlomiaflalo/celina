@@ -5,9 +5,10 @@ import { useAuth } from "../../auth/AuthContext";
 import type { CookProfile, Dish } from "../../types";
 import { Spinner, Badge, Button, ErrorState } from "../../components/ui";
 import { DeleteButton } from "../../components/DeleteButton";
-import { PlateIcon, VideoIcon, CameraIcon, AlertIcon } from "../../components/icons";
-import { useT, useTr } from "../../i18n";
-import { toLocalInput } from "../../lib/cookAt";
+import { DateTimePicker } from "../../components/DateTimePicker";
+import { PlateIcon, VideoIcon, CameraIcon, AlertIcon, ClockIcon } from "../../components/icons";
+import { useT, useTr, useLang } from "../../i18n";
+import { toLocalInput, describeCookAt } from "../../lib/cookAt";
 
 const CATEGORIES = ["супы", "горячее", "салаты", "выпечка", "десерты"];
 // Категории, попадающие под обязательную маркировку «Честный знак» (с 01.03.2026
@@ -34,6 +35,7 @@ const empty = {
 export function Menu() {
   const t = useT();
   const tr = useTr();
+  const { lang } = useLang();
   const { user } = useAuth();
   const cookId = user?.cookProfile?.id;
   const [dishes, setDishes] = useState<Dish[] | null>(null);
@@ -208,13 +210,17 @@ export function Menu() {
 
           {/* Когда повар готовит партию. Пусто — готовит по заказу, как раньше. */}
           <div>
-            <div className="mb-1.5 text-sm font-medium">{t.cook.cookAtLabel}</div>
+            <label htmlFor="dish-cook-at" className="mb-1.5 block text-sm font-medium">{t.cook.cookAtLabel}</label>
             <div className="flex flex-wrap items-center gap-2">
-              <input
-                className={input + " sm:w-auto"}
-                type="datetime-local"
+              {/* тот же фирменный календарь, что и у застолий: нативный
+                  datetime-local рисовался сине-белым и в формате mm/dd/yyyy.
+                  minDate — прошедшая партия не предзаказ, её некому готовить */}
+              <DateTimePicker
+                id="dish-cook-at"
                 value={editing.cookAt || ""}
-                onChange={(e) => setEditing({ ...editing, cookAt: e.target.value })}
+                onChange={(v) => setEditing({ ...editing, cookAt: v })}
+                triggerClass={input + " sm:w-auto"}
+                minDate={new Date()}
               />
               {editing.cookAt && (
                 <button
@@ -295,6 +301,17 @@ export function Menu() {
                 <div className="mt-0.5 whitespace-nowrap text-sm">
                   {d.price} {t.common.rub} · {d.portions} {t.cook.portionsShort}
                 </div>
+                {/* время партии видно прямо в карточке: иначе повар не помнит, что
+                    когда-то назначил час, и не замечает, что подпись уже протухла */}
+                {(() => {
+                  const c = describeCookAt(d.cookAt, lang === "en" ? "en" : "ru");
+                  if (c.kind === "none") return null;
+                  return (
+                    <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-xs font-medium text-[#e0860c]">
+                      <ClockIcon size={11} /> {c.text}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
             <div className="mt-3 flex gap-2">

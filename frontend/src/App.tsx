@@ -160,6 +160,9 @@ export const routes: RouteObject[] = [
           { path: "/cooks/:id", element: <CookProfilePage /> },
           // программные SEO-страницы (города и категории×город) — пререндерятся из снимка
           { path: "/eda/:citySlug", element: <CityPage /> },
+          // Хаб страны. /strana/, а не сегмент внутри /eda/: /eda/kz/almaty
+          // совпал бы с уже существующим /eda/:citySlug/:categorySlug.
+          { path: "/strana/:countrySlug", lazy: async () => ({ Component: (await import("./pages/seo/CountryPage")).CountryPage }) },
           { path: "/eda/:citySlug/:categorySlug", element: <CategoryCityPage /> },
           { path: "/blyudo/:dishSlug", element: <DishPage /> },
           // SEO-лендинги под конкретные поисковые интенты (доставка / посиделки)
@@ -172,6 +175,7 @@ export const routes: RouteObject[] = [
           { path: "/pravilnoe-pitanie", lazy: async () => ({ Component: (await import("./pages/seo/PravilnoePitanie")).PravilnoePitanie }) },
           { path: "/eda-na-prazdnik", lazy: async () => ({ Component: (await import("./pages/seo/EdaNaPrazdnik")).EdaNaPrazdnik }) },
           { path: "/zagotovki", lazy: async () => ({ Component: (await import("./pages/seo/Zagotovki")).Zagotovki }) },
+          { path: "/halal", lazy: async () => ({ Component: (await import("./pages/seo/Halal")).Halal }) },
           // застолья (социальный слой) — список и детали публичны, создание за входом
           { path: "/gatherings", lazy: async () => ({ Component: (await import("./pages/gatherings/GatheringsList")).GatheringsList }) },
           { path: "/gatherings/new", element: <Guard><GatheringCreate /></Guard> },

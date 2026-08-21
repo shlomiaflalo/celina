@@ -36,6 +36,9 @@ export function Cart() {
 
   // адрес доставки должен быть в городе покупателя (он же город поваров в корзине)
   const buyerCity = user?.city ?? null;
+  // город хранится по-русски; в ленте и в профиле повара он переводится, а здесь
+  // оставался «Москва» посреди английского текста — показываем через тот же tr()
+  const buyerCityLabel = buyerCity ? tr(buyerCity) : "";
 
   // профиль приходит асинхронно: при жёсткой перезагрузке /cart user ещё null,
   // и useState-инициализатор оставил address пустым. Подставляем адрес из
@@ -259,7 +262,7 @@ export function Cart() {
       <div className="mt-2 rounded-xl border border-orange-100 bg-white p-4">
         <div className="mb-1 flex items-center justify-between">
           <label htmlFor="cart-address" className="text-sm text-[#e0860c]">
-            {t.cart.address}{buyerCity ? ` · ${buyerCity}` : ""}
+            {t.cart.address}{buyerCityLabel ? ` · ${buyerCityLabel}` : ""}
           </label>
           <button
             type="button"
@@ -289,17 +292,17 @@ export function Cart() {
         {/* статус проверки адреса (структурно + геокодер) */}
         <div className="mb-4 mt-1.5 min-h-[1.1rem] text-xs font-medium">
           {geoStatus === "wrongCity" ? (
-            <span className="text-[#e0860c]">{t.cart.addressWrongCity.replace("{city}", buyerCity || "")}</span>
+            <span className="text-[#e0860c]">{t.cart.addressWrongCity.replace("{city}", buyerCityLabel)}</span>
           ) : geoStatus === "denied" ? (
             <span className="text-[#e0860c]">{t.cart.locationDenied}</span>
           ) : addrStatus === "valid" ? (
-            <span className="text-[#e0860c]">✓ {t.cart.addressConfirmed.replace("{city}", buyerCity || "")}</span>
+            <span className="text-[#e0860c]">✓ {t.cart.addressConfirmed.replace("{city}", buyerCityLabel)}</span>
           ) : addrStatus === "checking" ? (
             <span className="text-[#e0860c]/80">{t.cart.addressChecking}</span>
           ) : addrStatus === "invalid" ? (
             <span className="text-[#e0860c]">
               {addrReason === "format" ? t.cart.addressInvalid
-                : addrReason === "wrongCity" ? t.cart.addressWrongCity.replace("{city}", buyerCity || "")
+                : addrReason === "wrongCity" ? t.cart.addressWrongCity.replace("{city}", buyerCityLabel)
                 : t.cart.addressNotFound}
             </span>
           ) : (

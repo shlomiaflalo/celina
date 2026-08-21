@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 import { Head } from "vite-react-ssg";
 import { seoCities, seoCategories, seoCooks } from "../lib/seoData";
+import { CITY_CATALOG, COUNTRIES } from "../lib/cityCatalog";
+import { CITY_CONTENT } from "../data/cityContent";
+import { COUNTRY_CONTENT } from "../data/countryContent";
 import { useT, useTr } from "../i18n";
 
 /**
@@ -29,18 +32,43 @@ export function HomeSeoSection() {
       <h1 className="t-h2">{t.homeSeo.h1}</h1>
       <p className="mt-2 max-w-3xl leading-relaxed text-[#e0860c]/85">{t.homeSeo.intro}</p>
 
-      {seoCities.length > 0 && (
-        <div className="mt-8">
-          <h2 className="t-h3 mb-2">{t.homeSeo.byCity}</h2>
-          <div className="flex flex-wrap gap-2">
-            {seoCities.map((c) => (
-              <Link key={c.slug} to={`/eda/${c.slug}`} className={linkCls}>
-                {t.homeSeo.foodIn} {tr(c.prep)}
-              </Link>
+      {/* Точка входа в городской кластер.
+          Раньше список брался из seoCities — снимка каталога, который сейчас
+          пуст, поэтому блок не рендерился вовсе: в dist/index.html не было НИ
+          ОДНОЙ ссылки href="/eda/". Кластер из десятков похожих страниц,
+          достижимый только из sitemap.xml, — это структура дорвейной сети.
+          Берём города из CITY_CATALOG (охват), а не из снимка (наличие
+          поваров), и показываем только те, у кого есть свой текст. */}
+      {(() => {
+        const byCountry = Object.values(COUNTRIES)
+          .map((co) => ({ co, cities: CITY_CATALOG.filter((c) => c.country === co.code && c.slug in CITY_CONTENT) }))
+          .filter((g) => g.cities.length > 0);
+        if (byCountry.length === 0) return null;
+        return (
+          <div className="mt-8 space-y-5">
+            {byCountry.map(({ co, cities }) => (
+              <div key={co.code}>
+                <h2 className="t-h3 mb-2">
+                  {co.slug in COUNTRY_CONTENT ? (
+                    <Link to={`/strana/${co.slug}`} className="underline-offset-4 hover:underline">
+                      {t.homeSeo.foodIn} {tr(co.prep)}
+                    </Link>
+                  ) : (
+                    <>{t.homeSeo.foodIn} {tr(co.prep)}</>
+                  )}
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {cities.map((c) => (
+                    <Link key={c.slug} to={`/eda/${c.slug}`} className={linkCls}>
+                      {tr(c.name)}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {seoCategories.length > 0 && (
         <div className="mt-8">

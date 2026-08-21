@@ -100,7 +100,12 @@ export function Seo({ title, description, titleEn, descriptionEn, path = "/", im
       {YANDEX_VERIFICATION && <meta name="yandex-verification" content={YANDEX_VERIFICATION} />}
       {GOOGLE_VERIFICATION && <meta name="google-site-verification" content={GOOGLE_VERIFICATION} />}
       {/* hreflang: контент двуязычный на одном URL → ru основной, x-default тот же */}
-      <link rel="alternate" hrefLang="ru-RU" href={canonical} />
+      {/* hrefLang="ru", а НЕ "ru-RU". Региональный субтег -RU означает «эта
+          страница предназначена для России» — на /eda/almaty, /eda/tashkent и
+          /strana/uzbekistan это прямой сигнал не тому региону, поверх и без
+          того российской доменной зоны. Язык страниц действительно русский;
+          страна у них разная. */}
+      <link rel="alternate" hrefLang="ru" href={canonical} />
       <link rel="alternate" hrefLang="x-default" href={canonical} />
       <meta property="og:type" content={type} />
       <meta property="og:site_name" content="Celina" />
@@ -109,7 +114,9 @@ export function Seo({ title, description, titleEn, descriptionEn, path = "/", im
       <meta property="og:url" content={canonical} />
       <meta property="og:image" content={img} />
       <meta property="og:locale" content="ru_RU" />
-      <meta property="og:locale:alternate" content="en_US" />
+      {/* og:locale:alternate en_US убран: английский переключается на ТОМ ЖЕ
+          URL клиентским кодом, отдельной английской страницы не существует,
+          и объявлять её — значит обещать альтернативу, которой нет. */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={t} />
       <meta name="twitter:description" content={d} />

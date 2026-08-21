@@ -603,3 +603,104 @@ input[type="month"]::-webkit-calendar-picker-indicator:hover {
   --day-veil: transparent;
 }
 
+
+/* ───────────────────── декорация дня (см. theme/DayDecor.tsx) ─────────────────────
+   Рисованная графика дня: единственный визуальный рычаг оформления после того,
+   как с главной убрали фотографию героя. Всё инлайновое, всё на transform,
+   всё выключается по prefers-reduced-motion.
+
+   Палитра. Оранжевый остаётся хозяином экрана — зелёный и красный приходят
+   ровно настолько, насколько кабачок зелёный, а помидор красный. Это не
+   ребрендинг на день, это еда своего цвета. */
+:root {
+  --dc-green: #5f8f3e;
+  --dc-green-dk: #47702c;
+  --dc-green-lt: #8bb95e;
+  --dc-red: #c14a30;
+  --dc-amber: #e0860c;
+  --dc-deep: #a85c08;
+  --dc-stem: #7a4a1c;
+  --dc-jar: #cfe0a8;
+  --dc-shadow: rgba(120, 84, 30, 0.10);
+  /* высота кучи. Живёт в переменной, а не в контенте: полоса занимает своё
+     место с первого байта, поэтому не двигает вёрстку и не портит CLS. */
+  --day-heap-h: 84px;
+}
+
+/* Куча урожая под первым экраном.
+   Отрицательные поля — чтобы полоса не отодвигала прилавок: на телефоне
+   каждый лишний пиксель до первой карточки повара стоит дороже украшения. */
+.day-heap {
+  margin-block: -6px 0;
+  height: var(--day-heap-h);
+  pointer-events: none;
+  overflow: hidden;
+  line-height: 0;
+}
+.day-heap-svg {
+  display: block;
+  width: 100%;
+  height: var(--day-heap-h);
+}
+@media (min-width: 640px) {
+  :root { --day-heap-h: 118px; }
+}
+@media (min-width: 1024px) {
+  :root { --day-heap-h: 150px; }
+}
+
+/* Падающий урожай поверх первого экрана.
+   Слой абсолютный и не в потоке: текст героя стоит выше по z-index и не
+   спорит с ним за место. */
+.day-fall {
+  position: absolute;
+  inset: -8px 0 -4px;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* Без маски фигура на выходе рубится ровной горизонтальной линией — глаз
+     читает это как обрезанную картинку, а не как «улетело за край». */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 76%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 76%, transparent 100%);
+}
+
+/* Обёртка ростом в контейнер: проценты в translateY считаются от неё, значит
+   путь падения РАВЕН высоте первого экрана — сколько бы строк текста в нём
+   сегодня ни оказалось. */
+.day-fall-item {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 0;
+  will-change: transform;
+  animation-name: day-fall-y;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+@keyframes day-fall-y {
+  from { transform: translateY(-28%); }
+  to   { transform: translateY(108%); }
+}
+
+.day-fall-shape {
+  display: block;
+  aspect-ratio: 1;
+  height: auto;
+  /* прозрачность подобрана так, чтобы фигуры читались на «муке», но не
+     конкурировали с оранжевым текстом, который лежит поверх */
+  opacity: 0.5;
+  animation-name: day-fall-sway;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+@keyframes day-fall-sway {
+  from { transform: translateX(-9px) rotate(-15deg); }
+  to   { transform: translateX(11px) rotate(17deg); }
+}
+
+/* Замерший в воздухе кабачок читается как баг, а не как уважение к настройке.
+   Поэтому падение снимается целиком — куча остаётся, день по-прежнему виден. */
+@media (prefers-reduced-motion: reduce) {
+  .day-fall { display: none; }
+}

@@ -62,6 +62,18 @@ export function DateTimePicker({
   const [hour, setHour] = useState(parsed.h);
   const [minute, setMinute] = useState(parsed.m);
 
+  // value может смениться ИЗВНЕ, пока компонент уже смонтирован: повар нажимает
+  // «Изменить» на другом блюде, а форма (и этот пикер) уже открыта. Без этой
+  // синхронизации час/минута остаются от прошлого блюда — показывалось бы, скажем,
+  // 19:00 вместо сохранённых 18:00, а следующий клик по дню ещё и записал бы это
+  // неверное время обратно в блюдо.
+  useEffect(() => {
+    const p = parseValue(value);
+    setHour(p.h);
+    setMinute(p.m);
+    if (p.date) setView(new Date(p.date.getFullYear(), p.date.getMonth(), 1));
+  }, [value]);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
@@ -114,15 +126,18 @@ export function DateTimePicker({
           onMouseDown={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
         >
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={t.a11y.datePicker}
           onMouseDown={(e) => e.stopPropagation()}
           className="w-[20rem] max-w-[92vw] rounded-2xl border border-orange-100 bg-white p-4 shadow-2xl">
           {/* шапка месяца */}
           <div className="mb-2 flex items-center justify-between">
             <button type="button" onClick={() => setView(addMonths(view, -1))}
-              className="flex h-8 w-8 items-center justify-center rounded-full text-[#e0860c] transition hover:bg-orange-50" aria-label="prev">‹</button>
+              className="flex h-8 w-8 items-center justify-center rounded-full text-[#e0860c] transition hover:bg-orange-50" aria-label={t.a11y.prevMonth}>‹</button>
             <div className="text-sm font-semibold capitalize text-[#e0860c]">{monthLabel}</div>
             <button type="button" onClick={() => setView(addMonths(view, 1))}
-              className="flex h-8 w-8 items-center justify-center rounded-full text-[#e0860c] transition hover:bg-orange-50" aria-label="next">›</button>
+              className="flex h-8 w-8 items-center justify-center rounded-full text-[#e0860c] transition hover:bg-orange-50" aria-label={t.a11y.nextMonth}>›</button>
           </div>
 
           {/* дни недели */}
@@ -157,12 +172,12 @@ export function DateTimePicker({
           <div className="mt-3 flex items-center justify-between border-t border-orange-100 pt-3">
             <span className="text-sm font-medium text-[#e0860c]">{t.gatherings.pickTime}</span>
             <div className="flex items-center gap-1 text-sm">
-              <select value={hour} onChange={(e) => setTime(Number(e.target.value), minute)}
+              <select value={hour} aria-label={t.a11y.hours} onChange={(e) => setTime(Number(e.target.value), minute)}
                 className="rounded-lg border border-orange-200 bg-orange-50/50 px-2 py-1 font-semibold text-[#e0860c] outline-none focus:border-[#e0860c]">
                 {Array.from({ length: 24 }, (_, h) => <option key={h} value={h}>{pad2(h)}</option>)}
               </select>
-              <span className="font-bold text-[#e0860c]">:</span>
-              <select value={minute} onChange={(e) => setTime(hour, Number(e.target.value))}
+              <span className="font-bold text-[#e0860c]" aria-hidden="true">:</span>
+              <select value={minute} aria-label={t.a11y.minutes} onChange={(e) => setTime(hour, Number(e.target.value))}
                 className="rounded-lg border border-orange-200 bg-orange-50/50 px-2 py-1 font-semibold text-[#e0860c] outline-none focus:border-[#e0860c]">
                 {Array.from({ length: 12 }, (_, k) => k * 5).map((m) => <option key={m} value={m}>{pad2(m)}</option>)}
               </select>

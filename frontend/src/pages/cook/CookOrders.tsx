@@ -19,7 +19,11 @@ export function CookOrders() {
   const tr = useTr();
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [failed, setFailed] = useState(false);
-  const [tab, setTab] = useState<Tab>("new");
+  // null = повар ещё не выбирал вкладку сам. Раньше всегда открывались «Новые»,
+  // и повар с 2 активными и 10 завершёнными заказами видел «Заказов пока нет» —
+  // будто заказов нет вообще. Теперь по умолчанию открываем первую непустую,
+  // сохраняя приоритет «Новых» (там нужно действие повара).
+  const [picked, setPicked] = useState<Tab | null>(null);
 
   function load() {
     setFailed(false);
@@ -46,6 +50,7 @@ export function CookOrders() {
     active: orders.filter((o) => TAB_STATUSES.active.includes(o.status)).length,
     done: orders.filter((o) => TAB_STATUSES.done.includes(o.status)).length,
   };
+  const tab: Tab = picked ?? ((["new", "active", "done"] as Tab[]).find((tb) => counts[tb] > 0) ?? "new");
   const visible = orders.filter((o) => TAB_STATUSES[tab].includes(o.status));
 
   return (
@@ -57,9 +62,16 @@ export function CookOrders() {
         {(["new", "active", "done"] as Tab[]).map((tb) => (
           <button
             key={tb}
-            onClick={() => setTab(tb)}
+            onClick={() => setPicked(tb)}
             className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition ${
-              tab === tb ? "btn-glass" : "glass-soft "
+              // btn-glass и glass-soft различались ТОЛЬКО глубиной тени — какая
+              // вкладка выбрана, понять было нельзя. ring-* здесь не работает:
+              // .btn-glass задаёт box-shadow напрямую и перебивает кольцо
+              // Tailwind. Поэтому обводка через outline (его никто не занимает —
+              // своего focus-стиля в проекте нет, браузерный фокус выглядит иначе).
+              tab === tb
+                ? "btn-glass outline-2 outline-offset-2 outline-[#e0860c]"
+                : "glass-soft opacity-90"
             }`}
           >
             {t.orders.tabs[tb]}

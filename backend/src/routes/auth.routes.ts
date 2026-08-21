@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma.js";
+import { isOperatingCity } from "../lib/operatingCities.js";
 import { asyncHandler } from "../middleware/error.js";
 import { requireAuth } from "../middleware/auth.js";
 import { rateLimit } from "../middleware/rateLimit.js";
@@ -58,6 +59,17 @@ authRouter.post(
     // Город обязателен (для подбора поваров), остальное — по желанию.
     if (!data.city) {
       return res.status(400).json({ error: "Выберите город" });
+    }
+    // Граница сервиса, проверенная НА СЕРВЕРЕ. Выпадающий список городов на
+    // фронте — интерфейс, а не защита: сюда city приходит свободной строкой.
+    // Посадочные страницы теперь есть по Беларуси, Казахстану, Узбекистану и
+    // Армении, и они прямо зовут местных жителей — но зовут в список
+    // ожидания, а не в регистрацию. Работает Селина только в России: только
+    // там есть оферта, налоговый статус повара и право на его персданные.
+    if (!isOperatingCity(data.city)) {
+      return res.status(400).json({
+        error: "Селина пока работает только в России. Оставьте заявку в списке ожидания — мы напишем, когда откроемся в вашем городе.",
+      });
     }
 
     const exists = await prisma.user.findUnique({ where: { phone: data.phone } });

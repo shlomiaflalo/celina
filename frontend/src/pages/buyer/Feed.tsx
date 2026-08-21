@@ -15,6 +15,7 @@ import { useT, useTr, useLang } from "../../i18n";
 import { FirstCookInvite } from "../../components/FirstCookInvite";
 import { StorefrontPreview } from "../../components/StorefrontPreview";
 import { TODAY } from "../../theme/dayTheme";
+import { DayFall, DayHeap } from "../../theme/DayDecor";
 
 /** Человекочитаемое расстояние: «1.2 км» / «350 м» — БЕЗ знака «~» (решение основателя). */
 function fmtDist(m: number, kmLabel: string, mLabel: string): string {
@@ -203,12 +204,14 @@ export function Feed() {
       </div>
 
       <div className={`relative mb-6 ${dimActive ? "" : "z-20"}`}>
-        <div className="relative">
-          <div className="t-h1 max-w-2xl text-[#e0860c]">{t.feed.title}</div>
+        {/* урожай, падающий с неба: декорация дня, см. theme/DayDecor.tsx */}
+        <DayFall />
+        <div className="relative z-10">
+          <div className="t-h1 max-w-2xl text-[var(--day-accent)]">{t.feed.title}</div>
           <p className="mt-1 max-w-xl text-[#e0860c]/75 sm:t-lead sm:mt-2">{t.tagline}</p>
           {/* реплика дня: повод, по которому сайт сегодня так выглядит */}
           {TODAY.line && (
-            <p className="mt-2 max-w-xl text-sm font-medium text-[#e0860c] sm:mt-3 sm:text-base">
+            <p className="mt-2 max-w-xl text-sm font-medium text-[var(--day-accent)] sm:mt-3 sm:text-base">
               {lang === "en" ? TODAY.line.en : TODAY.line.ru}
             </p>
           )}
@@ -286,6 +289,9 @@ export function Feed() {
           </ul>
         </div>
       </div>
+
+      {/* куча урожая под первым экраном: то, что сосед оставил под дверью */}
+      <DayHeap />
 
       {/* фильтр по кухне + посиделки */}
       <div className="mb-5 flex flex-wrap gap-2">

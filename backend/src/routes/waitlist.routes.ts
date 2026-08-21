@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma.js";
+import { isOperatingCity } from "../lib/operatingCities.js";
 import { rateLimit } from "../middleware/rateLimit.js";
 
 /**
@@ -22,8 +23,24 @@ waitlistRouter.post("/", rateLimit({ windowMs: 60 * 60_000, max: 20 }), async (r
   const parsed = joinSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "Укажите город" });
   const { city, district, contact, role } = parsed.data;
-  const ip = (req.headers["x-forwarded-for"] as string | undefined)?.split(",").pop()?.trim() || req.ip || null;
-  await prisma.waitlist.create({ data: { city, district: district || null, contact: contact || null, role, ip } });
+  // Список ожидания принимает ЛЮБОЙ город, в том числе за пределами России:
+  // копить спрос можно где угодно, работать — только там, где есть оферта
+  // (см. isOperatingCity). Но за пределами России мы не храним НИЧЕГО, что
+  // указывает на человека.
+  //
+  // IP — персональные данные почти во всех этих юрисдикциях. Пока он писался
+  // на каждую заявку, «обезличенная карта спроса» обезличенной не была: житель
+  // Алматы, сознательно оставивший поле контакта пустым, всё равно оказывался
+  // в базе на российском сервере. Без IP и без контакта форма собирает
+  // статистику по районам и не подпадает под казахстанский закон 94-V и
+  // узбекский ЗРУ-547 ВООБЩЕ — это лучше, чем подпадать и иметь оправдание.
+  const operating = isOperatingCity(city);
+  const ip = operating
+    ? ((req.headers["x-forwarded-for"] as string | undefined)?.split(",").pop()?.trim() || req.ip || null)
+    : null;
+  await prisma.waitlist.create({
+    data: { city, district: district || null, contact: operating ? contact || null : null, role, ip },
+  });
   const cityCount = await prisma.waitlist.count({ where: { city } });
   res.json({ ok: true, cityCount });
 });

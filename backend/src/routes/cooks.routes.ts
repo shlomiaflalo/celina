@@ -64,21 +64,37 @@ cooksRouter.get(
   })
 );
 
+// Разумные пределы — та же причина, что и в dishSchema: без верхней границы
+// повар сохранял название кухни в 300 символов, и заголовок «Кухня …» уезжал
+// за правый край страницы (в ленте — за край карточки). Числа без max так же
+// разносили строку «Мин. заказ 888888888 ₽».
 const updateSchema = z.object({
-  kitchenName: z.string().min(1).optional(),
-  bio: z.string().optional(),
+  kitchenName: z.string().min(1).max(60).optional(),
+  bio: z.string().max(500).optional(),
   avatarUrl: z.string().optional(),
   coverUrl: z.string().optional(),
-  cuisine: z.array(z.string()).optional(),
+  cuisine: z.array(z.string().max(30)).max(10).optional(),
   deliveryEnabled: z.boolean().optional(),
   pickupEnabled: z.boolean().optional(),
-  deliveryFee: z.number().min(0).optional(),
-  minOrder: z.number().min(0).optional(),
-  city: z.string().optional(),
+  deliveryFee: z.number().min(0).max(10000).optional(),
+  minOrder: z.number().min(0).max(100000).optional(),
+  city: z.string().max(60).optional(),
   dineInEnabled: z.boolean().optional(),
-  dineInPrice: z.number().positive().optional(),
-  dineInSeats: z.number().int().positive().optional(),
-  dineInDesc: z.string().optional(),
+  // 0 = «посиделки не настроены». Раньше здесь стоял .positive(), а форма
+  // «Моя кухня» шлёт эти поля ВСЕГДА — поэтому любой повар без посиделок
+  // получал «Ошибка валидации» и не мог сохранить настройки вообще.
+  // Осмысленную проверку переносим на случай, когда посиделки включают.
+  dineInPrice: z.number().min(0).max(100000).optional(),
+  dineInSeats: z.number().int().min(0).max(50).optional(),
+  dineInDesc: z.string().max(500).optional(),
+}).superRefine((d, ctx) => {
+  if (d.dineInEnabled !== true) return;
+  if (d.dineInPrice !== undefined && d.dineInPrice <= 0) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["dineInPrice"], message: "Укажите цену с человека" });
+  }
+  if (d.dineInSeats !== undefined && d.dineInSeats <= 0) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["dineInSeats"], message: "Укажите количество мест" });
+  }
 });
 
 // PUT /api/cooks/me — редактирование профиля повара

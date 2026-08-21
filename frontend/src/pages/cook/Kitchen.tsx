@@ -105,24 +105,26 @@ export function Kitchen() {
       <div className="space-y-4 rounded-2xl border border-orange-100 bg-white p-6 shadow-sm">
         <div>
           <label htmlFor="kitchen-name" className={label}>{t.kitchen.name}</label>
-          <input id="kitchen-name" className={input} value={form.kitchenName} onChange={(e) => setForm({ ...form, kitchenName: e.target.value })} />
+          {/* maxLength/min/max совпадают с пределами updateSchema на бэкенде:
+              без них длинное название уезжало за край карточки в ленте */}
+          <input id="kitchen-name" maxLength={60} className={input} value={form.kitchenName} onChange={(e) => setForm({ ...form, kitchenName: e.target.value })} />
         </div>
         <div>
           <label htmlFor="kitchen-bio" className={label}>{t.kitchen.bio}</label>
-          <textarea id="kitchen-bio" className={input} rows={3} value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} />
+          <textarea id="kitchen-bio" maxLength={500} className={input} rows={3} value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} />
         </div>
         <div>
           <label htmlFor="kitchen-cuisine" className={label}>{t.kitchen.cuisine}</label>
-          <input id="kitchen-cuisine" className={input} value={form.cuisine} onChange={(e) => setForm({ ...form, cuisine: e.target.value })} placeholder={t.kitchen.cuisinePlaceholder} />
+          <input id="kitchen-cuisine" maxLength={120} className={input} value={form.cuisine} onChange={(e) => setForm({ ...form, cuisine: e.target.value })} placeholder={t.kitchen.cuisinePlaceholder} />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label htmlFor="kitchen-delivery-fee" className={label}>{t.kitchen.deliveryFee}</label>
-            <input id="kitchen-delivery-fee" type="number" className={input} value={form.deliveryFee} onChange={(e) => setForm({ ...form, deliveryFee: Number(e.target.value) })} />
+            <input id="kitchen-delivery-fee" type="number" min={0} max={10000} className={input} value={form.deliveryFee} onChange={(e) => setForm({ ...form, deliveryFee: Number(e.target.value) })} />
           </div>
           <div>
             <label htmlFor="kitchen-min-order" className={label}>{t.kitchen.minOrder}</label>
-            <input id="kitchen-min-order" type="number" className={input} value={form.minOrder} onChange={(e) => setForm({ ...form, minOrder: Number(e.target.value) })} />
+            <input id="kitchen-min-order" type="number" min={0} max={100000} className={input} value={form.minOrder} onChange={(e) => setForm({ ...form, minOrder: Number(e.target.value) })} />
           </div>
         </div>
 
@@ -153,18 +155,18 @@ export function Kitchen() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="dinein-price" className={label}>{t.dineIn.price}</label>
-                  <input id="dinein-price" type="number" className={input} value={form.dineInPrice}
+                  <input id="dinein-price" type="number" min={1} max={100000} className={input} value={form.dineInPrice}
                     onChange={(e) => setForm({ ...form, dineInPrice: Number(e.target.value) })} />
                 </div>
                 <div>
                   <label htmlFor="dinein-seats" className={label}>{t.dineIn.seatsLabel}</label>
-                  <input id="dinein-seats" type="number" className={input} value={form.dineInSeats}
+                  <input id="dinein-seats" type="number" min={1} max={50} className={input} value={form.dineInSeats}
                     onChange={(e) => setForm({ ...form, dineInSeats: Number(e.target.value) })} />
                 </div>
               </div>
               <div>
                 <label htmlFor="dinein-desc" className={label}>{t.dineIn.desc}</label>
-                <textarea id="dinein-desc" className={input} rows={2} value={form.dineInDesc}
+                <textarea id="dinein-desc" maxLength={500} className={input} rows={2} value={form.dineInDesc}
                   onChange={(e) => setForm({ ...form, dineInDesc: e.target.value })} />
               </div>
             </div>
