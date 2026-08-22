@@ -136,8 +136,8 @@ export const BLOG_POSTS: BlogPost[] = [
     tags: ["домашняя еда москва", "доставка", "москва", "инструкция"],
     links: [
       { to: "/eda/moskva", label: "Домашняя еда в Москве" },
-      { to: "/eda/moskva/supy", label: "Супы и борщи" },
-      { to: "/eda/moskva/vypechka", label: "Домашняя выпечка" },
+      { to: "/eda/moskva/goryachee", label: "Супы и борщи" },
+      { to: "/vypechka", label: "Домашняя выпечка на заказ" },
       { to: "/blog", label: "Все статьи блога" },
     ],
     ru: {
@@ -179,7 +179,7 @@ export const BLOG_POSTS: BlogPost[] = [
     tags: ["как продавать домашнюю еду легально", "самозанятость", "закон", "повар"],
     links: [
       { to: "/login?mode=register&role=cook", label: "Стать поваром на Celina" },
-      { to: "/eda/moskva/vypechka", label: "Домашняя выпечка в Москве" },
+      { to: "/vypechka", label: "Домашняя выпечка на заказ" },
       { to: "/eda/moskva", label: "Кухни соседей в Москве" },
       { to: "/blog", label: "Блог для поваров" },
     ],
@@ -222,7 +222,7 @@ export const BLOG_POSTS: BlogPost[] = [
     tags: ["хачапури", "грузинская кухня", "рецепт", "выпечка"],
     links: [
       { to: "/eda/moskva", label: "Посмотреть, кто готовит рядом в Москве" },
-      { to: "/eda/moskva/vypechka", label: "Домашняя выпечка в Москве" },
+      { to: "/vypechka", label: "Домашняя выпечка на заказ" },
       { to: "/blog", label: "Другие статьи блога" },
     ],
     ru: {
@@ -434,7 +434,7 @@ export const BLOG_POSTS: BlogPost[] = [
       { to: "/dostavka", label: "Как работает доставка домашней еды" },
       { to: "/eda/moskva", label: "Домашняя еда в Москве" },
       { to: "/eda/sankt-peterburg", label: "Домашняя еда в Петербурге" },
-      { to: "/eda/moskva/supy", label: "Домашние супы в Москве" },
+      { to: "/eda/moskva/goryachee", label: "Домашние супы в Москве" },
       { to: "/login?mode=register&role=cook", label: "Стать поваром" },
     ],
     ru: {
@@ -475,7 +475,7 @@ export const BLOG_POSTS: BlogPost[] = [
     readMin: 6,
     tags: ["осетинские пироги", "на заказ", "выпечка", "кавказская кухня"],
     links: [
-      { to: "/eda/moskva/vypechka", label: "Домашняя выпечка в Москве" },
+      { to: "/vypechka", label: "Домашняя выпечка на заказ" },
       { to: "/eda/moskva", label: "Домашняя еда в Москве" },
       { to: "/blog", label: "Другие статьи о домашней еде" },
     ],
@@ -515,6 +515,7 @@ export const BLOG_POSTS: BlogPost[] = [
     readMin: 7,
     tags: ["готовить на продажу", "повар", "из дома", "подработка"],
     links: [
+      { to: "/povaram", label: "Готовить дома и продавать соседям" },
       { to: "/login?mode=register&role=cook", label: "Стать поваром на Celina" },
       { to: "/eda/moskva", label: "Посмотреть, как готовят соседи" },
       { to: "/zagotovki", label: "Продать излишки заготовок соседям" },
@@ -558,7 +559,7 @@ export const BLOG_POSTS: BlogPost[] = [
     readMin: 6,
     tags: ["домашняя выпечка", "на заказ", "торты", "пироги"],
     links: [
-      { to: "/eda/moskva/vypechka", label: "Домашняя выпечка в Москве" },
+      { to: "/vypechka", label: "Домашняя выпечка на заказ" },
       { to: "/eda/moskva", label: "Домашняя еда в Москве" },
       { to: "/blog/yablochnyy-spas-chto-prigotovit", label: "Что пекут на Медовый, Яблочный и Ореховый Спас" },
       { to: "/login?mode=register&role=cook", label: "Печёте? Станьте поваром" },
@@ -602,8 +603,8 @@ export const BLOG_POSTS: BlogPost[] = [
     readMin: 6,
     tags: ["поминки", "домашняя еда", "меню", "заказ"],
     links: [
-      { to: "/eda/moskva/vypechka", label: "Домашняя выпечка в Москве" },
-      { to: "/eda/moskva/supy", label: "Домашние супы" },
+      { to: "/vypechka", label: "Домашняя выпечка на заказ" },
+      { to: "/eda/moskva/goryachee", label: "Домашние супы" },
       { to: "/eda/moskva/goryachee", label: "Горячие блюда" },
       { to: "/eda/sankt-peterburg", label: "Домашняя еда в Санкт-Петербурге" },
     ],
@@ -731,7 +732,7 @@ export const BLOG_POSTS: BlogPost[] = [
     readMin: 6,
     tags: ["татарская кухня", "эчпочмаки", "чак-чак", "региональная кухня"],
     links: [
-      { to: "/eda/moskva/vypechka", label: "Домашняя выпечка в Москве" },
+      { to: "/vypechka", label: "Домашняя выпечка на заказ" },
       { to: "/eda/moskva", label: "Домашняя еда в Москве" },
       { to: "/eda/moskva/deserty", label: "Домашние десерты" },
       { to: "/blog/domashnyaya-eda-v-kazani", label: "Домашняя еда в Казани" },
@@ -1393,6 +1394,7 @@ export const BLOG_POSTS: BlogPost[] = [
     readMin: 7,
     tags: ["новый год", "новогодний стол", "меню", "праздник", "домашняя еда"],
     links: [
+      { to: "/eda-na-prazdnik", label: "Праздничный стол на заказ" },
       { to: "/gatherings", label: "Соседские застолья" },
       { to: "/vstrechi", label: "С кем встретить праздник: встречи с соседями" },
       { to: "/obedy", label: "Домашние обеды с доставкой" },

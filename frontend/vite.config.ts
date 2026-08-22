@@ -179,18 +179,47 @@ export default defineConfig({
         if (u === "/" || ["/gatherings", "/dostavka", "/vypit-vmeste", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/halal", "/about", "/story", "/manifest"].includes(u)) return "/images/og-default.jpg";
         return null;
       };
-      const body = urls
-        .map((u) => {
-          const img = imageFor(u);
-          const imgXml = img ? `\n    <image:image><image:loc>${escUrl(SITE_URL + img)}</image:loc></image:image>` : "";
-          const lm = lastmodFor(u);
-          const lmXml = lm ? `\n    <lastmod>${lm}</lastmod>` : "";
-          return `  <url>\n    <loc>${escUrl(SITE_URL + (u === "/" ? "" : u))}</loc>${lmXml}\n    <changefreq>${fresh(u)}</changefreq>\n    <priority>${priority(u)}</priority>${imgXml}\n  </url>`;
-        })
-        .join("\n");
-      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${body}\n</urlset>\n`;
-      writeFileSync(resolve(process.cwd(), "dist/sitemap.xml"), xml, "utf8");
-      console.log(`[sitemap] ${urls.length} URL → dist/sitemap.xml`);
+      // Карта сайта — ИНДЕКС из посегментных карт (по стране + blog + static).
+      // Зачем: в Вебмастере и Search Console каждую дочернюю карту можно
+      // сабмитить отдельно и видеть indexed-vs-submitted ПО СТРАНЕ — ровно то
+      // измерение, ради которого не стали городить /kz/ в URL. Для краулера
+      // индекс эквивалентен одной карте; robots.txt указывает на sitemap.xml.
+      const citySlugCountry = new Map(CITY_CATALOG.map((c) => [c.slug, c.country.toLowerCase()]));
+      const countrySlugCode = new Map(Object.values(COUNTRIES).map((c) => [c.slug, c.code.toLowerCase()]));
+      const segmentOf = (u: string): string => {
+        if (u.startsWith("/blog")) return "blog";
+        if (u.startsWith("/eda/")) {
+          const cs = u.slice(5).split("/")[0];
+          return citySlugCountry.get(cs) ?? "ru";
+        }
+        if (u.startsWith("/strana/")) return countrySlugCode.get(u.slice(8)) ?? "static";
+        if (u.startsWith("/cooks/") || u.startsWith("/blyudo/")) return "ru";
+        return "static";
+      };
+      const urlXml = (u: string): string => {
+        const img = imageFor(u);
+        const imgXml = img ? `\n    <image:image><image:loc>${escUrl(SITE_URL + img)}</image:loc></image:image>` : "";
+        const lm = lastmodFor(u);
+        const lmXml = lm ? `\n    <lastmod>${lm}</lastmod>` : "";
+        return `  <url>\n    <loc>${escUrl(SITE_URL + (u === "/" ? "" : u))}</loc>${lmXml}\n    <changefreq>${fresh(u)}</changefreq>\n    <priority>${priority(u)}</priority>${imgXml}\n  </url>`;
+      };
+      const segments = new Map<string, string[]>();
+      for (const u of urls) {
+        const seg = segmentOf(u);
+        if (!segments.has(seg)) segments.set(seg, []);
+        segments.get(seg)!.push(u);
+      }
+      const children: string[] = [];
+      for (const [seg, segUrls] of [...segments.entries()].sort()) {
+        const name = `sitemap-${seg}.xml`;
+        const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${segUrls.map(urlXml).join("\n")}\n</urlset>\n`;
+        writeFileSync(resolve(process.cwd(), `dist/${name}`), xml, "utf8");
+        children.push(name);
+        console.log(`[sitemap] ${seg}: ${segUrls.length} URL → dist/${name}`);
+      }
+      const index = `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${children.map((n) => `  <sitemap><loc>${SITE_URL}/${n}</loc></sitemap>`).join("\n")}\n</sitemapindex>\n`;
+      writeFileSync(resolve(process.cwd(), "dist/sitemap.xml"), index, "utf8");
+      console.log(`[sitemap] index: ${children.length} карт, ${urls.length} URL → dist/sitemap.xml`);
 
       // защита от «неправильного домена» в проде: пустой/чужой домен = слив SEO
       if (process.env.VITE_SITE_URL) {
