@@ -159,6 +159,8 @@ export const routes: RouteObject[] = [
           // Лениво, как и прочие SEO-страницы. Статический импорт затягивал
           // cityContent.ts (180 КБ прозы про районы) в ОБЩИЙ чанк, то есть
           // каждый посетитель главной скачивал тексты всех 36 городов.
+          // Хаб кластера: /eda без слага — «Домашняя еда по городам».
+          { path: "/eda", lazy: async () => ({ Component: (await import("./pages/seo/EdaIndex")).EdaIndex }) },
           { path: "/eda/:citySlug", lazy: async () => ({ Component: (await import("./pages/seo/CityPage")).CityPage }) },
           // Хаб страны. /strana/, а не сегмент внутри /eda/: /eda/kz/almaty
           // совпал бы с уже существующим /eda/:citySlug/:categorySlug.

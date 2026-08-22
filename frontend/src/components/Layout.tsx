@@ -6,7 +6,6 @@ import { LangSwitch } from "./LangSwitch";
 import { CartIcon } from "./icons";
 import { NotificationBell } from "./NotificationBell";
 import { Fab } from "./Fab";
-import { PrivacyLink } from "./LegalModal";
 import { VerifiedBadge } from "./VerifiedBadge";
 import { BowlMark } from "./Logo";
 import { ConfirmModal } from "./ui";
@@ -225,6 +224,35 @@ export function Layout() {
           </div>
 
           <span className="inline-block h-4 w-px bg-white/40" />
+          {/* Разделы. Подвал пререндерится на всех ~110 страницах, поэтому
+              каждая ссылка отсюда — это ~110 внутренних входящих и глубина 1.
+              До этого 9 из 11 денежных лендингов не имели ссылки с главной,
+              четыре сидели на глубине 3, а /privacy и /story были сиротами:
+              в sitemap — да, входящих ссылок по всему сайту — ноль. */}
+          <Link to="/eda" className="hover:underline">Города</Link>
+          <span className="inline-block h-3 w-px bg-white/40" />
+          <Link to="/dostavka" className="hover:underline">Доставка</Link>
+          <span className="inline-block h-3 w-px bg-white/40" />
+          <Link to="/obedy" className="hover:underline">Обеды</Link>
+          <span className="inline-block h-3 w-px bg-white/40" />
+          <Link to="/vypechka" className="hover:underline">Выпечка</Link>
+          <span className="inline-block h-3 w-px bg-white/40" />
+          <Link to="/eda-na-nedelyu" className="hover:underline">Еда на неделю</Link>
+          <span className="inline-block h-3 w-px bg-white/40" />
+          <Link to="/pravilnoe-pitanie" className="hover:underline">Правильное питание</Link>
+          <span className="inline-block h-3 w-px bg-white/40" />
+          <Link to="/eda-na-prazdnik" className="hover:underline">Праздничный стол</Link>
+          <span className="inline-block h-3 w-px bg-white/40" />
+          <Link to="/zagotovki" className="hover:underline">Заготовки</Link>
+          <span className="inline-block h-3 w-px bg-white/40" />
+          <Link to="/halal" className="hover:underline">Халяль</Link>
+          <span className="inline-block h-3 w-px bg-white/40" />
+          <Link to="/vstrechi" className="hover:underline">Встречи</Link>
+          <span className="inline-block h-3 w-px bg-white/40" />
+          <Link to="/vypit-vmeste" className="hover:underline">Посиделки</Link>
+          <span className="inline-block h-3 w-px bg-white/40" />
+          <Link to="/story" className="hover:underline">Как это работает</Link>
+          <span className="inline-block h-3 w-px bg-white/40" />
           <Link to="/blog" className="hover:underline">{t.blog.nav}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
           {/* Единственная ссылка сайта для повара — в подвале, то есть на всех 108
@@ -236,7 +264,8 @@ export function Layout() {
           <span className="inline-block h-3 w-px bg-white/40" />
           <Link to="/contact" className="hover:underline">{t.contact.nav}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <PrivacyLink className="font-semibold text-white" />
+          {/* настоящая ссылка вместо кнопки-модалки: краулер видит href */}
+          <Link to="/privacy" className="font-semibold text-white hover:underline">Конфиденциальность</Link>
           <span className="hidden h-3 w-px bg-white/40 sm:inline-block" />
           <span className="hidden text-white/85 sm:inline">{t.landing.rights}</span>
         </div>

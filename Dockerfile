@@ -7,6 +7,10 @@
 FROM node:20 AS frontend
 WORKDIR /fe
 COPY frontend/package*.json ./
+# patches/ нужен ДО npm install: postinstall запускает patch-package, который
+# чинит порчу кириллицы в vite-react-ssg (NUL из renderToPipeableStream →
+# U+FFFD в HTML). Без этой строки образ собирался бы с непатченной библиотекой.
+COPY frontend/patches ./patches
 # package-lock.json генерируется на macOS и содержит только darwin-варианты
 # платформенных бинарников (rollup, esbuild, lightningcss, @tailwindcss/oxide).
 # И `npm ci`, и `npm install` опираются на этот лок, поэтому в linux-контейнере

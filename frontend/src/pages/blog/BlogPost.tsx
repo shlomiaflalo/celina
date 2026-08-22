@@ -43,7 +43,7 @@ export function BlogPost() {
       image: img,
       datePublished: post.date,
       dateModified: post.date,
-      author: { "@type": "Organization", name: "Celina" },
+      author: { "@type": "Organization", "@id": SITE_URL + "/#organization", name: "Celina" },
       // @id связывает издателя всех 49 статей с ЕДИНОЙ сущностью Organization
       // (главная и /about несут её же — с foundingDate 2026-01 и Амстердамом),
       // вместо 49 безымянных «каких-то Celina».

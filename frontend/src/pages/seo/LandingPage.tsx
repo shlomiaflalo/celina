@@ -51,7 +51,7 @@ export function LandingPage({ data }: { data: LandingData }) {
       serviceType: data.serviceType,
       name: L.h1,
       description: L.seoDesc,
-      provider: { "@type": "Organization", name: "Celina", url: SITE_URL },
+      provider: { "@type": "Organization", "@id": SITE_URL + "/#organization", name: "Celina", url: SITE_URL },
       areaServed: { "@type": "Country", name: "Россия" },
       availableChannel: { "@type": "ServiceChannel", serviceUrl: SITE_URL + data.path },
     });

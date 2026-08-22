@@ -33,6 +33,15 @@ export function CountryPage() {
     ? `Домашняя еда в ${country.prep} — Селина собирает список ожидания`
     : `Домашняя еда в ${country.prep} — Селина`;
 
+  // Своя картинка шаринга на каждый хаб — иначе четыре хаба делят одну
+  // og-default и в превью неотличимы. Честные фото блюд, не «фото страны».
+  const HUB_IMAGE: Record<string, string> = {
+    belarus: "/images/dishes/draniki.jpg",
+    kazakhstan: "/images/dishes/manty.jpg",
+    uzbekistan: "/images/dishes/plov.jpg",
+    armeniya: "/images/dishes/shashlik.jpg",
+  };
+
   const jsonLd = [
     {
       "@context": "https://schema.org",
@@ -57,7 +66,7 @@ export function CountryPage() {
 
   return (
     <div>
-      <Seo title={title} description={copy.lead.slice(0, 200)} path={`/strana/${country.slug}`} jsonLd={jsonLd} />
+      <Seo title={title} description={copy.lead.slice(0, 200)} path={`/strana/${country.slug}`} image={HUB_IMAGE[country.slug]} jsonLd={jsonLd} />
 
       <h1 className="t-h1 mb-3">Домашняя еда в {country.prep}</h1>
       <p className="t-lead mb-6 max-w-3xl">{copy.lead}</p>

@@ -2,7 +2,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { BLOG_POSTS } from "./src/data/blogPosts"; // чистые данные (без зависимостей) → безопасно для конфига
 import { CITY_CATALOG, CITY_CATALOG_SLUGS } from "./src/lib/cityCatalog"; // приоритетные города — рендерим всегда, даже без поваров
@@ -55,7 +55,7 @@ function assertContentIndexInSync(): void {
 function publicRoutes(): string[] {
   assertContentIndexInSync();
   const seo = loadSeo();
-  const staticRoutes = ["/", "/about", "/manifest", "/contact", "/privacy", "/story", "/blog", "/gatherings", "/dostavka", "/vypit-vmeste", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/halal", "/povaram"];
+  const staticRoutes = ["/", "/about", "/manifest", "/contact", "/privacy", "/story", "/blog", "/gatherings", "/dostavka", "/vypit-vmeste", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/halal", "/povaram", "/eda"];
   const blogRoutes = BLOG_POSTS.map((p) => `/blog/${p.slug}`);
   const citySlugByName = new Map(seo.cities.map((c) => [c.name, c.slug]));
   const catSlugByName = new Map(seo.categories.map((c) => [c.name, c.slug]));
@@ -106,13 +106,42 @@ export default defineConfig({
   ssgOptions: {
     script: "async",
     formatting: "minify",
+    // Критический CSS снова ВКЛЮЧЁН. Историческая справка: на 12 из 110
+    // страниц в кириллице появлялся U+FFFD («ули�ца», «со�общим»). Виноват был
+    // не beasties и не JSDOM, а renderToPipeableStream из react-dom: на
+    // границах чанков он вставлял паразитный NUL, а КАЖДЫЙ спекосовместимый
+    // HTML-парсер ниже по конвейеру обязан заменять NUL на U+FFFD. Исправлено
+    // в patches/vite-react-ssg+0.9.2.patch: буферы склеиваются один раз и NUL
+    // вычищается до всех парсеров (плюс пропуск холостого JSDOM-прохода).
+    // Сборка падает, если U+FFFD или NUL всё же просочится (см. onFinished).
     includedRoutes() {
       return publicRoutes();
     },
     // после генерации страниц пишем полный sitemap.xml из реально отрендеренных URL
     onFinished() {
+      // Страж от порчи кириллицы: react-dom когда-то вставлял NUL на границах
+      // чанков, парсеры превращали его в U+FFFD, и «ули�ца» уезжала в индекс.
+      // Патч стоит (patches/vite-react-ssg+0.9.2.patch), а страж гарантирует,
+      // что регресс уронит сборку, а не тихо уедет в прод.
+      const walk = (dir: string): string[] => readdirSync(dir, { withFileTypes: true })
+        .flatMap((e) => e.isDirectory()
+          ? (e.name === "assets" ? [] : walk(resolve(dir, e.name)))
+          : (e.name.endsWith(".html") ? [resolve(dir, e.name)] : []));
+      for (const f of walk(resolve(process.cwd(), "dist"))) {
+        const t = readFileSync(f, "utf8");
+        if (t.includes("\uFFFD") || t.includes("\u0000")) {
+          throw new Error(`[guard] порча текста (U+FFFD/NUL) в ${f} — см. patches/vite-react-ssg+0.9.2.patch`);
+        }
+      }
       const urls = publicRoutes();
-      const lastmod = new Date().toISOString().slice(0, 10); // дата сборки — сигнал свежести для Яндекса
+      // lastmod: у статьи — её настоящая дата публикации (совпадает с
+      // datePublished в разметке страницы). У остальных URL поля НЕТ вообще:
+      // единый «сегодняшний» lastmod на все 108 URL — это шум, который Google
+      // и Яндекс документированно перестают учитывать. Отсутствующее поле
+      // честно; неверное — нет.
+      const blogDate = new Map(BLOG_POSTS.map((p) => [p.slug, p.date]));
+      const lastmodFor = (u: string): string | null =>
+        u.startsWith("/blog/") ? (blogDate.get(u.slice(6)) ?? null) : null;
       const escUrl = (s: string) => s.replace(/&/g, "&amp;");
       // денежные лендинги (доставка/застолья) и город — высокий приоритет
       const MONEY = new Set(["/dostavka", "/vypit-vmeste", "/gatherings", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/halal", "/povaram"]);
@@ -154,12 +183,14 @@ export default defineConfig({
         .map((u) => {
           const img = imageFor(u);
           const imgXml = img ? `\n    <image:image><image:loc>${escUrl(SITE_URL + img)}</image:loc></image:image>` : "";
-          return `  <url>\n    <loc>${escUrl(SITE_URL + (u === "/" ? "" : u))}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${fresh(u)}</changefreq>\n    <priority>${priority(u)}</priority>${imgXml}\n  </url>`;
+          const lm = lastmodFor(u);
+          const lmXml = lm ? `\n    <lastmod>${lm}</lastmod>` : "";
+          return `  <url>\n    <loc>${escUrl(SITE_URL + (u === "/" ? "" : u))}</loc>${lmXml}\n    <changefreq>${fresh(u)}</changefreq>\n    <priority>${priority(u)}</priority>${imgXml}\n  </url>`;
         })
         .join("\n");
       const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${body}\n</urlset>\n`;
       writeFileSync(resolve(process.cwd(), "dist/sitemap.xml"), xml, "utf8");
-      console.log(`[sitemap] ${urls.length} URL (lastmod ${lastmod}) → dist/sitemap.xml`);
+      console.log(`[sitemap] ${urls.length} URL → dist/sitemap.xml`);
 
       // защита от «неправильного домена» в проде: пустой/чужой домен = слив SEO
       if (process.env.VITE_SITE_URL) {

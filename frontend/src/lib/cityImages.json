@@ -1,70 +1,172 @@
 {
+
 "Москва": "/images/cities/city-0.jpg",
+
 "Санкт-Петербург": "/images/cities/city-1.jpg",
+
 "Новосибирск": "/images/cities/city-2.jpg",
+
 "Екатеринбург": "/images/cities/city-3.jpg",
+
 "Казань": "/images/cities/city-4.jpg",
+
 "Нижний Новгород": "/images/cities/city-5.jpg",
+
 "Челябинск": "/images/cities/city-6.jpg",
+
 "Омск": "/images/cities/city-8.jpg",
+
 "Ростов-на-Дону": "/images/cities/city-9.jpg",
+
 "Уфа": "/images/cities/city-10.jpg",
+
 "Красноярск": "/images/cities/city-11.jpg",
+
 "Воронеж": "/images/cities/city-12.jpg",
+
 "Пермь": "/images/cities/city-13.jpg",
+
 "Волгоград": "/images/cities/city-14.jpg",
+
 "Краснодар": "/images/cities/city-15.jpg",
+
 "Саратов": "/images/cities/city-16.jpg",
+
 "Тюмень": "/images/cities/city-17.jpg",
+
 "Тольятти": "/images/cities/city-18.jpg",
+
 "Ижевск": "/images/cities/city-19.jpg",
+
 "Барнаул": "/images/cities/city-20.jpg",
+
 "Ульяновск": "/images/cities/city-21.jpg",
+
 "Иркутск": "/images/cities/city-22.jpg",
+
 "Хабаровск": "/images/cities/city-23.jpg",
+
 "Ярославль": "/images/cities/city-24.jpg",
+
 "Владивосток": "/images/cities/city-25.jpg",
+
 "Махачкала": "/images/cities/city-26.jpg",
+
 "Томск": "/images/cities/city-27.jpg",
+
 "Оренбург": "/images/cities/city-28.jpg",
+
 "Кемерово": "/images/cities/city-29.jpg",
+
 "Новокузнецк": "/images/cities/city-30.jpg",
+
 "Рязань": "/images/cities/city-31.jpg",
+
 "Астрахань": "/images/cities/city-32.jpg",
+
 "Пенза": "/images/cities/city-34.jpg",
+
 "Липецк": "/images/cities/city-35.jpg",
+
 "Киров": "/images/cities/city-36.jpg",
+
 "Чебоксары": "/images/cities/city-37.jpg",
+
 "Тула": "/images/cities/city-38.jpg",
+
 "Калининград": "/images/cities/city-39.jpg",
+
 "Курск": "/images/cities/city-40.jpg",
+
 "Ставрополь": "/images/cities/city-41.jpg",
+
 "Улан-Удэ": "/images/cities/city-42.jpg",
+
 "Тверь": "/images/cities/city-43.jpg",
+
 "Магнитогорск": "/images/cities/city-44.jpg",
+
 "Сочи": "/images/cities/city-45.jpg",
+
 "Иваново": "/images/cities/city-46.jpg",
+
 "Брянск": "/images/cities/city-47.jpg",
+
 "Белгород": "/images/cities/city-48.jpg",
+
 "Сургут": "/images/cities/city-49.jpg",
+
 "Архангельск": "/images/cities/city-51.jpg",
+
 "Чита": "/images/cities/city-52.jpg",
+
 "Калуга": "/images/cities/city-53.jpg",
+
 "Смоленск": "/images/cities/city-54.jpg",
+
 "Волжский": "/images/cities/city-55.jpg",
+
 "Якутск": "/images/cities/city-56.jpg",
+
 "Саранск": "/images/cities/city-57.jpg",
+
 "Череповец": "/images/cities/city-58.jpg",
+
 "Вологда": "/images/cities/city-59.jpg",
+
 "Грозный": "/images/cities/city-62.jpg",
+
 "Мурманск": "/images/cities/city-63.jpg",
+
 "Тамбов": "/images/cities/city-64.jpg",
+
 "Петрозаводск": "/images/cities/city-65.jpg",
+
 "Нижневартовск": "/images/cities/city-66.jpg",
+
 "Кострома": "/images/cities/city-67.jpg",
+
 "Новороссийск": "/images/cities/city-68.jpg",
+
 "Йошкар-Ола": "/images/cities/city-69.jpg",
+
 "Таганрог": "/images/cities/city-70.jpg",
+
 "Сыктывкар": "/images/cities/city-71.jpg",
-"Нальчик": "/images/cities/city-72.jpg"
+
+"Нальчик": "/images/cities/city-72.jpg",
+
+"Минск": "/images/dishes/draniki.jpg",
+
+"Гомель": "/images/dishes/vareniki.jpg",
+
+"Гродно": "/images/pirozhki.jpg",
+
+"Витебск": "/images/dishes/golubtsy.jpg",
+
+"Могилёв": "/images/syrniki.jpg",
+
+"Брест": "/images/borscht.jpg",
+
+"Бобруйск": "/images/dishes/kotlety.jpg",
+
+"Алматы": "/images/dishes/manty.jpg",
+
+"Астана": "/images/dishes/beefstrog.jpg",
+
+"Шымкент": "/images/dishes/plov.jpg",
+
+"Караганда": "/images/dishes/shchi.jpg",
+
+"Усть-Каменогорск": "/images/pelmeni.jpg",
+
+"Павлодар": "/images/dishes/ponchiki.jpg",
+
+"Ташкент": "/images/dishes/cheburek.jpg",
+
+"Самарканд": "/images/dishes/medovik.jpg",
+
+"Фергана": "/images/dishes/okroshka.jpg",
+
+"Ереван": "/images/dishes/shashlik.jpg"
 }
