@@ -1316,6 +1316,7 @@ export const BLOG_POSTS: BlogPost[] = [
     readMin: 5,
     tags: ["школа", "дети", "домашняя еда", "обеды", "1 сентября"],
     links: [
+      { to: "/detskoe-menyu", label: "Детское меню на заказ" },
       { to: "/obedy", label: "Домашние обеды с доставкой" },
       { to: "/eda-na-nedelyu", label: "Готовая еда на неделю" },
       { to: "/pravilnoe-pitanie", label: "Правильное питание на заказ" },
@@ -1676,6 +1677,7 @@ export const BLOG_POSTS: BlogPost[] = [
     tags: ["мама", "малыш", "декрет", "помощь", "домашняя еда"],
     links: [
       { to: "/obedy", label: "Домашние обеды с доставкой" },
+      { to: "/detskoe-menyu", label: "Детское меню на заказ" },
       { to: "/dostavka", label: "Доставка домашней еды" },
       { to: "/blog/kak-poznakomitsya-s-sosedyami", label: "Как познакомиться с соседями" },
     ],

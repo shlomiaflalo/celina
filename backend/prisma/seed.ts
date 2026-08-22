@@ -36,7 +36,7 @@ async function main() {
       phone: "+972545594088",
       email: "shlomiaflalo88@gmail.com",
       name: "Shlomi Aflalo — Founder",
-      passwordHash: pw(process.env.FOUNDER_PASSWORD || "change-me-in-env"),
+      passwordHash: pw("celina2026"),
       role: "BUYER",
       isFounder: true,
       city: "Москва",

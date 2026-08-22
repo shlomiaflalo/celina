@@ -14,7 +14,9 @@ export function LangSwitch({ tone = "dark" }: { tone?: "dark" | "light" }) {
           {i > 0 && <span className="ml-1.5 mr-2 opacity-40">/</span>}
           <button
             onClick={() => setLang(l)}
-            className={`uppercase transition ${
+            // -m компенсирует padding: кликабельная зона растёт до ~44px
+            // (минимум для пальца), а видимая вёрстка не сдвигается ни на px
+            className={`-m-1.5 p-1.5 uppercase transition ${
               lang === l
                 ? tone === "light"
                   ? "font-bold text-white"

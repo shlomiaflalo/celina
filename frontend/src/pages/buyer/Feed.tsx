@@ -290,11 +290,15 @@ export function Feed() {
         </div>
       </div>
 
-      {/* куча урожая под первым экраном: то, что сосед оставил под дверью */}
+      {/* Урожай под первым экраном — фриз в цветах логотипа (решение
+          основателя 22.08: овощи оставить, цвета — только фирменные).
+          Запасная сцена «общий стол» лежит в components/TableBand.tsx. */}
       <DayHeap />
 
-      {/* фильтр по кухне + посиделки */}
-      <div className="mb-5 flex flex-wrap gap-2">
+      {/* Фильтр по кухне + посиделки. По центру: ряд стоит под кучей урожая
+          во всю ширину окна, и прижатый влево он читался как её обрезок, а не
+          как самостоятельная строка управления. */}
+      <div className="mb-6 flex flex-wrap items-center justify-center gap-2">
         <Chip active={cuisine === null && !drinkOnly && !favOnly} onClick={() => { setCuisine(null); setDrinkOnly(false); setFavOnly(false); }}>
           {t.common.all}
         </Chip>

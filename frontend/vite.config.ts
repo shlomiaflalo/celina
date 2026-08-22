@@ -55,7 +55,7 @@ function assertContentIndexInSync(): void {
 function publicRoutes(): string[] {
   assertContentIndexInSync();
   const seo = loadSeo();
-  const staticRoutes = ["/", "/about", "/manifest", "/contact", "/privacy", "/story", "/blog", "/gatherings", "/dostavka", "/vypit-vmeste", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/halal", "/povaram", "/eda"];
+  const staticRoutes = ["/", "/about", "/manifest", "/contact", "/privacy", "/story", "/blog", "/gatherings", "/dostavka", "/vypit-vmeste", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/halal", "/detskoe-menyu", "/povaram", "/eda"];
   const blogRoutes = BLOG_POSTS.map((p) => `/blog/${p.slug}`);
   const citySlugByName = new Map(seo.cities.map((c) => [c.name, c.slug]));
   const catSlugByName = new Map(seo.categories.map((c) => [c.name, c.slug]));
@@ -144,7 +144,7 @@ export default defineConfig({
         u.startsWith("/blog/") ? (blogDate.get(u.slice(6)) ?? null) : null;
       const escUrl = (s: string) => s.replace(/&/g, "&amp;");
       // денежные лендинги (доставка/застолья) и город — высокий приоритет
-      const MONEY = new Set(["/dostavka", "/vypit-vmeste", "/gatherings", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/halal", "/povaram"]);
+      const MONEY = new Set(["/dostavka", "/vypit-vmeste", "/gatherings", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/halal", "/detskoe-menyu", "/povaram"]);
       const priority = (u: string) =>
         u === "/" ? "1.0"
         : MONEY.has(u) ? "0.9"
@@ -176,7 +176,7 @@ export default defineConfig({
       const imageFor = (u: string): string | null => {
         if (u.startsWith("/blog/")) return blogSlugToImg.get(u.slice(6)) ?? null;
         if (u.startsWith("/eda/") && !u.slice(5).includes("/")) return citySlugToImg.get(u.slice(5)) ?? "/images/og-default.jpg";
-        if (u === "/" || ["/gatherings", "/dostavka", "/vypit-vmeste", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/halal", "/about", "/story", "/manifest"].includes(u)) return "/images/og-default.jpg";
+        if (u === "/" || ["/gatherings", "/dostavka", "/vypit-vmeste", "/vstrechi", "/obedy", "/vypechka", "/eda-na-nedelyu", "/pravilnoe-pitanie", "/eda-na-prazdnik", "/zagotovki", "/halal", "/detskoe-menyu", "/about", "/story", "/manifest"].includes(u)) return "/images/og-default.jpg";
         return null;
       };
       // Карта сайта — ИНДЕКС из посегментных карт (по стране + blog + static).

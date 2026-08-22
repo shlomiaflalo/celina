@@ -88,14 +88,25 @@ export function Layout() {
                 выдавливается за край. До 420px оставляем только знак — тарелку
                 с паром, тот же логотип; дальше слово возвращается. */}
             <Link to="/" className="shrink-0" aria-label="Celina">
-              <span className="block min-[420px]:hidden"><BowlMark size={30} /></span>
-              {/* логотип следует за языком: RU (по умолчанию) → Селина, EN → Celina */}
-              <img
-                src={lang === "en" ? "/images/logo.png" : "/images/logo-ru.png"}
-                alt="Celina"
-                draggable={false}
-                className="relative -top-[1px] hidden h-[24px] w-auto select-none min-[420px]:block sm:h-[26px] md:h-[30px]"
-              />
+              <span className="block min-[420px]:hidden"><BowlMark size={24} /></span>
+              {/* Высота 18px — как была до 12.08: увеличение до 24–30px
+                  основатель забраковал («логотип слишком большой»). Не растить.
+                  Логотип следует за языком: RU (по умолчанию) → Селина, EN →
+                  Celina. ОБЕ картинки в DOM, переключает CSS: если менять src,
+                  то при переходе на EN браузер продолжает показывать «Селину»,
+                  пока качает английский PNG, — «логотип остался русским». Обе
+                  версии грузятся один раз, дальше переключение мгновенное. */}
+              {(["ru", "en"] as const).map((l) => (
+                <img
+                  key={l}
+                  src={l === "en" ? "/images/logo.png" : "/images/logo-ru.png"}
+                  alt="Celina"
+                  draggable={false}
+                  className={`relative -top-[2px] h-[18px] w-auto select-none ${
+                    lang === l ? "hidden min-[420px]:block" : "hidden"
+                  }`}
+                />
+              ))}
             </Link>
 
             {/* Меню в ту же строку, что и логотип, на ВСЕХ ширинах. Раньше на
@@ -229,35 +240,37 @@ export function Layout() {
               До этого 9 из 11 денежных лендингов не имели ссылки с главной,
               четыре сидели на глубине 3, а /privacy и /story были сиротами:
               в sitemap — да, входящих ссылок по всему сайту — ноль. */}
-          <Link to="/eda" className="hover:underline">Города</Link>
+          <Link to="/eda" className="hover:underline">{lang === "en" ? "Cities" : "Города"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/dostavka" className="hover:underline">Доставка</Link>
+          <Link to="/dostavka" className="hover:underline">{lang === "en" ? "Delivery" : "Доставка"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/obedy" className="hover:underline">Обеды</Link>
+          <Link to="/obedy" className="hover:underline">{lang === "en" ? "Lunches" : "Обеды"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/vypechka" className="hover:underline">Выпечка</Link>
+          <Link to="/vypechka" className="hover:underline">{lang === "en" ? "Baking" : "Выпечка"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/eda-na-nedelyu" className="hover:underline">Еда на неделю</Link>
+          <Link to="/eda-na-nedelyu" className="hover:underline">{lang === "en" ? "Weekly meals" : "Еда на неделю"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/pravilnoe-pitanie" className="hover:underline">Правильное питание</Link>
+          <Link to="/pravilnoe-pitanie" className="hover:underline">{lang === "en" ? "Healthy eating" : "Правильное питание"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/eda-na-prazdnik" className="hover:underline">Праздничный стол</Link>
+          <Link to="/eda-na-prazdnik" className="hover:underline">{lang === "en" ? "Holiday table" : "Праздничный стол"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/zagotovki" className="hover:underline">Заготовки</Link>
+          <Link to="/zagotovki" className="hover:underline">{lang === "en" ? "Preserves" : "Заготовки"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/halal" className="hover:underline">Халяль</Link>
+          <Link to="/halal" className="hover:underline">{lang === "en" ? "Halal" : "Халяль"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/vstrechi" className="hover:underline">Встречи</Link>
+          <Link to="/detskoe-menyu" className="hover:underline">{lang === "en" ? "Kids' menu" : "Детское меню"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/vypit-vmeste" className="hover:underline">Посиделки</Link>
+          <Link to="/vstrechi" className="hover:underline">{lang === "en" ? "Meetups" : "Встречи"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/story" className="hover:underline">Как это работает</Link>
+          <Link to="/vypit-vmeste" className="hover:underline">{lang === "en" ? "Get-togethers" : "Посиделки"}</Link>
+          <span className="inline-block h-3 w-px bg-white/40" />
+          <Link to="/story" className="hover:underline">{lang === "en" ? "How it works" : "Как это работает"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
           <Link to="/blog" className="hover:underline">{t.blog.nav}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
           {/* Единственная ссылка сайта для повара — в подвале, то есть на всех 108
               страницах. Без неё /povaram достижим только с главной. */}
-          <Link to="/povaram" className="hover:underline">Готовить и продавать</Link>
+          <Link to="/povaram" className="hover:underline">{lang === "en" ? "Cook & sell" : "Готовить и продавать"}</Link>
           <Link to="/about" className="hover:underline">{t.contact.aboutNav}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
           <Link to="/manifest" className="hover:underline">{t.contact.manifestNav}</Link>
@@ -265,7 +278,7 @@ export function Layout() {
           <Link to="/contact" className="hover:underline">{t.contact.nav}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
           {/* настоящая ссылка вместо кнопки-модалки: краулер видит href */}
-          <Link to="/privacy" className="font-semibold text-white hover:underline">Конфиденциальность</Link>
+          <Link to="/privacy" className="font-semibold text-white hover:underline">{lang === "en" ? "Privacy" : "Конфиденциальность"}</Link>
           <span className="hidden h-3 w-px bg-white/40 sm:inline-block" />
           <span className="hidden text-white/85 sm:inline">{t.landing.rights}</span>
         </div>

@@ -40,6 +40,12 @@ export function CountryPage() {
     kazakhstan: "/images/dishes/manty.jpg",
     uzbekistan: "/images/dishes/plov.jpg",
     armeniya: "/images/dishes/shashlik.jpg",
+    ukraina: "/images/borscht.jpg",
+    kyrgyzstan: "/images/dishes/manty.jpg",
+    moldova: "/images/dishes/golubtsy.jpg",
+    gruziya: "/images/khinkali.jpg",
+    azerbaydzhan: "/images/dishes/shashlik.jpg",
+    tadzhikistan: "/images/dishes/plov.jpg",
   };
 
   const jsonLd = [

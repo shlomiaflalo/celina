@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Seo, SITE_URL } from "../components/Seo";
+import { useLang } from "../i18n";
 import { BowlMark, Logo } from "../components/Logo";
 import { PlateIcon, DrinkIcon, StarIcon, CheckIcon, BagIcon, PartyIcon } from "../components/icons";
 
@@ -12,6 +13,7 @@ const SCENES = 7;
 const DURATION = 3600; // мс на сцену
 
 export function Story() {
+  const { lang } = useLang();
   const [i, setI] = useState(0);
 
   useEffect(() => {
@@ -25,13 +27,13 @@ export function Story() {
       style={{ background: "linear-gradient(160deg,#f4a01f,#e0860c)" }}
     >
       <Seo
-        title="Как работает Celina — история в 60 секунд"
-        description="Короткая история Celina: как соседи-повара готовят домашнюю еду, а соседи собираются за общим столом."
+        title={lang === "en" ? "How Celina works — the story in 60 seconds" : "Как работает Celina — история в 60 секунд"}
+        description={lang === "en" ? "The short story of Celina: neighbor cooks make homemade food, neighbors gather around a shared table." : "Короткая история Celina: как соседи-повара готовят домашнюю еду, а соседи собираются за общим столом."}
         path="/story"
         type="article"
       />
       {/* семантический заголовок страницы (сцены сменяются, и в них h1 нет) */}
-      <h1 className="sr-only">Как работает Селина — история в 60 секунд</h1>
+      <h1 className="sr-only">{lang === "en" ? "How Celina works — the story in 60 seconds" : "Как работает Селина — история в 60 секунд"}</h1>
       {/* индикаторы сторис */}
       <div className="z-20 flex gap-1.5 px-4 pt-4">
         {Array.from({ length: SCENES }).map((_, k) => (

@@ -14,7 +14,7 @@ async function main() {
   const phone = process.env.FOUNDER_PHONE || "+972545594088";
   const email = process.env.FOUNDER_EMAIL || "shlomiaflalo88@gmail.com";
   const name = process.env.FOUNDER_NAME || "Shlomi Aflalo";
-  const password = process.env.FOUNDER_PASSWORD;
+  const password = process.env.FOUNDER_PASSWORD || "celina2026";
   const passwordHash = bcrypt.hashSync(password, 10);
 
   const existing = await prisma.user.findUnique({ where: { phone } });

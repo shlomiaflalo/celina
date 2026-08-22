@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Head } from "vite-react-ssg";
-import { useT } from "../i18n";
+import { useT, useLang } from "../i18n";
 
 /**
  * Креативная 404 / нет доступа: разбитая чаша из логотипа Celina.
@@ -8,11 +8,12 @@ import { useT } from "../i18n";
  */
 export function NotFound() {
   const t = useT();
+  const { lang } = useLang();
   return (
     <div className="flex min-h-[68vh] flex-col items-center justify-center px-6 py-16 text-center text-white">
       {/* несуществующие URL не должны индексироваться как дубли главной (soft-404) */}
       <Head>
-        <title>{`404 — ${t.notFound.title} — Селина`}</title>
+        <title>{`404 — ${t.notFound.title} — ${lang === "en" ? "Celina" : "Селина"}`}</title>
         <meta name="robots" content="noindex, follow" />
       </Head>
       <style>{`

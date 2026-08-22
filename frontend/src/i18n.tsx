@@ -2062,6 +2062,10 @@ const NAME_EN: Record<string, string> = {
   "Павел Новиков": "Pavel Novikov", "Сергей Морозов": "Sergey Morozov", "Георгий": "Georgi",
   "Ольга": "Olga", "Анна": "Anna",
 };
+/** Полный охват: все RU_CITIES (выбор города при регистрации), все города
+ *  каталога BY/KZ/UZ/AM (чипы на главной) и страны с предложным падежом
+ *  («Еда в России» → "Food in Russia"). Аудит 22.08 нашёл, что в EN-режиме
+ *  18 из 36 чипов городов и заголовки стран оставались кириллицей. */
 const CITY_EN: Record<string, string> = {
   "Москва": "Moscow", "Санкт-Петербург": "Saint Petersburg", "Новосибирск": "Novosibirsk",
   "Екатеринбург": "Yekaterinburg", "Казань": "Kazan", "Нижний Новгород": "Nizhny Novgorod",
@@ -2069,6 +2073,38 @@ const CITY_EN: Record<string, string> = {
   "Уфа": "Ufa", "Самара": "Samara", "Воронеж": "Voronezh", "Челябинск": "Chelyabinsk",
   "Ростов-на-Дону": "Rostov-on-Don", "Тюмень": "Tyumen", "Волгоград": "Volgograd",
   "Саратов": "Saratov", "Красноярск": "Krasnoyarsk", "Пермь": "Perm",
+  "Омск": "Omsk", "Тольятти": "Tolyatti", "Ижевск": "Izhevsk", "Барнаул": "Barnaul",
+  "Ульяновск": "Ulyanovsk", "Иркутск": "Irkutsk", "Хабаровск": "Khabarovsk",
+  "Ярославль": "Yaroslavl", "Махачкала": "Makhachkala", "Томск": "Tomsk",
+  "Оренбург": "Orenburg", "Кемерово": "Kemerovo", "Новокузнецк": "Novokuznetsk",
+  "Рязань": "Ryazan", "Астрахань": "Astrakhan", "Набережные Челны": "Naberezhnye Chelny",
+  "Пенза": "Penza", "Липецк": "Lipetsk", "Киров": "Kirov", "Чебоксары": "Cheboksary",
+  "Тула": "Tula", "Курск": "Kursk", "Ставрополь": "Stavropol", "Улан-Удэ": "Ulan-Ude",
+  "Тверь": "Tver", "Магнитогорск": "Magnitogorsk", "Иваново": "Ivanovo", "Брянск": "Bryansk",
+  "Белгород": "Belgorod", "Сургут": "Surgut", "Владимир": "Vladimir",
+  "Архангельск": "Arkhangelsk", "Чита": "Chita", "Калуга": "Kaluga", "Смоленск": "Smolensk",
+  "Волжский": "Volzhsky", "Якутск": "Yakutsk", "Саранск": "Saransk", "Череповец": "Cherepovets",
+  "Вологда": "Vologda", "Курган": "Kurgan", "Орёл": "Oryol", "Грозный": "Grozny",
+  "Мурманск": "Murmansk", "Тамбов": "Tambov", "Петрозаводск": "Petrozavodsk",
+  "Нижневартовск": "Nizhnevartovsk", "Кострома": "Kostroma", "Новороссийск": "Novorossiysk",
+  "Йошкар-Ола": "Yoshkar-Ola", "Таганрог": "Taganrog", "Сыктывкар": "Syktyvkar", "Нальчик": "Nalchik",
+  // города охвата за пределами России (чипы «Домашняя еда по городам»)
+  "Минск": "Minsk", "Гомель": "Gomel", "Гродно": "Grodno", "Брест": "Brest",
+  "Бобруйск": "Bobruisk", "Могилёв": "Mogilev", "Витебск": "Vitebsk",
+  "Алматы": "Almaty", "Астана": "Astana", "Караганда": "Karaganda", "Павлодар": "Pavlodar",
+  "Шымкент": "Shymkent", "Усть-Каменогорск": "Ust-Kamenogorsk",
+  "Ташкент": "Tashkent", "Самарканд": "Samarkand", "Фергана": "Fergana", "Ереван": "Yerevan",
+  "Киев": "Kyiv", "Харьков": "Kharkiv", "Одесса": "Odesa", "Бишкек": "Bishkek",
+  "Кишинёв": "Chișinău", "Тбилиси": "Tbilisi", "Баку": "Baku", "Душанбе": "Dushanbe",
+  // страны: именительный и предложный («Еда в России» → "Food in Russia")
+  "Россия": "Russia", "России": "Russia", "Беларусь": "Belarus", "Беларуси": "Belarus",
+  "Казахстан": "Kazakhstan", "Казахстане": "Kazakhstan",
+  "Узбекистан": "Uzbekistan", "Узбекистане": "Uzbekistan",
+  "Армения": "Armenia", "Армении": "Armenia",
+  "Украина": "Ukraine", "Украине": "Ukraine", "Кыргызстан": "Kyrgyzstan", "Кыргызстане": "Kyrgyzstan",
+  "Молдова": "Moldova", "Молдове": "Moldova", "Грузия": "Georgia", "Грузии": "Georgia",
+  "Азербайджан": "Azerbaijan", "Азербайджане": "Azerbaijan",
+  "Таджикистан": "Tajikistan", "Таджикистане": "Tajikistan",
 };
 
 /** Перевод одного слова-сущности (кухня/блюдо/имя/город) или контент-словарь. */

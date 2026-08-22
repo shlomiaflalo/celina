@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/client";
-import { useT } from "../i18n";
+import { useT, useLang } from "../i18n";
 import { Seo } from "../components/Seo";
 import { ShareButtons } from "../components/ShareButtons";
 import { Spinner } from "../components/ui";
@@ -8,6 +8,7 @@ import { Spinner } from "../components/ui";
 /** /invite — реферальная программа: личная ссылка, шеринг, счётчик, лидерборд. */
 export function Invite() {
   const t = useT();
+  const { lang } = useLang();
   const [me, setMe] = useState<{ code: string; count: number } | null>(null);
   const [leaders, setLeaders] = useState<{ name: string; count: number }[]>([]);
   const [failed, setFailed] = useState(false);
@@ -37,7 +38,7 @@ export function Invite() {
 
   return (
     <div className="mx-auto max-w-2xl text-white drop-shadow-sm">
-      <Seo title="Пригласить друзей — Селина" description="Пригласите соседей на Celina — соседи кормят соседей." path="/invite" />
+      <Seo title={lang === "en" ? "Invite friends — Celina" : "Пригласить друзей — Селина"} description={lang === "en" ? "Invite your neighbors to Celina — neighbors feeding neighbors." : "Пригласите соседей на Celina — соседи кормят соседей."} path="/invite" />
       <h1 className="text-2xl font-bold sm:text-3xl">{t.invite.title}</h1>
       <p className="mt-1 text-white/90">{t.invite.subtitle}</p>
 

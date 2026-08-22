@@ -180,6 +180,7 @@ export const routes: RouteObject[] = [
           // единственный лендинг для повара, а не для покупателя
           { path: "/povaram", lazy: async () => ({ Component: (await import("./pages/seo/Povaram")).Povaram }) },
           { path: "/halal", lazy: async () => ({ Component: (await import("./pages/seo/Halal")).Halal }) },
+          { path: "/detskoe-menyu", lazy: async () => ({ Component: (await import("./pages/seo/DetskoeMenyu")).DetskoeMenyu }) },
           // застолья (социальный слой) — список и детали публичны, создание за входом
           { path: "/gatherings", lazy: async () => ({ Component: (await import("./pages/gatherings/GatheringsList")).GatheringsList }) },
           { path: "/gatherings/new", element: <Guard><GatheringCreate /></Guard> },

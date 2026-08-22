@@ -239,6 +239,7 @@ export const OBEDY_PAGE: LandingData = {
     { to: "/pravilnoe-pitanie", label_ru: "ПП и правильное питание на заказ", label_en: "Healthy eating delivered to order" },
     { to: "/blog/pp-i-dieticheskaya-eda-na-zakaz", label_ru: "ПП и диетическая еда на заказ", label_en: "Healthy and diet food to order" },
     { to: "/blog/domashnyaya-eda-dlya-shkolnika", label_ru: "Домашняя еда для школьника", label_en: "Homemade food for a schoolchild" },
+    { to: "/detskoe-menyu", label_ru: "Детское меню на заказ", label_en: "Kids' menu to order" },
     { to: "/eda-na-prazdnik", label_ru: "Еда на праздник: праздничный стол на заказ", label_en: "Party food: a celebration table to order" },
     { to: "/eda-na-nedelyu", label_ru: "Готовая еда на неделю", label_en: "Ready meals for the week" },
     { to: "/vypechka", label_ru: "Выпечка и торты на заказ", label_en: "Baking & cakes to order" },
@@ -815,6 +816,91 @@ export const POVARAM_PAGE: LandingData = {
       { q: "How many dishes do I need to start?", a: "Three to five. A menu of thirty is unnecessary: a narrow set of things you make confidently works better, because you can always actually cook them." },
       { q: "I have a job. Can I cook only at weekends?", a: "Yes. You open your own order windows: weekends only, evenings only, a pause for holidays. The storefront does not require you to be available constantly." },
       { q: "What if I try it and want to stop?", a: "Then you stop. No investment, no fixed-term contract, no minimum volume. A storefront can be closed at any time — which is part of why trying costs almost nothing." },
+    ],
+  },
+};
+
+/**
+ * /detskoe-menyu — денежный лендинг под «еду для ребёнка».
+ *
+ * Зачем отдельная страница. Кластер обслуживала только инфо-статья
+ * /blog/domashnyaya-eda-dlya-shkolnika: она отвечает на «чем кормить», но не
+ * на транзакционное «заказать». Тот же приём репозиторий уже применил дважды —
+ * /vypechka ↔ /blog/domashnyaya-vypechka-na-zakaz и /pravilnoe-pitanie ↔
+ * /blog/pp-i-dieticheskaya-eda-na-zakaz: лендинг забирает коммерческий интент,
+ * статья остаётся информационной, связка двусторонняя, каннибализации нет.
+ *
+ * Почему сегодня: до 1 сентября меньше двух недель — пик у «обеды школьнику»,
+ * «еда для ребёнка с доставкой» приходится на конец августа. При этом страница
+ * НЕ праздничная: дети едят круглый год, поэтому запуск сезонный, а сама
+ * страница вечнозелёная и не протухнет 2 сентября.
+ *
+ * Чего здесь нет и не будет: КБЖУ, слова «полезно для здоровья» в медицинском
+ * смысле, обещаний врача и намёка на то, что это промышленное детское питание.
+ * «Детское питание» — регулируемая категория (ТР ТС 021/2011), домашняя кухня
+ * ею не является, и страница говорит это прямым текстом, а не мелким шрифтом.
+ * Дети до года названы отдельно: прикорм и смеси — вопрос к педиатру.
+ */
+export const DETSKOE_MENYU_PAGE: LandingData = {
+  path: "/detskoe-menyu",
+  serviceType: "Домашняя еда для детей и школьников на заказ",
+  related: [
+    { to: "/blog/domashnyaya-eda-dlya-shkolnika", label_ru: "Домашняя еда для школьника", label_en: "Homemade food for a schoolchild" },
+    { to: "/obedy", label_ru: "Домашние обеды с доставкой", label_en: "Home-cooked lunches delivered" },
+    { to: "/eda-na-nedelyu", label_ru: "Готовая еда на неделю", label_en: "Ready meals for the week" },
+    { to: "/blog/eda-dlya-mamy-s-malyshom", label_ru: "Еда для мамы с малышом", label_en: "Food for a mother with a baby" },
+    { to: "/blog/chto-prigotovit-na-obed", label_ru: "Что приготовить на обед: идеи", label_en: "What to cook for lunch: ideas" },
+    { to: "/blog/skolko-stoit-domashnyaya-eda", label_ru: "Сколько стоит домашняя еда", label_en: "How much homemade food costs" },
+    { to: "/blog/menyu-na-den-rozhdeniya-bez-gotovki", label_ru: "Меню на день рождения без готовки", label_en: "A birthday menu without cooking" },
+    { to: "/pravilnoe-pitanie", label_ru: "Правильное питание на заказ", label_en: "Healthy eating delivered to order" },
+    { to: "/dostavka", label_ru: "Доставка домашней еды", label_en: "Homemade food delivery" },
+  ],
+  ctas: [
+    { to: "/", label_ru: "Найти повара рядом", label_en: "Find a cook nearby", primary: true },
+    { to: "/eda-na-nedelyu", label_ru: "Обеды на учебную неделю", label_en: "Lunches for the school week" },
+  ],
+  ru: {
+    seoTitle: "Детское меню на заказ — домашняя еда для ребёнка | Селина",
+    seoDesc: "Домашняя еда для ребёнка на заказ: обеды школьнику, супы, котлеты, сырники, запеканки от соседей-поваров. Без лука и острого, оплата наличными при получении.",
+    h1: "Детское меню на заказ — домашняя еда для ребёнка от соседей-поваров",
+    intro: "До 1 сентября меньше двух недель, и у родителей опять тот же вопрос: чем кормить ребёнка, когда день расписан по минутам. Готовые детские рационы — это обычно либо конвейерные контейнеры, либо витрина супермаркета с составом на полстраницы. На Селине есть третий вариант: домашнюю еду вашему ребёнку готовит сосед из вашего же района — суп, котлеты с пюре, сырники, запеканку, — небольшой порцией и так, как готовил бы своим детям. Сразу честно: это домашняя кухня, а не промышленное детское питание, и она не заменяет рекомендаций педиатра. Зато с поваром можно договориться до заказа: без лука, без острого, порция поменьше.",
+    sections: [
+      { h: "Как заказать детское меню", p: ["Откройте ленту Селины и посмотрите, кто готовит рядом. У каждого повара своя витрина: фотографии блюд, состав, цена и отзывы соседей. Выберите то, что ребёнок точно ест, а остальное обсудите с поваром в чате — это обычная просьба, и повара к таким вопросам привыкли.", "Дальше всё как всегда: повар подтверждает заказ, готовит и передаёт его доставкой или самовывозом к тому времени, которое вы выбрали при оформлении. Оплата наличными при получении — сначала вы видите еду, потом платите, поэтому первый заказ у нового повара можно сделать спокойно."] },
+      { h: "Что заказывают детям: супы, котлеты, сырники, запеканки", p: ["Домашняя детская классика — та, которую едят без уговоров: куриный суп с лапшой, котлеты и тефтели с картофельным пюре, творожная запеканка, сырники, ленивые вареники, блины, гречка с подливой, овощи на пару. Ничего экзотического здесь и не нужно: ребёнок охотнее ест то, что похоже на еду из дома, а не «блюдо из меню на сто позиций».", "К завтраку берут сырники и блины, к обеду — суп и второе, на перекус — домашний пирожок или кусок запеканки вместо булки из буфета. Повар готовит небольшими партиями, поэтому легко попросить именно детскую порцию, а не взрослую «на вырост»."] },
+      { h: "Обед в школу с собой и горячий обед после уроков", p: ["Формат выбираете вы. Можно взять обед с собой в контейнере — котлета с гарниром, запеканка или пирожок в рюкзак вместо шоколадки. А можно договориться, чтобы горячий обед был готов к возвращению ребёнка из школы: пришёл с уроков — а на столе домашний суп, а не разогретые полуфабрикаты.", "Многие повара готовы готовить регулярно, по понятному расписанию на учебную неделю. Обсудите дни, блюда и час передачи — и у вас появится свой человек, который кормит ребёнка домашним, пока вы на работе. Если удобнее закрыть сразу несколько дней одним заказом, посмотрите готовую еду на неделю."] },
+      { h: "Без лука, без острого, порция поменьше — меню под вашего ребёнка", p: ["Главное отличие от рационов и супермаркетовской витрины: здесь есть с кем поговорить. Привередливый едок, нелюбовь к луку, «только не острое», отказ от рыбы, вегетарианство в семье, постные дни — всё это решается парой сообщений до заказа, а не «пожеланием в комментарии», которое никто не прочитает.", "Про аллергены спрашивайте прямо: есть ли в блюде орехи, молоко, яйцо, глютен, на каком масле жарилось, что в подливе. У каждого блюда открыт состав, а повар ответит на уточнения — для семьи с аллергией это принципиально, и хороший повар это понимает. Договорённость стоит зафиксировать сообщением в чате: так её видно обоим."] },
+      { h: "Кто готовит и насколько это безопасно", p: ["Готовят соседи — домашние повара, которые прошли проверку личности по документам и подтвердили, что соблюдают санитарные правила на своей кухне. У каждого открытый профиль с именем, фотографией и отзывами: вы видите, кто именно готовит вашему ребёнку, а не логотип дарк-китчена.", "И честная оговорка, без которой этот раздел был бы рекламой. Селина не сертифицирует кухни и не проверяет их выездом. Это домашняя еда, а не промышленное детское питание по ГОСТ и не лечебный стол; детям до года она не предназначена — смеси и прикорм остаются вопросом к педиатру. Мы не считаем КБЖУ и не заменяем назначения врача. Всё, что мы даём, — имя, документы, отзывы соседей и возможность спросить повара напрямую до заказа."] },
+      { h: "С чего начать к 1 сентября", p: ["Откройте Селину, выберите город и найдите повара рядом. Закажите пробный обед — убедитесь, что вкус ребёнку нравится. Понравилось — напишите повару и договоритесь о расписании на учебную неделю: какие дни, какие блюда, к какому часу. К детскому дню рождения договаривайтесь заранее: на торт и стол на компанию повару нужно время.", "Если поваров в вашем районе пока нет — сервис только запускается, — оставьте заявку на странице своего города или позовите ту соседку, чьи сырники и котлеты знает весь двор. С неё в вашем подъезде всё и начнётся."] },
+    ],
+    faqs: [
+      { q: "Можно ли попросить приготовить без лука и без острого?", a: "Да, и это обычная просьба. Повар готовит небольшой партией, а не сотней одинаковых контейнеров, поэтому детский вариант — без лука, без острых специй, гарнир на пару вместо жареного, порция поменьше — спокойно обсуждается в чате до заказа. Договорённость лучше написать сообщением, чтобы она была перед глазами у обоих." },
+      { q: "Как узнать состав и спросить про аллергены?", a: "У каждого блюда на витрине открыт состав, а всё, чего в нём не видно, спрашивайте у повара напрямую: орехи, молоко, яйцо, глютен, масло для жарки, что в подливе. Если у ребёнка аллергия — напишите об этом до заказа, а не в примечании к нему: живой человек, в отличие от конвейера, ответит и учтёт." },
+      { q: "Это детское питание?", a: "Нет. Это домашняя еда, приготовленная соседом, а не промышленное детское питание по ГОСТ и не лечебное. Детям до года она не предназначена: смеси и прикорм — вопрос к педиатру. Селина проверяет личность повара по документам и показывает отзывы соседей, но не сертифицирует кухни и не проверяет их выездом." },
+      { q: "Можно ли заказывать обеды регулярно, на всю учебную неделю?", a: "Да, по договорённости с поваром: обсудите дни недели, блюда и время передачи. Многие готовы готовить по расписанию — так удобнее и вам, и повару. Если хочется закрыть сразу несколько дней одним заказом, посмотрите страницу «Готовая еда на неделю»." },
+      { q: "Сколько стоит детский обед?", a: "Цену ставит сам повар, поэтому она разная у разных людей и в разных городах. Комиссию сервис сейчас не берёт — вся сумма достаётся повару. Из чего складывается стоимость домашней еды и почему она обычно ниже ресторанной доставки, мы разобрали в отдельной статье." },
+      { q: "А если рядом ещё нет поваров?", a: "Сервис только запускается, и в части районов поваров действительно пока нет. Откройте страницу своего города и оставьте заявку — так мы понимаем, куда идти дальше, — или позовите готовить знакомую, которая вкусно кормит весь двор. Обычно с одного человека в подъезде всё и начинается." },
+    ],
+  },
+  en: {
+    seoTitle: "Kids' Menu to Order — Home-Cooked Food for Children | Celina",
+    seoDesc: "Home-cooked food for children to order from verified neighbor cooks: school lunches, soups, cutlets, syrniki, casseroles. No onion, no spice, pay on delivery.",
+    h1: "Kids' Menu to Order — Home-Cooked Food for Your Child, Made by Neighbors",
+    intro: "The school year starts on September 1st, and parents face the same question again: what to feed a child when the day is planned to the minute. Ready-made kids' meal plans usually mean either conveyor-belt containers or a supermarket shelf with half a page of ingredients. Celina offers a third option: home food cooked for your child by a neighbor from your own district — soup, cutlets with mash, syrniki, a casserole — in a small batch, the way they'd cook for their own kids. Honestly up front: this is a home kitchen, not industrial baby food, and it does not replace a paediatrician's advice. What it does give you is a person to agree things with before ordering: no onion, no spice, a smaller portion.",
+    sections: [
+      { h: "How to order a kids' menu", p: ["Open the Celina feed and see who cooks nearby. Every cook has a showcase: dish photos, ingredients, price and neighbor reviews. Pick what your child definitely eats, and settle the rest with the cook in chat — it's an ordinary request, and cooks are used to it.", "The rest works as usual: the cook confirms the order, prepares it and hands it over by delivery or pickup at the time you chose at checkout. Payment is cash on receipt — you see the food first and pay after, so a first order from a new cook carries no risk."] },
+      { h: "What people order for kids: soups, cutlets, syrniki, casseroles", p: ["Home comfort classics kids eat without coaxing: chicken noodle soup, cutlets and meatballs with mashed potatoes, curd casserole, syrniki, lazy vareniki, blini, buckwheat with gravy, steamed vegetables. Nothing exotic is needed: a child eats more willingly what resembles food from home, not a 'dish from a hundred-item menu'.", "For breakfast it's syrniki and blini, for lunch soup and a main, for a snack a homemade pirozhok or a slice of casserole instead of a canteen bun. Cooks work in small batches, so it's easy to ask for a genuine child's portion rather than an adult one."] },
+      { h: "A packed lunch for school and a hot meal after class", p: ["You choose the format. Take lunch in a container — a cutlet with a side, a casserole or a pirozhok in the backpack instead of a chocolate bar. Or arrange for a hot meal to be ready when your child gets back from school: home soup on the table, not reheated convenience food.", "Many cooks are glad to cook regularly, on a clear schedule for the school week. Agree the days, the dishes and the handover time — and you have your own person feeding your child home food while you're at work. If it's easier to cover several days in one order, look at ready meals for the week."] },
+      { h: "No onion, no spice, a smaller portion — a menu built around your child", p: ["The key difference from meal plans and supermarket shelves: there's someone to talk to. A picky eater, a hatred of onion, 'nothing spicy', a refusal to eat fish, vegetarianism in the family, fasting days — all of it is settled in a couple of messages before ordering, not by a 'note to the order' nobody reads.", "Ask about allergens directly: nuts, milk, egg, gluten, which oil it was fried in, what's in the gravy. Every dish lists its ingredients, and the cook will answer follow-ups — for a family with an allergy that's essential, and a good cook understands it. Put what you agreed in a chat message, so both of you can see it."] },
+      { h: "Who cooks it, and how safe it is", p: ["Your neighbors cook it — home cooks who passed identity verification with documents and confirmed that they follow sanitary rules in their kitchen. Each has an open profile with a name, photo and reviews: you see exactly who is cooking for your child, not a dark-kitchen logo.", "And the honest caveat, without which this section would be advertising. Celina does not certify kitchens and does not inspect them on site. This is home food, not certified industrial baby food and not a medical diet; it is not intended for children under one — formula and first foods remain a question for your paediatrician. We don't count macros and we don't replace a doctor's instructions. What we give you is a name, documents, neighbor reviews and the ability to ask the cook directly before ordering."] },
+      { h: "Where to start before September 1st", p: ["Open Celina, choose your city and find a cook nearby. Order a trial lunch and make sure your child likes the taste. If they do, message the cook and agree a schedule for the school week: which days, which dishes, by what hour. For a child's birthday, arrange it ahead: a cake and a table for a group take the cook time.", "If there are no cooks in your district yet — the service is only launching — leave a request on your city page, or invite the neighbor whose syrniki and cutlets the whole yard knows. That's how it starts in your stairwell."] },
+    ],
+    faqs: [
+      { q: "Can I ask for it to be cooked without onion and without spice?", a: "Yes, and it's an ordinary request. The cook makes a small batch rather than a hundred identical containers, so a child's version — no onion, no hot spices, a steamed side instead of fried, a smaller portion — is easily agreed in chat before ordering. Better to put it in a message so both of you have it in front of you." },
+      { q: "How do I check the ingredients and ask about allergens?", a: "Every dish on the showcase lists its ingredients, and anything you can't see there you ask the cook directly: nuts, milk, egg, gluten, the frying oil, what's in the gravy. If your child has an allergy, write about it before ordering rather than in a note attached to it: a real person, unlike a conveyor, will answer and take it into account." },
+      { q: "Is this baby food?", a: "No. It's home food cooked by a neighbor — not certified industrial baby food and not a medical diet. It is not intended for children under one: formula and first foods are a question for your paediatrician. Celina verifies the cook's identity with documents and shows neighbor reviews, but does not certify kitchens or inspect them on site." },
+      { q: "Can I order lunches regularly, for the whole school week?", a: "Yes, by arrangement with the cook: agree the days of the week, the dishes and the handover time. Many are happy to cook on a schedule — it suits both sides. If you'd rather cover several days in one order, see the 'Ready meals for the week' page." },
+      { q: "How much does a child's lunch cost?", a: "The cook sets the price, so it differs between people and between cities. The service charges no commission right now — the cook keeps the full amount. What makes up the cost of home food, and why it's usually below restaurant delivery, we covered in a separate article." },
+      { q: "What if there are no cooks nearby yet?", a: "The service is only launching, and in some districts there genuinely aren't any yet. Open your city page and leave a request — that's how we know where to go next — or invite someone you know who feeds the whole yard well. It usually starts with one person in a building." },
     ],
   },
 };

@@ -161,9 +161,13 @@ export function CookProfilePage() {
 
   // структурированные данные для поисковиков: ресторан + меню + отзывы + хлебные крошки
   const cookUrl = `${SITE_URL}/cooks/${cook.id}`;
-  const seoTitle = `${cook.kitchenName} — домашняя еда${cook.city ? ` в ${cityPrepOf(cook.city)}` : ""} — Селина`;
+  const seoTitle = lang === "en"
+    ? `${tr(cook.kitchenName)} — homemade food${cook.city ? ` in ${tr(cook.city)}` : ""} — Celina`
+    : `${cook.kitchenName} — домашняя еда${cook.city ? ` в ${cityPrepOf(cook.city)}` : ""} — Селина`;
   // насыщенное и в пределах 158 символов: короткое авторское bio дополняем продающим текстом
-  const cookFallback = `Закажите домашнюю еду у повара ${cook.kitchenName}${cook.city ? ` в городе ${cook.city}` : ""} на Celina. ${cook.dishes?.length ?? 0} ${plRu(cook.dishes?.length ?? 0, ["блюдо, приготовленное", "блюда, приготовленных", "блюд, приготовленных"])} дома по семейным рецептам. Доставка и самовывоз.`;
+  const cookFallback = lang === "en"
+    ? `Order homemade food from ${tr(cook.kitchenName)}${cook.city ? ` in ${tr(cook.city)}` : ""} on Celina. Dishes cooked at home from family recipes. Delivery and pickup.`
+    : `Закажите домашнюю еду у повара ${cook.kitchenName}${cook.city ? ` в городе ${cook.city}` : ""} на Celina. ${cook.dishes?.length ?? 0} ${plRu(cook.dishes?.length ?? 0, ["блюдо, приготовленное", "блюда, приготовленных", "блюд, приготовленных"])} дома по семейным рецептам. Доставка и самовывоз.`;
   const cookBio = cook.bio?.trim() || "";
   const seoDesc = clampMeta(cookBio.length >= 70 ? cookBio : (cookBio ? `${cookBio} — ${cookFallback}` : cookFallback));
   const jsonLd: object[] = [

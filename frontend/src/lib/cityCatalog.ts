@@ -13,7 +13,9 @@
  * валюта, наличие поля контакта в форме ожидания и сам факт, что страница
  * говорит «мы тут не работаем».
  */
-export type CountryCode = "RU" | "BY" | "KZ" | "UZ" | "AM";
+export type CountryCode =
+  | "RU" | "BY" | "KZ" | "UZ" | "AM"
+  | "UA" | "KG" | "MD" | "GE" | "AZ" | "TJ";
 
 export interface CountryEntry {
   code: CountryCode;
@@ -48,6 +50,22 @@ export const COUNTRIES: Record<CountryCode, CountryEntry> = {
         currency: "UZS", currencySymbol: "сум", operates: false, allowsContact: false },
   AM: { code: "AM", name: "Армения", prep: "Армении", slug: "armeniya",
         currency: "AMD", currencySymbol: "֏", operates: false, allowsContact: true },
+  // Волна расширения 22.08.2026: все русскоязычные страны, включая Украину
+  // (прямое решение основателя, отменившее прежнее «без Украины»).
+  // allowsContact: false у ВСЕХ шести — свои законы о персданных в каждой
+  // юрисдикции; анонимная отметка не собирает ничего личного.
+  UA: { code: "UA", name: "Украина", prep: "Украине", slug: "ukraina",
+        currency: "UAH", currencySymbol: "₴", operates: false, allowsContact: false },
+  KG: { code: "KG", name: "Кыргызстан", prep: "Кыргызстане", slug: "kyrgyzstan",
+        currency: "KGS", currencySymbol: "сом", operates: false, allowsContact: false },
+  MD: { code: "MD", name: "Молдова", prep: "Молдове", slug: "moldova",
+        currency: "MDL", currencySymbol: "лей", operates: false, allowsContact: false },
+  GE: { code: "GE", name: "Грузия", prep: "Грузии", slug: "gruziya",
+        currency: "GEL", currencySymbol: "₾", operates: false, allowsContact: false },
+  AZ: { code: "AZ", name: "Азербайджан", prep: "Азербайджане", slug: "azerbaydzhan",
+        currency: "AZN", currencySymbol: "₼", operates: false, allowsContact: false },
+  TJ: { code: "TJ", name: "Таджикистан", prep: "Таджикистане", slug: "tadzhikistan",
+        currency: "TJS", currencySymbol: "смн", operates: false, allowsContact: false },
 };
 
 export interface CityEntry { slug: string; name: string; prep: string; country: CountryCode }
@@ -98,6 +116,14 @@ export const CITY_CATALOG: CityEntry[] = [
 
   // ── Армения ── охват и список ожидания; сервис здесь НЕ работает
   { slug: "yerevan", name: "Ереван", prep: "Ереване", country: "AM" },
+  { slug: "kiev", name: "Киев", prep: "Киеве", country: "UA" },
+  { slug: "harkov", name: "Харьков", prep: "Харькове", country: "UA" },
+  { slug: "odessa", name: "Одесса", prep: "Одессе", country: "UA" },
+  { slug: "bishkek", name: "Бишкек", prep: "Бишкеке", country: "KG" },
+  { slug: "kishinyov", name: "Кишинёв", prep: "Кишинёве", country: "MD" },
+  { slug: "tbilisi", name: "Тбилиси", prep: "Тбилиси", country: "GE" },
+  { slug: "baku", name: "Баку", prep: "Баку", country: "AZ" },
+  { slug: "dushanbe", name: "Душанбе", prep: "Душанбе", country: "TJ" },
 ];
 
 /** Все slug приоритетных городов — для безусловной генерации маршрутов/sitemap. */

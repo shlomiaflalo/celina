@@ -82,7 +82,9 @@ export function StorefrontPreview() {
                 width={360}
                 height={360}
                 loading={i < 4 ? "eager" : "lazy"}
-                fetchPriority={i < 2 ? "high" : undefined}
+                // строчными: React 18 не знает камелкейс-пропа fetchPriority —
+                // он не долетал до DOM и сыпал предупреждение в консоль
+                {...(i < 2 ? { fetchpriority: "high" } : {})}
                 decoding="async"
                 className="block aspect-square w-full object-cover"
               />

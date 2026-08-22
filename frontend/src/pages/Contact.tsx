@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { api } from "../api/client";
 import { Button } from "../components/ui";
-import { useT } from "../i18n";
+import { useT, useLang } from "../i18n";
 import { Seo } from "../components/Seo";
 import { metricaGoal } from "../components/Metrica";
 
@@ -10,6 +10,7 @@ const EMAIL = "celinarussia.support@gmail.com";
 /** Страница Связаться с нами — форма отправляет письмо НА СЕРВЕРЕ (без mailto). */
 export function Contact() {
   const t = useT();
+  const { lang } = useLang();
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -42,8 +43,8 @@ export function Contact() {
   return (
     <div className="mx-auto max-w-lg">
       <Seo
-        title="Контакты Celina — связаться с командой"
-        description="Свяжитесь с командой Celina: вопросы о домашней еде, поддержка поваров и покупателей, сотрудничество."
+        title={lang === "en" ? "Contact Celina — reach the team" : "Контакты Celina — связаться с командой"}
+        description={lang === "en" ? "Contact the Celina team: questions about homemade food, cook and buyer support, partnerships." : "Свяжитесь с командой Celina: вопросы о домашней еде, поддержка поваров и покупателей, сотрудничество."}
         path="/contact"
       />
       <h1 className="mb-2 text-center text-3xl font-bold text-white drop-shadow sm:text-4xl">
@@ -106,7 +107,7 @@ export function Contact() {
 
       {/* быстрая связь в WhatsApp — белый значок в круге цвета логотипа (без подписи) */}
       <a
-        href={`https://wa.me/972545594088?text=${encodeURIComponent("Здравствуйте! Я пишу из Celina 🍲 Подскажите, пожалуйста — у меня есть вопрос, буду благодарен за помощь.")}`}
+        href={`https://wa.me/972545594088?text=${encodeURIComponent(lang === "en" ? "Hello! I'm writing from Celina 🍲 I have a question — I'd appreciate your help." : "Здравствуйте! Я пишу из Celina 🍲 Подскажите, пожалуйста — у меня есть вопрос, буду благодарен за помощь.")}`}
         target="_blank"
         rel="noreferrer"
         aria-label="WhatsApp"

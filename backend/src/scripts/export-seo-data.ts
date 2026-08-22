@@ -129,7 +129,7 @@ async function main() {
       `\n❌ Снимок собран НЕ на продакшн-базе: в нём ${cookData.length} поваров.\n` +
       `   Локальная база сидирована демо-данными — они попадут в HTML и в\n` +
       `   schema.org как настоящие повара с настоящими рейтингами.\n\n` +
-      `   Снимок с продакшна:  ssh на прод-сервер, база в /root/celina/data\n` +
+      `   Снимок с продакшна:  ssh на ваш сервер, база /root/celina/data\n` +
       `   Осознанно и правда с прода:  SEO_EXPORT_FROM_PROD=1 npm run seo:export\n`
     );
     process.exit(1);

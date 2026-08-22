@@ -202,14 +202,19 @@ export function Login() {
           <div className="mb-3 flex justify-center sm:mb-4">
             <LangSwitch />
           </div>
-          {/* 2) логотип следует за языком: RU (по умолчанию) → Селина, EN → Celina */}
+          {/* 2) Логотип следует за языком: RU (по умолчанию) → Селина, EN → Celina.
+                 Обе картинки в DOM, переключает CSS — при смене src браузер
+                 показывал бы старую «Селину», пока качается английский PNG. */}
           <div className="mb-4 flex justify-center sm:mb-6">
-            <img
-              src={lang === "en" ? "/images/logo.png" : "/images/logo-ru.png"}
-              alt={lang === "en" ? "Celina" : "Селина"}
-              draggable={false}
-              className="h-auto w-[160px] select-none sm:w-[184px]"
-            />
+            {(["ru", "en"] as const).map((l) => (
+              <img
+                key={l}
+                src={l === "en" ? "/images/logo.png" : "/images/logo-ru.png"}
+                alt={l === "en" ? "Celina" : "Селина"}
+                draggable={false}
+                className={`h-auto w-[136px] select-none sm:w-[156px] ${lang === l ? "" : "hidden"}`}
+              />
+            ))}
           </div>
 
           <div className="rounded-3xl border border-orange-100 bg-white p-5 shadow-xl shadow-orange-500/10 sm:p-7">
