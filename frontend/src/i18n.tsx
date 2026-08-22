@@ -844,7 +844,7 @@ const ru = {
     open: "Открыть",
     close: "Закрыть",
     accept: "Принимаю",
-    lastUpdated: "Редакция от 10 августа 2026 · проверяется еженедельно",
+    lastUpdated: "Редакция от 22 августа 2026 · проверяется еженедельно",
   },
 
   founder: {
@@ -1743,7 +1743,7 @@ const en: typeof ru = {
     open: "Open",
     close: "Close",
     accept: "I accept",
-    lastUpdated: "Revision of August 10, 2026 · reviewed weekly",
+    lastUpdated: "Revision of August 22, 2026 · reviewed weekly",
   },
 
   founder: {
