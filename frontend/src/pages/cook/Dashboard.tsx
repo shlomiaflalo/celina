@@ -59,15 +59,15 @@ export function Dashboard() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">{tr(user?.cookProfile?.kitchenName || "")}</h1>
-          <p className="text-sm ">{t.nav.dashboard}</p>
+          <p className="text-sm opacity-75">{t.nav.dashboard}</p>
         </div>
         <button
           onClick={toggleOnline}
           disabled={toggling}
           aria-pressed={online}
-          className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition active:scale-95 disabled:opacity-60 ${online ? "bg-[#e0860c] text-white shadow-sm" : "bg-orange-50 text-[#e0860c] ring-1 ring-orange-200"}`}
+          className={`flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition active:scale-95 disabled:opacity-60 ${online ? "bg-[#e0860c] text-white shadow-sm" : "bg-orange-50 text-[#e0860c] ring-1 ring-orange-200"}`}
         >
-          <span className={`h-2.5 w-2.5 rounded-full ${online ? "bg-white" : "bg-[#c2ad90]"}`} />
+          <span className={`h-2.5 w-2.5 rounded-full ${online ? "bg-white" : "bg-[#e0860c]/40"}`} />
           {online ? t.cook.online : t.cook.offline}
         </button>
       </div>
@@ -86,14 +86,26 @@ export function Dashboard() {
       </div>
 
       {active.length === 0 ? (
-        <p className="">{t.orders.empty}</p>
+        <div className="rounded-2xl bg-white/10 p-6 text-center ring-1 ring-white/20">
+          <p>{t.orders.empty}</p>
+          {/* первый экран нового повара не должен быть тупиком: следующее
+              действие — добавить блюдо в меню */}
+          <Link to="/cook/menu" className="btn-glass mt-3 inline-flex items-center gap-1 rounded-xl px-4 py-2 text-sm font-semibold">
+            {t.nav.menu} →
+          </Link>
+          <div className="mt-3 text-sm">
+            <Link to="/listovki" className="underline-offset-2 hover:underline">
+              {`Листовки для подъезда →`}
+            </Link>
+          </div>
+        </div>
       ) : (
         <div className="space-y-2">
           {active.slice(0, 5).map((o) => (
-            <div key={o.id} className="flex items-center justify-between rounded-xl border border-orange-100 bg-white p-4">
+            <div key={o.id} className="flex items-center justify-between card rounded-xl p-4">
               <div>
                 <div className="font-medium">{o.buyer?.name}</div>
-                <div className="text-sm ">
+                <div className="text-sm opacity-75">
                   {o.items.map((i) => `${tr(i.titleSnapshot)}×${i.qty}`).join(", ")}
                 </div>
               </div>
@@ -108,7 +120,7 @@ export function Dashboard() {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-2xl border border-orange-100 bg-white p-4 text-center shadow-sm">
+    <div className="card rounded-2xl p-4 text-center">
       <div className="text-2xl font-semibold text-[#e0860c]">{value}</div>
       <div className="mt-1 text-xs ">{label}</div>
     </div>

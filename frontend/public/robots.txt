@@ -12,6 +12,7 @@ Allow: /cooks/
 Disallow: /verify
 Disallow: /founder
 Disallow: /login
+Disallow: /listovki
 
 User-agent: Yandex
 Allow: /

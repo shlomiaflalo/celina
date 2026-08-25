@@ -512,6 +512,11 @@ const ru = {
     ctaButton: "Найти повара рядом",
   },
 
+  domchat: {
+    title: "Одно сообщение в домовой чат",
+    hint: "Почти у каждого дома есть чат в Telegram или WhatsApp. Одно сообщение туда — и о Селине узнают ровно те соседи, которые могут готовить для вас. Текст уже написан:",
+    message: "Соседи, есть сервис домашней еды между соседями — Селина. Кто готовит дома — может продавать порции своим же домом, остальные — заказывать. Деньги через сервис не проходят, оплата наличными при получении.",
+  },
   share: {
     label: "Поделиться",
     copy: "Копировать ссылку",
@@ -1423,6 +1428,11 @@ const en: typeof ru = {
     ctaButton: "Find a cook nearby",
   },
 
+  domchat: {
+    title: "One message to your building chat",
+    hint: "Almost every building has a Telegram or WhatsApp chat. One message there reaches exactly the neighbors who could cook for you. The text is ready:",
+    message: "Neighbors, there's a service for homemade food between neighbors — Celina. If you cook at home you can sell portions to your own building; everyone else can order. Money never passes through the service — cash on delivery.",
+  },
   share: {
     label: "Share",
     copy: "Copy link",

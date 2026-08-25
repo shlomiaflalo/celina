@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useDialog } from "../lib/useDialog";
 import { api } from "../api/client";
 import { Button } from "./ui";
 import { PasswordField } from "./PasswordField";
@@ -10,6 +11,8 @@ import { useT } from "../i18n";
  *  обратный отсчёт до следующей возможности. */
 export function ForgotPassword({ onClose }: { onClose: () => void }) {
   const t = useT();
+  // Esc закрывает, фокус в окне — как у ConfirmModal на этой же странице
+  const dialogRef = useDialog<HTMLDivElement>(true, onClose);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [id, setId] = useState("");
   const [code, setCode] = useState("");
@@ -35,7 +38,7 @@ export function ForgotPassword({ onClose }: { onClose: () => void }) {
   const limited = retryLeft > 0;
 
   const input =
-    "w-full rounded-xl border border-orange-100 bg-orange-50/40 px-3.5 py-2.5 text-sm outline-none transition focus:border-orange-300 focus:bg-white focus:ring-2 focus:ring-orange-200";
+    "w-full rounded-xl border border-[var(--hairline)] bg-orange-50/40 px-3.5 py-2.5 text-sm outline-none transition focus:border-orange-300 focus:bg-white focus:ring-2 focus:ring-orange-200";
 
   async function sendCode() {
     setBusy(true); setError(null);
@@ -70,10 +73,10 @@ export function ForgotPassword({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
-      <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={t.auth.forgotTitle} className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-bold text-[#e0860c]">{t.auth.forgotTitle}</h2>
-          <button onClick={onClose} aria-label={t.a11y.close} className="text-2xl leading-none text-[#e0860c] hover:text-[#e0860c]">×</button>
+          <button onClick={onClose} aria-label={t.a11y.close} className="-m-2 flex h-11 w-11 items-center justify-center rounded-full text-2xl leading-none text-[#e0860c] transition hover:bg-orange-50 active:scale-95">×</button>
         </div>
 
         {step === 1 && (

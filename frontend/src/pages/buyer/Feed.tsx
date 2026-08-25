@@ -74,6 +74,37 @@ export function Feed() {
   const [favOnly, setFavOnly] = useState(false);
   const { favs, isFav, toggle: toggleFav } = useFavorites();
   const [focused, setFocused] = useState(false);
+  // Живой плейсхолдер: поле само печатает блюда по буквам — витрина
+  // подсказывает, ЧТО здесь ищут. Выключается, если пользователь начал
+  // печатать сам или просил меньше движения (prefers-reduced-motion).
+  const PH_ITEMS = lang === "en"
+    ? ["Borscht, pelmeni…", "Syrniki, okroshka…", "Plov, manty…", "Khinkali, vareniki…"]
+    : ["Борщ, пельмени…", "Сырники, окрошка…", "Плов, манты…", "Хинкали, вареники…"];
+  const [ph, setPh] = useState(PH_ITEMS[0]);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setPh(PH_ITEMS[0]); // язык сменился — плейсхолдер тут же, не через цикл
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let idx = 0, chars = PH_ITEMS[0].length, dir: "hold" | "type" | "erase" = "hold";
+    let t: ReturnType<typeof setTimeout>;
+    const tick = () => {
+      if (dir === "hold") { dir = "erase"; t = setTimeout(tick, 2600); return; }
+      if (dir === "erase") {
+        chars -= 2;
+        if (chars <= 0) { chars = 0; idx = (idx + 1) % PH_ITEMS.length; dir = "type"; }
+        setPh(PH_ITEMS[idx].slice(0, Math.max(chars, 0)));
+        t = setTimeout(tick, 24);
+        return;
+      }
+      chars += 1;
+      setPh(PH_ITEMS[idx].slice(0, chars));
+      if (chars >= PH_ITEMS[idx].length) dir = "hold";
+      t = setTimeout(tick, 55);
+    };
+    t = setTimeout(tick, 2600);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang]);
   const [activeIdx, setActiveIdx] = useState(-1);
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -207,7 +238,7 @@ export function Feed() {
         {/* урожай, падающий с неба: декорация дня, см. theme/DayDecor.tsx */}
         <DayFall />
         <div className="relative z-10">
-          <div className="t-h1 max-w-2xl text-[var(--day-accent)]">{t.feed.title}</div>
+          <h1 className="t-h1 max-w-2xl text-[var(--day-accent)]">{t.feed.title}</h1>
           <p className="mt-1 max-w-xl text-[#e0860c]/75 sm:t-lead sm:mt-2">{t.tagline}</p>
           {/* реплика дня: повод, по которому сайт сегодня так выглядит */}
           {TODAY.line && (
@@ -223,9 +254,14 @@ export function Feed() {
                 onFocus={() => setFocused(true)}
                 onBlur={() => { blurTimer.current = setTimeout(() => setFocused(false), 150); }}
                 onKeyDown={onKey}
-                placeholder={TODAY.placeholder ? (lang === "en" ? TODAY.placeholder.en : TODAY.placeholder.ru) : t.feed.aiPlaceholder}
+                placeholder={ph}
+                role="combobox"
+                aria-expanded={showSuggest}
+                aria-autocomplete="list"
+                aria-controls="feed-suggest"
+                aria-activedescendant={activeIdx >= 0 ? `feed-sg-${activeIdx}` : undefined}
                 aria-label={t.feed.aiPlaceholder}
-                className="w-full truncate rounded-xl border border-[var(--hairline)] bg-white py-3.5 pl-4 pr-28 shadow-[var(--e2)] outline-none"
+                className="w-full truncate rounded-xl border border-[var(--hairline)] bg-white py-3.5 pl-4 pr-28 shadow-[var(--e2)] outline-none transition-[box-shadow,border-color] duration-200 focus:border-[#e0860c]/45 focus:shadow-[0_10px_36px_rgba(176,104,8,0.16)]"
               />
               <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full bg-[#e0860c] px-2.5 py-1 text-xs font-semibold text-white">
                 {t.feed.aiBadge}
@@ -233,10 +269,13 @@ export function Feed() {
 
               {/* автодополнение */}
               {showSuggest && (
-                <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[65vh] overflow-y-auto overflow-x-hidden rounded-2xl border border-orange-100 bg-white shadow-2xl">
+                <div id="feed-suggest" role="listbox" className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[65vh] overflow-y-auto overflow-x-hidden rounded-2xl border border-[var(--hairline)] bg-white shadow-2xl">
                   {suggestions.map((sg, i) => (
                     <button
                       key={sg.kind + sg.cookId + (sg.dishTitle ?? "")}
+                      role="option"
+                      id={`feed-sg-${i}`}
+                      aria-selected={i === activeIdx}
                       onMouseDown={(e) => { e.preventDefault(); pick(sg.cookId); }}
                       onMouseEnter={() => setActiveIdx(i)}
                       className={`flex w-full items-center gap-3 px-3.5 py-2.5 text-left transition ${i === activeIdx ? "bg-orange-50" : "hover:bg-orange-50/60"}`}
@@ -344,7 +383,12 @@ export function Feed() {
             <FirstCookInvite />
           </>
         ) : (
-          <p className="">{t.feed.empty}</p>
+          // не тупик: один клик сбрасывает поиск и все фильтры разом
+          <EmptyState
+            title={t.feed.empty}
+            actionLabel={t.common.all}
+            onAction={() => { setQ(""); setCuisine(null); setDrinkOnly(false); setFavOnly(false); }}
+          />
         )
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
@@ -453,8 +497,14 @@ function Chip({
   return (
     <button
       onClick={onClick}
-      className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
-        active ? "btn-glass ring-2 ring-[#e0860c]/50" : "glass-soft opacity-90"
+      aria-pressed={active}
+      // выбранный чип — сплошной бренд с белым текстом: «что сейчас включено»
+      // читается с расстояния, а не угадывается по толщине кольца;
+      // py-2.5 — тач-цель ~40px (+gap до 44px эффективных)
+      className={`rounded-full px-4 py-2.5 text-sm font-medium transition ${
+        active
+          ? "bg-[#e0860c] text-white shadow-[0_4px_14px_rgba(224,134,12,0.35)]"
+          : "glass-soft opacity-90 hover:opacity-100"
       }`}
     >
       {children}

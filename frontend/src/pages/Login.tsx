@@ -168,7 +168,7 @@ export function Login() {
   }
 
   const input =
-    "w-full rounded-xl border border-orange-100 bg-orange-50/40 px-3.5 py-2.5 text-sm outline-none transition focus:border-orange-300 focus:bg-white focus:ring-2 focus:ring-orange-200";
+    "w-full rounded-xl border border-[var(--hairline)] bg-orange-50/40 px-3.5 py-2.5 text-sm outline-none transition focus:border-orange-300 focus:bg-white focus:ring-2 focus:ring-orange-200";
 
   return (
     <div>
@@ -217,7 +217,7 @@ export function Login() {
             ))}
           </div>
 
-          <div className="rounded-3xl border border-orange-100 bg-white p-5 shadow-xl shadow-orange-500/10 sm:p-7">
+          <div className="rounded-3xl border border-[var(--hairline)] bg-white p-5 shadow-[var(--e2)] sm:p-7">
             {/* единственный <h1> страницы входа: заголовок карточки формы.
                 Герой слева скрыт на мобильных (hidden lg:flex), поэтому h1
                 ставим здесь — он виден на всех размерах. Классы не меняются. */}
@@ -267,7 +267,7 @@ export function Login() {
                       почти треть формы уходила на то, что можно пропустить, и
                       регистрация переставала помещаться в экран телефона.
                       Свёрнутый — 44 px, и порядок полей не меняется. */}
-                  <details className="group rounded-xl border border-orange-100 bg-orange-50/40 p-3 [&[open]>summary]:mb-2">
+                  <details className="group rounded-xl border border-[var(--hairline)] bg-orange-50/40 p-3 [&[open]>summary]:mb-2">
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-xs font-medium text-[#e0860c]/80">
                       <span>{t.auth.addressOptional}</span>
                       <span aria-hidden className="text-base leading-none transition-transform group-open:rotate-45">+</span>
@@ -363,15 +363,14 @@ export function Login() {
 
             <button
               onClick={() => setMode(mode === "login" ? "register" : "login")}
-              className="mt-4 w-full text-center text-sm font-medium hover:underline"
-              style={{ color: "#e0860c" }}
+              className="mt-1.5 w-full py-2.5 text-center text-sm font-medium text-[#e0860c] hover:underline"
             >
               {mode === "login" ? t.auth.noAccount : t.auth.haveAccount}
             </button>
             {mode === "login" && (
               <button
                 onClick={() => setShowForgot(true)}
-                className="mt-2 w-full text-center text-xs font-medium text-[#e0860c] hover:underline"
+                className="w-full py-2.5 text-center text-xs font-medium text-[#e0860c] hover:underline"
               >
                 {t.auth.forgot}
               </button>
@@ -401,12 +400,12 @@ export function Login() {
         <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
           <div className="mb-1 flex items-center justify-between">
             <h2 className="text-lg font-bold text-[#e0860c]">{t.auth.deviceLimitTitle}</h2>
-            <button onClick={() => setDeviceLimit(null)} aria-label={t.a11y.close} className="text-2xl leading-none text-[#e0860c]">×</button>
+            <button onClick={() => setDeviceLimit(null)} aria-label={t.a11y.close} className="-m-2 flex h-11 w-11 items-center justify-center rounded-full text-2xl leading-none text-[#e0860c] transition hover:bg-orange-50 active:scale-95">×</button>
           </div>
           <p className="mb-4 text-sm text-[#e0860c]/85">{t.auth.deviceLimitDesc}</p>
           <div className="space-y-2">
             {deviceLimit.map((s) => (
-              <div key={s.id} className="flex items-center justify-between gap-3 rounded-2xl border border-orange-100 bg-orange-50/40 p-3">
+              <div key={s.id} className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--hairline)] bg-orange-50/40 p-3">
                 <div className="min-w-0">
                   <div className="truncate text-sm font-semibold text-[#e0860c]">{s.device}</div>
                   <div className="truncate text-xs text-[#e0860c]/70">
@@ -442,12 +441,13 @@ function RoleTab({
 }) {
   return (
     <button
+      aria-pressed={active}
       type="button"
       onClick={onClick}
       className={`flex flex-1 flex-col items-center gap-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition ${
         active
           ? "border-orange-400 bg-orange-50 text-[#e0860c] shadow-sm"
-          : "border-orange-100  hover:border-orange-200"
+          : "border-[var(--hairline)] hover:border-orange-200"
       }`}
     >
       {children}

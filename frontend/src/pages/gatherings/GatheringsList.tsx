@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../api/client";
 import type { Gathering } from "../../types";
-import { Spinner } from "../../components/ui";
+import { Spinner, ErrorState } from "../../components/ui";
 import { PinIcon, ClockIcon } from "../../components/icons";
 import { cityImage } from "../../lib/cityImage";
 import { useAuth } from "../../auth/AuthContext";
@@ -17,13 +17,20 @@ export function GatheringsList() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [items, setItems] = useState<Gathering[] | null>(null);
+  const [failed, setFailed] = useState(false);
 
-  useEffect(() => {
-    api.get<{ gatherings: Gathering[] }>("/gatherings?upcoming=true").then((r) => setItems(r.gatherings)).catch(() => setItems([]));
-  }, []);
+  // ошибка сети НЕ маскируется под честное «застолий пока нет»: человек на
+  // плохом соединении должен увидеть «Повторить», а не ложную пустоту
+  function load() {
+    setFailed(false);
+    api.get<{ gatherings: Gathering[] }>("/gatherings?upcoming=true").then((r) => setItems(r.gatherings)).catch(() => setFailed(true));
+  }
+  useEffect(load, []);
 
   const fmtDate = (iso: string) =>
     new Date(iso).toLocaleString(lang === "en" ? "en-GB" : "ru-RU", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+
+  if (failed) return <ErrorState onRetry={load} />;
 
   return (
     <div>
@@ -47,7 +54,7 @@ export function GatheringsList() {
       {/* герой */}
       <div className="relative z-20 mb-6 overflow-hidden rounded-3xl">
         <picture>
-                    <img src="/images/gatherings/tablespread.jpg" alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full rounded-3xl object-cover" />
+                    <img src="/images/gatherings/tablespread.jpg" alt="" {...({ fetchpriority: "high" } as object)} decoding="async" className="absolute inset-0 h-full w-full rounded-3xl object-cover" />
         </picture>
         <div className="absolute inset-0 rounded-3xl" style={{ background: "rgba(224,134,12,0.30)" }} />
         <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-black/55 via-black/20 to-transparent" />
@@ -75,7 +82,7 @@ export function GatheringsList() {
             <Link
               key={g.id}
               to={`/gatherings/${g.id}`}
-              className="group block overflow-hidden rounded-3xl bg-white shadow-[0_6px_24px_rgba(176,104,8,0.10)] ring-1 ring-orange-100 transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_44px_rgba(176,104,8,0.20)]"
+              className="group block overflow-hidden rounded-3xl bg-white shadow-[0_6px_24px_rgba(176,104,8,0.10)] ring-1 ring-[var(--hairline)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_44px_rgba(176,104,8,0.20)]"
             >
               <div className="relative h-40 overflow-hidden bg-orange-50">
                 <img src={g.coverUrl || cityImage(g.city)} alt={tr(g.title)} loading="lazy" className="h-full w-full object-cover transition duration-[600ms] group-hover:scale-110" />

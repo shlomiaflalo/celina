@@ -60,7 +60,7 @@ export function StorefrontPreview() {
 
         <div className="counter-grid">
           {DISHES.map((d, i) => (
-            <div key={d.f} className="counter-tile">
+            <div key={d.f} className="counter-tile" style={{ "--tile-i": i } as React.CSSProperties}>
               <picture>
               {/* webp сначала, jpg запасным. make-tiles.mjs собирает оба
                   формата, но srcSet ссылался только на jpg — 36 webp-файлов

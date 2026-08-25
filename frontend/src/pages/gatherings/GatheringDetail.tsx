@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { api } from "../../api/client";
 import { toast } from "../../components/Toast";
 import type { Gathering } from "../../types";
-import { Spinner, Button } from "../../components/ui";
+import { Spinner, Button, ErrorState } from "../../components/ui";
 import { DeleteButton } from "../../components/DeleteButton";
 import { PinIcon, ClockIcon, CheckIcon, CookIcon, CoinsIcon } from "../../components/icons";
 import { cityImage } from "../../lib/cityImage";
@@ -32,7 +32,7 @@ export function GatheringDetail() {
   }
   useEffect(load, [id]);
 
-  if (failed) return <p className="rounded-2xl bg-white/70 p-6 text-center text-[#e0860c]">{t.common.error}</p>;
+  if (failed) return <ErrorState onRetry={load} />;
   if (!g) return <Spinner />;
 
   const fmtDate = (iso: string) =>
@@ -86,7 +86,7 @@ export function GatheringDetail() {
 
       <Link to="/gatherings" className="text-sm font-medium text-white/90 hover:underline">← {t.gatherings.back}</Link>
 
-      <div className="mt-3 overflow-hidden rounded-3xl border border-orange-100 bg-white shadow-sm">
+      <div className="mt-3 overflow-hidden rounded-3xl border border-[var(--hairline)] bg-white shadow-sm">
         <div className="relative h-48 sm:h-60">
           <img src={g.coverUrl || cityImage(g.city)} alt={g.title} className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10" />
@@ -110,7 +110,7 @@ export function GatheringDetail() {
 
           {/* RSVP */}
           {!g.isHost && !closed && (
-            <div className="mt-5 border-t border-orange-100 pt-4">
+            <div className="mt-5 border-t border-[var(--hairline)] pt-4">
               {going ? (
                 <div className="flex items-center justify-between gap-3">
                   <span className="inline-flex items-center gap-1.5 font-semibold text-[#e0860c]"><CheckIcon size={18} /> {t.gatherings.joined} ({g.myGuests})</span>
@@ -136,7 +136,7 @@ export function GatheringDetail() {
           {showInvite && <InviteMoment variant="gathering" />}
 
           {g.isHost && (
-            <div className="mt-5 border-t border-orange-100 pt-4">
+            <div className="mt-5 border-t border-[var(--hairline)] pt-4">
               <DeleteButton
                 label={t.gatherings.deleteGathering}
                 confirmText={t.gatherings.deleteGatheringConfirm}
@@ -149,12 +149,12 @@ export function GatheringDetail() {
 
           {/* шеринг — вирусная петля */}
           {!showInvite && (
-            <div className="mt-5 border-t border-orange-100 pt-4">
+            <div className="mt-5 border-t border-[var(--hairline)] pt-4">
               <div className="mb-2 text-sm font-medium text-[#e0860c]">{t.gatherings.share}</div>
               <div className="flex flex-wrap gap-2">
-                <a href={tg} target="_blank" rel="noreferrer" className="rounded-full bg-orange-50 px-4 py-2 text-sm font-semibold text-[#e0860c] ring-1 ring-orange-100 transition hover:bg-orange-100">Telegram</a>
-                <a href={vk} target="_blank" rel="noreferrer" className="rounded-full bg-orange-50 px-4 py-2 text-sm font-semibold text-[#e0860c] ring-1 ring-orange-100 transition hover:bg-orange-100">{t.share.vk}</a>
-                <a href={wa} target="_blank" rel="noreferrer" className="rounded-full bg-orange-50 px-4 py-2 text-sm font-semibold text-[#e0860c] ring-1 ring-orange-100 transition hover:bg-orange-100">WhatsApp</a>
+                <a href={tg} target="_blank" rel="noreferrer" className="rounded-full bg-orange-50 px-4 py-2 text-sm font-semibold text-[#e0860c] ring-1 ring-[var(--hairline)] transition hover:bg-orange-100">Telegram</a>
+                <a href={vk} target="_blank" rel="noreferrer" className="rounded-full bg-orange-50 px-4 py-2 text-sm font-semibold text-[#e0860c] ring-1 ring-[var(--hairline)] transition hover:bg-orange-100">{t.share.vk}</a>
+                <a href={wa} target="_blank" rel="noreferrer" className="rounded-full bg-orange-50 px-4 py-2 text-sm font-semibold text-[#e0860c] ring-1 ring-[var(--hairline)] transition hover:bg-orange-100">WhatsApp</a>
               </div>
             </div>
           )}
@@ -169,7 +169,7 @@ export function GatheringDetail() {
         ) : (
           <div className="flex flex-wrap gap-2">
             {g.attendees.map((a, i) => (
-              <span key={i} className="rounded-full bg-white px-3.5 py-1.5 text-sm font-medium text-[#e0860c] ring-1 ring-orange-100">
+              <span key={i} className="rounded-full bg-white px-3.5 py-1.5 text-sm font-medium text-[#e0860c] ring-1 ring-[var(--hairline)]">
                 {tr(a.name)}{a.guests > 1 ? ` +${a.guests - 1}` : ""}
               </span>
             ))}

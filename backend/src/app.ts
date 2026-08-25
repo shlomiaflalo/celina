@@ -322,7 +322,7 @@ export function createApp() {
     // Здесь перечислены клиентские маршруты, у которых пререндера нет и быть
     // не должно (они за авторизацией). Все они уже Disallow в robots.txt, так
     // что их 200 поиску безразличен. Всё, чего в списке нет, — мёртвый URL.
-    const SPA_ROUTES = /^\/(cart|profile|orders|cook|verify|founder|login|invite|gatherings|story|manifest)(\/|$)/;
+    const SPA_ROUTES = /^\/(cart|profile|orders|cook|verify|founder|login|invite|gatherings|story|manifest|listovki)(\/|$)/;
     app.get(/^\/(?!api\/|uploads\/).*/, (req, res) => {
       res.status(SPA_ROUTES.test(req.path) ? 200 : 404).sendFile(path.resolve(FRONTEND_DIST, "index.html"));
     });

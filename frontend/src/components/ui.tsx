@@ -15,8 +15,11 @@ export function ErrorState({ onRetry }: { onRetry?: () => void }) {
   return (
     <div className="flex flex-col items-center gap-3 py-16 text-center">
       <AlertIcon size={40} />
-      <p className="max-w-xs text-sm font-medium text-[#e0860c]">{t.common.loadError}</p>
-      <Button onClick={onRetry ?? (() => location.reload())}>{t.common.retry}</Button>
+      {/* без жёсткого оранжевого: на оранжевом полотне band-brand текст был
+          невидим (контраст ~1.2) — каскад сам даёт белый на банде и
+          фирменный на бумаге */}
+      <p className="max-w-xs text-sm font-medium">{t.common.loadError}</p>
+      <Button variant="ghost" onClick={onRetry ?? (() => location.reload())}>{t.common.retry}</Button>
     </div>
   );
 }
@@ -73,17 +76,20 @@ export function EmptyState({
     <div className="flex flex-col items-center gap-3 py-16 text-center">
       {/* без opacity: на оранжевом фоне иконка должна быть чисто белой */}
       {icon && <div>{icon}</div>}
-      <p className="font-medium text-[#e0860c]">{title}</p>
+      <p className="font-medium">{title}</p>
       {actionLabel && onAction && <Button onClick={onAction}>{actionLabel}</Button>}
     </div>
   );
 }
 
 export function Stars({ rating }: { rating: number }) {
+  // Пустые звёзды — бледный контур ТОГО ЖЕ оранжевого (opacity), не серый:
+  // без приглушения 3.0 и 5.0 рендерились одинаково — пять сплошных звёзд,
+  // и главный trust-сигнал маркетплейса не работал.
   return (
-    <span className="text-[#e0860c]" title={rating.toFixed(1)}>
-      {"★".repeat(Math.round(rating))}
-      <span className="">{"★".repeat(5 - Math.round(rating))}</span>
+    <span className="text-[#e0860c]" title={rating.toFixed(1)} aria-label={`${rating.toFixed(1)} из 5`}>
+      <span aria-hidden>{"★".repeat(Math.round(rating))}</span>
+      <span aria-hidden className="opacity-25">{"★".repeat(5 - Math.round(rating))}</span>
     </span>
   );
 }

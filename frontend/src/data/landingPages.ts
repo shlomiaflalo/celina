@@ -715,6 +715,7 @@ export const POVARAM_PAGE: LandingData = {
   path: "/povaram",
   serviceType: "Витрина для домашнего повара: продажа домашней еды соседям",
   related: [
+    { to: "/listovki", label_ru: "Листовки для подъезда", label_en: "Building flyers" },
     { to: "/blog/kak-nachat-gotovit-na-prodazhu-iz-doma", label_ru: "Как начать готовить на продажу из дома", label_en: "How to start cooking for sale from home" },
     { to: "/blog/kak-legalno-prodavat-domashnyuyu-edu-2026", label_ru: "Как легально продавать домашнюю еду", label_en: "How to sell homemade food legally" },
     { to: "/blog/kak-my-proveryaem-domashnih-povarov", label_ru: "Как мы проверяем домашних поваров", label_en: "How we verify home cooks" },

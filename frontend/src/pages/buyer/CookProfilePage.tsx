@@ -222,7 +222,7 @@ export function CookProfilePage() {
     <div>
       <Seo title={seoTitle} description={seoDesc} path={`/cooks/${cook.id}`} type="profile" image={cook.dishes?.find((d) => d.photoUrl)?.photoUrl ?? undefined} jsonLd={jsonLd} />
       {cartLimit && (
-        <div className="fixed inset-x-0 top-16 z-[60] mx-auto w-fit max-w-[92%] rounded-xl bg-[#e0860c] px-4 py-2.5 text-center text-sm font-semibold text-white shadow-lg">
+        <div role="status" className="notif-in fixed inset-x-0 top-16 z-[60] mx-auto w-fit max-w-[92%] rounded-xl bg-[#e0860c] px-4 py-2.5 text-center text-sm font-semibold text-white shadow-lg">
           {cartLimit}
         </div>
       )}
@@ -231,7 +231,7 @@ export function CookProfilePage() {
       </Link>
 
       {/* шапка-обложка */}
-      <div className="mt-3 overflow-hidden rounded-3xl border border-orange-100 bg-white shadow-sm">
+      <div className="mt-3 overflow-hidden card rounded-3xl shadow-[var(--e2)]">
         <div className="relative h-32 sm:h-40">
           {/* обложка = фото города; кадрируем по нижней части — видно город/достопримечательности, а не небо */}
           <img src={cityImage(cook.city)} alt={cook.city || ""} className="h-full w-full object-cover" style={{ objectPosition: "center 72%" }} />
@@ -240,7 +240,8 @@ export function CookProfilePage() {
             <button
               onClick={() => toggle(cook.id)}
               aria-label={t.feed.favorites}
-              className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#e0860c] shadow-sm backdrop-blur transition hover:bg-white active:scale-90"
+              aria-pressed={isFav(cook.id)}
+              className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-[#e0860c] shadow-sm backdrop-blur transition hover:bg-white active:scale-90"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill={isFav(cook.id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
@@ -322,7 +323,8 @@ export function CookProfilePage() {
               <button
                 onClick={() => setGuests((g) => Math.max(1, g - 1))}
                 aria-label={t.a11y.decreaseGuests}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-orange-200 bg-white text-lg leading-none hover:bg-orange-50"
+                disabled={guests <= 1}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-orange-200 bg-white text-xl leading-none hover:bg-orange-50 disabled:opacity-40 disabled:hover:bg-white"
               >
                 −
               </button>
@@ -330,7 +332,8 @@ export function CookProfilePage() {
               <button
                 onClick={() => setGuests((g) => Math.min(cook.dineInSeats ?? 1, g + 1))}
                 aria-label={t.a11y.increaseGuests}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-orange-200 bg-white text-lg leading-none hover:bg-orange-50"
+                disabled={guests >= (cook.dineInSeats ?? 1)}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-orange-200 bg-white text-xl leading-none hover:bg-orange-50 disabled:opacity-40 disabled:hover:bg-white"
               >
                 +
               </button>
@@ -367,7 +370,7 @@ export function CookProfilePage() {
           dishes.map((dish) => (
               <div
                 key={dish.id}
-                className="overflow-hidden rounded-2xl border border-orange-100 bg-white p-4 shadow-sm"
+                className="overflow-hidden rounded-2xl card p-4"
               >
                 <DishGallery
                   photos={dish.photos && dish.photos.length ? dish.photos : dish.photoUrl ? [dish.photoUrl] : []}
@@ -477,7 +480,7 @@ export function CookProfilePage() {
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {cook.reviews.map((r) => (
-            <div key={r.id} className="rounded-2xl border border-orange-100 bg-white p-4 shadow-sm">
+            <div key={r.id} className="rounded-2xl card p-4">
               <div className="flex items-center justify-between">
                 <span className="font-medium">{tr(r.buyer?.name) || t.common.guest}</span>
                 <Stars rating={r.rating} />

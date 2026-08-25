@@ -310,7 +310,10 @@ textarea::placeholder {
    бы форму каждой rounded-full таблетки при фокусе, второй стёр бы тень
    карточки. ring-orange-300 (#fdba74) на белом поле поиска давал контраст
    1.55:1, то есть не был виден вообще. */
-:focus-visible { outline: 3px solid #1b1613; outline-offset: 2px; }
+:focus-visible { outline: 3px solid #e0860c; outline-offset: 2px; }
+/* на оранжевом полотне тёмно-оранжевое кольцо фокуса невидимо — там белое */
+.band-brand :focus-visible, .band-solid :focus-visible,
+.rail :focus-visible, footer :focus-visible { outline-color: #fff; }
 
 /* min-height: 44px здесь НЕ СТАВИТЬ. У кнопки одна строка текста, её строчный
    бокс прижат к верху контентной области — недостающую до 44px высоту браузер
@@ -354,16 +357,22 @@ textarea::placeholder {
      3) Дырка на .5rem, вырез многоугольника на .42rem: дырка должна лежать
         ВНУТРИ фигуры на всей своей высоте, иначе её срезает тем же
         clip-path и остаётся полукруглая зазубрина. */
+  /* Визуал (фон, вырез, тень) живёт на ::after, а не на самой ссылке:
+     clip-path на элементе резал не только картинку, но и hit-testing с
+     фокус-кольцом — у единственного конверсионного линка первого экрана
+     была кликабельная зона ~21px и невидимый фокус. Теперь линк-бокс
+     ~40px (padding-block .85rem), кликается весь прямоугольник, а
+     transform создаёт stacking context, так что z-index:-1 не проваливается
+     под плитку. */
   .pricetag {
     position: absolute;
     left: .5rem;
     bottom: 100%;
-    margin-bottom: .5rem;
+    margin-bottom: 0;
     display: inline-flex;
     align-items: center;
     gap: .4rem;
-    padding: .3rem .6rem .3rem 1.05rem;
-    background: var(--brand);
+    padding: .85rem .6rem .85rem 1.05rem;
     color: #fff;
     border-radius: 4px;
     font-size: .6875rem;
@@ -373,9 +382,17 @@ textarea::placeholder {
     white-space: nowrap;
     transform: rotate(-2deg);
     transform-origin: left bottom;
+    transition: transform .15s ease;
+  }
+  .pricetag::after {
+    content: "";
+    position: absolute;
+    inset: .55rem 0;
+    z-index: -1;
+    background: var(--brand);
+    border-radius: 4px;
     clip-path: polygon(.42rem 0, 100% 0, 100% 100%, .42rem 100%, 0 50%);
     filter: drop-shadow(0 2px 4px rgba(60, 35, 5, .28));
-    transition: transform .15s ease;
   }
   .pricetag::before {
     content: "";
@@ -734,4 +751,79 @@ input[type="month"]::-webkit-calendar-picker-indicator:hover {
    Поэтому падение снимается целиком — куча остаётся, день по-прежнему виден. */
 @media (prefers-reduced-motion: reduce) {
   .day-fall { display: none; }
+}
+
+/* ───────────────── переходы между страницами ─────────────────
+   Контент въезжает мягким подъёмом при каждой навигации. Ключ — pathname
+   (см. Layout.tsx): React перемонтирует полотно, анимация запускается CSS,
+   без JS-оркестрации и без блокировки навигации. */
+.page-enter { animation: page-in 0.3s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
+/* Плитки прилавка появляются каскадом (задержка через --tile-i).
+   Чистый CSS: без JS плитки всё равно видимы после анимации (both) —
+   пререндеренный HTML ничего не прячет от краулера. */
+.counter-tile {
+  animation: tile-in 0.5s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation-delay: calc(var(--tile-i, 0) * 45ms);
+}
+@keyframes tile-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+}
+
+/* Шапка при прокрутке приподнимается: тень глубже, граница плотнее.
+   Сигнал «вы ушли от начала страницы» без единого лишнего пикселя высоты. */
+.header-elevated {
+  box-shadow: 0 6px 24px rgba(176, 104, 8, 0.14);
+  border-bottom-color: rgba(224, 134, 12, 0.32);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter, .counter-tile { animation: none; }
+}
+
+/* ───────────── листовки для подъезда (/listovki) ─────────────
+   Постер живёт в мм: на печати это точный A4, на экране превью просто
+   масштабируется контейнером .poster-preview (aspect-ratio 210/297). */
+.poster-sheet {
+  width: 210mm;
+  height: 297mm;
+  padding: 18mm 16mm;
+  justify-content: space-between;
+}
+.poster-logo { height: 14mm; width: auto; }
+.poster-title { font-size: 26mm; letter-spacing: -0.02em; }
+.poster-body { font-size: 7.2mm; max-width: 165mm; }
+.poster-qr { width: 62mm; height: 62mm; }
+.poster-url { font-size: 13mm; }
+.poster-note { font-size: 5.5mm; opacity: 0.8; }
+
+/* превью: тот же постер, ужатый в карточку */
+.poster-preview {
+  aspect-ratio: 210 / 297;
+  width: 100%;
+  position: relative;
+  background: #fff;
+}
+.poster-preview .poster-sheet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+  /* 210mm ≈ 794px; карточка ~256px → масштаб считается в JS не нужен:
+     широкая поддержка у zoom нынче есть, но надёжнее transform по scale
+     от известной ширины контейнера через cqw нельзя без container queries.
+     Простейшее надёжное: scale(0.322) под сетку sm:grid-cols-3 при
+     max-w-3xl; на телефоне карточка шире — допустимо, превью просто
+     мельче листа. */
+  transform: scale(0.322);
+}
+
+.print-only { display: none; }
+@media print {
+  .print-only { display: block; position: fixed; inset: 0; z-index: 9999; background: #fff; }
+  /* печатаем ТОЛЬКО постер: остальная страница скрыта утилитой print:hidden */
+  @page { size: A4 portrait; margin: 0; }
 }

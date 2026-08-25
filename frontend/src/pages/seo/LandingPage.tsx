@@ -68,8 +68,8 @@ export function LandingPage({ data }: { data: LandingData }) {
         jsonLd={jsonLd}
       />
 
-      <h1 className="text-2xl font-bold drop-shadow sm:text-3xl">{L.h1}</h1>
-      <p className="mt-3 leading-relaxed text-white/90">{L.intro}</p>
+      <h1 className="t-h1 drop-shadow">{L.h1}</h1>
+      <p className="t-lead mt-3 text-white/90">{L.intro}</p>
 
       <div className="mt-5 flex flex-wrap gap-2.5">
         {data.ctas.map((c) => (
@@ -89,7 +89,7 @@ export function LandingPage({ data }: { data: LandingData }) {
 
       {L.sections.map((s, i) => (
         <section key={i} className="mt-7">
-          <h2 className="text-xl font-bold drop-shadow">{s.h}</h2>
+          <h2 className="t-h2 drop-shadow">{s.h}</h2>
           {s.p.map((para, j) => (
             <p key={j} className="mt-2 leading-relaxed text-white/90">{para}</p>
           ))}
@@ -115,7 +115,7 @@ export function LandingPage({ data }: { data: LandingData }) {
           <ul className="flex flex-wrap gap-2">
             {data.related.map((r) => (
               <li key={r.to}>
-                <Link to={r.to} className="inline-block rounded-full bg-white/90 px-3.5 py-1.5 text-sm font-medium text-[#e0860c] ring-1 ring-orange-100 transition hover:bg-white">
+                <Link to={r.to} className="inline-block rounded-full bg-white/90 px-3.5 py-2 text-sm font-medium text-[#e0860c] shadow-[var(--e1)] transition hover:bg-white">
                   {lang === "en" ? r.label_en : r.label_ru}
                 </Link>
               </li>

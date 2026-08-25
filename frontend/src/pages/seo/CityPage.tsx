@@ -24,6 +24,7 @@ const CITY_GUIDES: Record<string, string> = {
   ufa: "domashnyaya-eda-v-ufe",
   chelyabinsk: "domashnyaya-eda-v-chelyabinske",
   krasnoyarsk: "domashnyaya-eda-v-krasnoyarske",
+  samara: "domashnyaya-eda-v-samare",
 };
 
 // Карточка повара — те же классы оформления, что в ленте (дизайн не меняем).

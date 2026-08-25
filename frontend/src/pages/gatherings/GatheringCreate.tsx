@@ -30,7 +30,7 @@ export function GatheringCreate() {
   const [error, setError] = useState<string | null>(null);
 
   const input =
-    "w-full rounded-xl border border-orange-100 bg-orange-50/40 px-3.5 py-2.5 text-sm outline-none transition focus:border-orange-300 focus:bg-white focus:ring-2 focus:ring-orange-200";
+    "w-full rounded-xl border border-[var(--hairline)] bg-orange-50/40 px-3.5 py-2.5 text-sm outline-none transition focus:border-orange-300 focus:bg-white focus:ring-2 focus:ring-orange-200";
   const label = "mb-1 block text-sm font-medium text-[#e0860c]";
 
   async function onCover(e: React.ChangeEvent<HTMLInputElement>) {
@@ -88,9 +88,12 @@ export function GatheringCreate() {
           <label className="group relative flex h-44 cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-orange-200 bg-orange-50/40 transition hover:border-orange-300">
             {form.coverUrl ? (
               <img src={form.coverUrl} alt="" className="h-full w-full object-cover" />
-            ) : uploading ? (
-              <span className="text-sm font-medium text-[#e0860c]">{t.gatherings.uploading}</span>
-            ) : null}
+            ) : (
+              // пустая зона больше не молчит: словами говорим, что сюда класть
+              <span className="px-4 text-center text-sm font-medium text-[#e0860c]">
+                {uploading ? t.gatherings.uploading : t.gatherings.fPhotoHint}
+              </span>
+            )}
             <input id="gathering-cover" type="file" accept="image/*" className="sr-only" onChange={onCover} disabled={uploading} />
             {form.coverUrl && !uploading && (
               <span className="absolute inset-0 bg-black/0 transition group-hover:bg-black/25" />
@@ -142,7 +145,7 @@ export function GatheringCreate() {
 
         {error && <p className="rounded-lg bg-orange-50 px-3 py-2 text-sm font-semibold text-[#e0860c]">{error}</p>}
 
-        <Button type="submit" full disabled={busy || uploading || !form.coverUrl}>{busy ? "…" : t.gatherings.submit}</Button>
+        <Button type="submit" full disabled={busy || uploading}>{busy ? "…" : t.gatherings.submit}</Button>
       </form>
     </div>
   );

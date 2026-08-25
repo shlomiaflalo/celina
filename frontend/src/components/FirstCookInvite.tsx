@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useT, useLang } from "../i18n";
 import { CheckIcon, PlateIcon, BasketIcon } from "./icons";
+import { ShareButtons } from "./ShareButtons";
 
 /**
  * Что видит человек, когда поваров в ленте ещё нет.
@@ -74,10 +75,28 @@ export function FirstCookInvite() {
           <p className="mt-1 text-sm leading-relaxed text-[#e0860c]">{c.firstText}</p>
         </div>
 
+        {/* Домовой чат — главный канал дистрибуции соседского сервиса:
+            одно сообщение попадает ровно в тех соседей, которые и есть рынок.
+            Текст готов, клики считаются целями Метрики (domchat_*). */}
+        <div className="mt-6 rounded-2xl bg-orange-50 p-4">
+          <p className="font-semibold text-[#e0860c]">{t.domchat.title}</p>
+          <p className="mt-1 text-sm leading-relaxed text-[#e0860c]/85">{t.domchat.hint}</p>
+          <p className="mt-2 rounded-xl bg-white p-3 text-sm italic leading-relaxed text-[#e0860c]">
+            «{t.domchat.message}»
+          </p>
+          <ShareButtons
+            url="https://celinaeda.ru/?utm_source=domchat&utm_medium=share&utm_campaign=first-cook"
+            text={t.domchat.message}
+            label={t.share.label}
+            goal="domchat"
+            copyMessage
+          />
+        </div>
+
         <div className="mt-6 flex flex-wrap gap-2.5">
           <Link
             to="/login?mode=register&role=cook"
-            className="inline-flex items-center gap-2 rounded-xl bg-[#e0860c] px-6 py-3 font-semibold text-white shadow-sm transition hover:brightness-105 active:scale-95"
+            className="btn-solid inline-flex items-center gap-2 rounded-xl px-6 py-3 font-semibold"
           >
             <PlateIcon size={18} /> {c.ctaCook}
           </Link>
@@ -86,7 +105,7 @@ export function FirstCookInvite() {
               не форму обратной связи. */}
           <Link
             to="/povaram"
-            className="inline-flex items-center gap-2 rounded-xl border border-orange-200 px-5 py-3 font-medium text-[#e0860c] transition hover:bg-orange-50 active:scale-95"
+            className="inline-flex items-center gap-2 rounded-xl border border-[var(--hairline)] px-5 py-3 font-medium text-[#e0860c] transition hover:bg-orange-50 active:scale-95"
           >
             {c.ctaMore}
           </Link>
@@ -105,7 +124,7 @@ export function FirstCookInvite() {
         <p className="mx-auto mt-1 max-w-lg text-sm leading-relaxed text-[#e0860c]">{c.buyerText}</p>
         <Link
           to="/vstrechi"
-          className="mt-3 inline-block rounded-xl border border-orange-200 px-5 py-2.5 text-sm font-medium text-[#e0860c] transition hover:bg-orange-50"
+          className="mt-3 inline-block rounded-xl border border-[var(--hairline)] px-5 py-2.5 text-sm font-medium text-[#e0860c] transition hover:bg-orange-50"
         >
           {c.buyerCta} →
         </Link>

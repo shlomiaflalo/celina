@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { useCart } from "../cart/CartContext";
@@ -34,11 +34,19 @@ export function Layout() {
   const { pathname } = useLocation();
   const paper = PAPER.some((re) => re.test(pathname));
   const [showLogout, setShowLogout] = useState(false);
+  // приподнятая шапка после начала прокрутки (тень+граница, см. .header-elevated)
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 4);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const isCook = user?.role === "COOK";
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `shrink-0 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium ${
-      isActive ? "bg-orange-50 text-[#e0860c]" : " "
+      isActive ? "bg-orange-50 text-[#e0860c]" : "transition-colors hover:bg-orange-50/60"
     }`;
 
   const baseLinks = isCook
@@ -81,9 +89,16 @@ export function Layout() {
       >
         {t.common.skipToContent}
       </a>
-      <header className="sticky top-0 z-50 border-b border-[var(--hairline)] bg-white shadow-[var(--e1)]">
+      <header className={`sticky top-0 z-50 border-b border-[var(--hairline)] bg-white shadow-[var(--e1)] transition-[box-shadow,border-color] duration-300 ${scrolled ? "header-elevated" : ""}`}>
         <div className="mx-auto max-w-5xl px-4">
-          <div className="flex items-center gap-3 py-2">
+          {/* На телефоне меню переносится второй строкой на всю ширину
+              (order-last w-full): в одной строке с языком, колокольчиком,
+              корзиной, именем и «Выйти» ему оставалось 30px — «Ле…», и ни
+              «Пригласить», ни панель основателя было не достать. */}
+          {/* Перенос строк — только вошедшему: гостю меню из двух пунктов
+              сжимается, а язык и «Войти» остаются в одной строке с логотипом
+              (при flex-wrap они уезжали на вторую строку на узких телефонах). */}
+          <div className={`flex items-center gap-x-3 gap-y-1 py-2 ${user ? "flex-wrap sm:flex-nowrap" : "flex-nowrap"}`}>
             {/* На 375px полное слово занимает 112 px из 375, и «Застолья»
                 выдавливается за край. До 420px оставляем только знак — тарелку
                 с паром, тот же логотип; дальше слово возвращается. */}
@@ -114,10 +129,28 @@ export function Layout() {
                 из 812 — четверть экрана до того, как человек увидит хоть одно
                 блюдо. min-w-0 + overflow-x-auto: при тесноте меню
                 прокручивается, а «Войти» и имя остаются на месте. */}
-            <nav className="ml-1 flex min-w-0 flex-1 items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">{navItems}</nav>
+            {/* БЕЗ flex-1: меню берёт свою естественную ширину, а приветствие
+                справа (flex-1, basis 0) получает только остаток. Раньше оба
+                были flex-1 и делили место пополам — на 1280px «Пригласить»
+                обрезалось до одной буквы, а «Основатель» уезжал за край
+                скрытой прокрутки: основатель не находил свою панель. */}
+            {/* Растушёвка у правого края (только на телефоне): обрезанный
+                пункт читается как «листайте дальше», а не как сломанная
+                вёрстка; pr-8 даёт последнему пункту доехать из-под неё. */}
+            <nav
+              className={`flex min-w-0 shrink items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+                user
+                  // вошедший: пять пунктов + колокольчик, корзина, имя — вторая строка
+                  ? "order-last -mx-1 w-full pr-8 [mask-image:linear-gradient(to_right,#000_calc(100%-32px),transparent)] sm:order-none sm:mx-0 sm:ml-1 sm:w-auto sm:pr-0 sm:[mask-image:none]"
+                  // гость: два пункта помещаются в одну строку с логотипом
+                  : "ml-1"
+              }`}
+            >
+              {navItems}
+            </nav>
 
             {user && (
-              <div className="hidden flex-1 truncate px-2 text-center text-sm font-medium  xl:block">
+              <div className="hidden min-w-0 flex-1 truncate px-2 text-center text-sm font-medium xl:block">
                 {greet} <span className="text-[#e0860c]">{firstName}</span>
               </div>
             )}
@@ -153,7 +186,7 @@ export function Layout() {
                   </Link>
                   <button
                     onClick={() => setShowLogout(true)}
-                    className="whitespace-nowrap text-sm  hover:opacity-70"
+                    className="whitespace-nowrap text-sm transition-opacity hover:opacity-75"
                   >
                     {t.nav.logout}
                   </button>
@@ -192,14 +225,16 @@ export function Layout() {
       {/* <main> больше не колонка, а полотно: секции внутри вправе выходить
           на всю ширину окна через .bleed. Колонка 1024px переехала внутрь. */}
       <main id="main" className={`flex w-full flex-1 flex-col ${paper ? "" : "band-brand"}`}>
-        <div className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
+        {/* key=pathname: каждая навигация перемонтирует полотно и запускает
+            CSS-въезд .page-enter — переходы ощущаются, но ничего не ждут */}
+        <div key={pathname} className="page-enter mx-auto w-full max-w-5xl flex-1 px-4 py-6">
           <Outlet />
         </div>
       </main>
 
       {/* нижний сервисный бар — в потоке, прижат к низу контента (не перекрывает экран) */}
       <footer className="border-t border-white/50 bg-[#e0860c] text-white shadow-[0_-2px_12px_rgba(0,0,0,0.08)]">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-4 gap-y-1.5 px-4 py-2.5 text-xs">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-4 gap-y-0 px-4 py-1.5 text-xs">
           {/* соцсети — белый текст внутри */}
           <div className="flex items-center gap-2">
             {[
@@ -240,45 +275,46 @@ export function Layout() {
               До этого 9 из 11 денежных лендингов не имели ссылки с главной,
               четыре сидели на глубине 3, а /privacy и /story были сиротами:
               в sitemap — да, входящих ссылок по всему сайту — ноль. */}
-          <Link to="/eda" className="hover:underline">{lang === "en" ? "Cities" : "Города"}</Link>
+          <Link to="/eda" className="inline-block py-2 hover:underline">{lang === "en" ? "Cities" : "Города"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/dostavka" className="hover:underline">{lang === "en" ? "Delivery" : "Доставка"}</Link>
+          <Link to="/dostavka" className="inline-block py-2 hover:underline">{lang === "en" ? "Delivery" : "Доставка"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/obedy" className="hover:underline">{lang === "en" ? "Lunches" : "Обеды"}</Link>
+          <Link to="/obedy" className="inline-block py-2 hover:underline">{lang === "en" ? "Lunches" : "Обеды"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/vypechka" className="hover:underline">{lang === "en" ? "Baking" : "Выпечка"}</Link>
+          <Link to="/vypechka" className="inline-block py-2 hover:underline">{lang === "en" ? "Baking" : "Выпечка"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/eda-na-nedelyu" className="hover:underline">{lang === "en" ? "Weekly meals" : "Еда на неделю"}</Link>
+          <Link to="/eda-na-nedelyu" className="inline-block py-2 hover:underline">{lang === "en" ? "Weekly meals" : "Еда на неделю"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/pravilnoe-pitanie" className="hover:underline">{lang === "en" ? "Healthy eating" : "Правильное питание"}</Link>
+          <Link to="/pravilnoe-pitanie" className="inline-block py-2 hover:underline">{lang === "en" ? "Healthy eating" : "Правильное питание"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/eda-na-prazdnik" className="hover:underline">{lang === "en" ? "Holiday table" : "Праздничный стол"}</Link>
+          <Link to="/eda-na-prazdnik" className="inline-block py-2 hover:underline">{lang === "en" ? "Holiday table" : "Праздничный стол"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/zagotovki" className="hover:underline">{lang === "en" ? "Preserves" : "Заготовки"}</Link>
+          <Link to="/zagotovki" className="inline-block py-2 hover:underline">{lang === "en" ? "Preserves" : "Заготовки"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/halal" className="hover:underline">{lang === "en" ? "Halal" : "Халяль"}</Link>
+          <Link to="/halal" className="inline-block py-2 hover:underline">{lang === "en" ? "Halal" : "Халяль"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/detskoe-menyu" className="hover:underline">{lang === "en" ? "Kids' menu" : "Детское меню"}</Link>
+          <Link to="/detskoe-menyu" className="inline-block py-2 hover:underline">{lang === "en" ? "Kids' menu" : "Детское меню"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/vstrechi" className="hover:underline">{lang === "en" ? "Meetups" : "Встречи"}</Link>
+          <Link to="/vstrechi" className="inline-block py-2 hover:underline">{lang === "en" ? "Meetups" : "Встречи"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/vypit-vmeste" className="hover:underline">{lang === "en" ? "Get-togethers" : "Посиделки"}</Link>
+          <Link to="/vypit-vmeste" className="inline-block py-2 hover:underline">{lang === "en" ? "Get-togethers" : "Посиделки"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/story" className="hover:underline">{lang === "en" ? "How it works" : "Как это работает"}</Link>
+          <Link to="/story" className="inline-block py-2 hover:underline">{lang === "en" ? "How it works" : "Как это работает"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/blog" className="hover:underline">{t.blog.nav}</Link>
+          <Link to="/blog" className="inline-block py-2 hover:underline">{t.blog.nav}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
           {/* Единственная ссылка сайта для повара — в подвале, то есть на всех 108
               страницах. Без неё /povaram достижим только с главной. */}
-          <Link to="/povaram" className="hover:underline">{lang === "en" ? "Cook & sell" : "Готовить и продавать"}</Link>
-          <Link to="/about" className="hover:underline">{t.contact.aboutNav}</Link>
+          <Link to="/povaram" className="inline-block py-2 hover:underline">{lang === "en" ? "Cook & sell" : "Готовить и продавать"}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/manifest" className="hover:underline">{t.contact.manifestNav}</Link>
+          <Link to="/about" className="inline-block py-2 hover:underline">{t.contact.aboutNav}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
-          <Link to="/contact" className="hover:underline">{t.contact.nav}</Link>
+          <Link to="/manifest" className="inline-block py-2 hover:underline">{t.contact.manifestNav}</Link>
+          <span className="inline-block h-3 w-px bg-white/40" />
+          <Link to="/contact" className="inline-block py-2 hover:underline">{t.contact.nav}</Link>
           <span className="inline-block h-3 w-px bg-white/40" />
           {/* настоящая ссылка вместо кнопки-модалки: краулер видит href */}
-          <Link to="/privacy" className="font-semibold text-white hover:underline">{lang === "en" ? "Privacy" : "Конфиденциальность"}</Link>
+          <Link to="/privacy" className="inline-block py-2 font-semibold text-white hover:underline">{lang === "en" ? "Privacy" : "Конфиденциальность"}</Link>
           <span className="hidden h-3 w-px bg-white/40 sm:inline-block" />
           <span className="hidden text-white/85 sm:inline">{t.landing.rights}</span>
         </div>

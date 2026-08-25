@@ -28,7 +28,7 @@ export function HomeSeoSection() {
 
   return (
     <section className="mt-14 border-t border-[var(--hairline)] pt-10 text-[#e0860c]">
-      <h1 className="t-h2">{t.homeSeo.h1}</h1>
+      <h2 className="t-h2">{t.homeSeo.h1}</h2>
       <p className="mt-2 max-w-3xl leading-relaxed text-[#e0860c]/85">{t.homeSeo.intro}</p>
 
       {/* Точка входа в городской кластер.
@@ -47,7 +47,7 @@ export function HomeSeoSection() {
           <div className="mt-8 space-y-5">
             {byCountry.map(({ co, cities }) => (
               <div key={co.code}>
-                <h2 className="t-h3 mb-2">
+                <h3 className="t-h3 mb-2">
                   {COUNTRY_CONTENT_SLUGS.has(co.slug) ? (
                     <Link to={`/strana/${co.slug}`} className="underline-offset-4 hover:underline">
                       {t.homeSeo.foodIn} {tr(co.prep)}
@@ -55,7 +55,7 @@ export function HomeSeoSection() {
                   ) : (
                     <>{t.homeSeo.foodIn} {tr(co.prep)}</>
                   )}
-                </h2>
+                </h3>
                 <div className="flex flex-wrap gap-2">
                   {cities.map((c) => (
                     <Link key={c.slug} to={`/eda/${c.slug}`} className={linkCls}>
@@ -71,7 +71,7 @@ export function HomeSeoSection() {
 
       {seoCategories.length > 0 && (
         <div className="mt-8">
-          <h2 className="t-h3 mb-2">{t.homeSeo.byCategory}</h2>
+          <h3 className="t-h3 mb-2">{t.homeSeo.byCategory}</h3>
           <div className="flex flex-wrap gap-2">
             {seoCategories.map((cat) => (
               <Link key={cat.slug} to={`/eda/${seoCities[0]?.slug ?? "moskva"}/${cat.slug}`} className={linkCls}>
@@ -84,7 +84,7 @@ export function HomeSeoSection() {
 
       {dishes.length > 0 && (
         <div className="mt-8">
-          <h2 className="t-h3 mb-2">{t.homeSeo.popularDishes}</h2>
+          <h3 className="t-h3 mb-2">{t.homeSeo.popularDishes}</h3>
           <div className="flex flex-wrap gap-2">
             {dishes.map((d) => (
               <Link key={d.slug} to={`/blyudo/${d.slug}`} className={linkCls}>
@@ -97,7 +97,7 @@ export function HomeSeoSection() {
 
       {topCooks.length > 0 && (
         <div className="mt-8">
-          <h2 className="t-h3 mb-2">{t.homeSeo.verifiedCooks}</h2>
+          <h3 className="t-h3 mb-2">{t.homeSeo.verifiedCooks}</h3>
           <div className="flex flex-wrap gap-2">
             {topCooks.map((c) => (
               <Link key={c.id} to={`/cooks/${c.id}`} className={linkCls}>
@@ -119,7 +119,7 @@ export function HomeSeoSection() {
 
       {/* Полезные разделы — внутренняя перелинковка на новые SEO-лендинги */}
       <div className="mt-8">
-        <h2 className="t-h3 mb-2">{t.homeSeo.usefulTitle}</h2>
+        <h3 className="t-h3 mb-2">{t.homeSeo.usefulTitle}</h3>
         <div className="flex flex-wrap gap-2">
           {t.homeSeo.usefulLinks.map((l) => (
             <Link key={l.to} to={l.to} className={linkCls}>
@@ -131,7 +131,7 @@ export function HomeSeoSection() {
 
       {/* Как это работает — 3 шага (для покупателя) */}
       <div className="mt-12">
-        <h2 className="t-h3 mb-3">{t.homeSeo.howTitle}</h2>
+        <h3 className="t-h3 mb-3">{t.homeSeo.howTitle}</h3>
         <div className="grid gap-4 sm:grid-cols-3">
           {t.homeSeo.steps.map((s, i) => (
             <div key={i} className="card p-4">
@@ -145,7 +145,7 @@ export function HomeSeoSection() {
 
       {/* Частые вопросы + FAQPage-разметка (расширенный сниппет в Яндексе/Google) */}
       <div className="mt-12">
-        <h2 className="t-h3 mb-3">{t.homeSeo.faqTitle}</h2>
+        <h3 className="t-h3 mb-3">{t.homeSeo.faqTitle}</h3>
         <div className="space-y-2.5">
           {t.homeSeo.faqs.map((f, i) => (
             <details key={i} className="card p-4">

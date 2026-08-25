@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { PlateIcon, VideoIcon } from "./icons";
+import { useDialog } from "../lib/useDialog";
 import { useT } from "../i18n";
 
 /**
@@ -21,11 +22,12 @@ export function DishGallery({
   const imgs = photos.filter(Boolean);
   const [active, setActive] = useState(0);
   const [showVideo, setShowVideo] = useState(false);
+  const videoDialogRef = useDialog<HTMLDivElement>(showVideo, () => setShowVideo(false));
 
   const hasMedia = imgs.length > 0 || !!videoUrl;
   if (!hasMedia) {
     return (
-      <div className={`flex h-44 w-full items-center justify-center rounded-2xl bg-orange-50 ${className}`}>
+      <div className={`flex h-44 w-full items-center justify-center rounded-2xl bg-orange-50 sm:h-52 ${className}`}>
         <PlateIcon size={44} className="opacity-50" />
       </div>
     );
@@ -80,12 +82,13 @@ export function DishGallery({
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
           onClick={() => setShowVideo(false)}
         >
-          <div className="relative w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
+          {/* как ConfirmModal: Esc закрывает, скринридер знает, что это диалог */}
+          <div ref={videoDialogRef} role="dialog" aria-modal="true" aria-label={title} className="relative w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
             <video src={videoUrl} controls autoPlay className="w-full rounded-2xl" />
             <button
               onClick={() => setShowVideo(false)}
               aria-label={t.a11y.close}
-              className="absolute -top-3 -right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-lg font-bold text-[#e0860c] shadow-lg"
+              className="absolute -top-3 -right-3 flex h-11 w-11 items-center justify-center rounded-full bg-white text-lg font-bold text-[#e0860c] shadow-lg"
             >
               ✕
             </button>
