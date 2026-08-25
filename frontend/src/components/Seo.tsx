@@ -230,13 +230,14 @@ export const siteJsonLd: object[] = [
     slogan: "Соседи кормят соседей",
     description: "Маркетплейс домашней еды в России: заказывайте блюда у проверенных соседей-поваров с доставкой и самовывозом.",
     email: "celinarussia.support@gmail.com",
-    // Селина основана в январе 2026, публично запущена в июне 2026 в Амстердаме
-    // (штаб-квартира — Амстердам; рынок, который обслуживаем, — Россия).
+    // Селина основана в январе 2026, публично запущена в июне 2026 в Лиссабоне
+    // (штаб-квартира — Лиссабон, Португалия; рынок — Россия. Основатель 25.08.2026:
+    // прежний город был ошибкой, сервис создан в Лиссабоне.)
     foundingDate: "2026-01",
     foundingLocation: {
       "@type": "Place",
-      name: "Amsterdam",
-      address: { "@type": "PostalAddress", addressLocality: "Amsterdam", addressCountry: "NL" },
+      name: "Lisbon",
+      address: { "@type": "PostalAddress", addressLocality: "Lisbon", addressCountry: "PT" },
     },
     areaServed: { "@type": "Country", name: "Россия" },
     // привязка соцпрофилей к бренду → узнавание сущности и панель знаний в Яндексе/Google
@@ -270,5 +271,5 @@ export const siteJsonLd: object[] = [
 
 /** Та же организация (тот же @id), что и на главной — для страницы «О нас».
  *  Профильная страница компании несёт данные об организации, дате основания
- *  (foundingDate 2026-01) и штаб-квартире (Амстердам), а не только главная. */
+ *  (foundingDate 2026-01) и штаб-квартире (Лиссабон), а не только главная. */
 export const aboutJsonLd: object[] = [siteJsonLd[0]];
