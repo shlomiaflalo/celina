@@ -189,7 +189,7 @@ const ru = {
       { q: "Как оплатить заказ?", a: "На этапе бесплатного запуска оплата — наличными при получении, напрямую повару, без комиссий и банковских карт." },
       { q: "Есть ли доставка домашней еды?", a: "Да. Выберите доставку от повара по вашему городу или самовывоз у повара — как удобнее." },
       { q: "Как стать поваром на Celina?", a: "Зарегистрируйтесь как повар, пройдите проверку личности и безопасности пищи, добавьте блюда с фотографиями — и принимайте заказы от соседей." },
-      { q: "В каких городах работает Celina?", a: "Селина работает в России с июня 2026 года. Сейчас в городах идёт набор первых поваров — откройте страницу своего города и посмотрите, кто готовит рядом." },
+      { q: "В каких городах работает Celina?", a: "Селина работает в России с июля 2026 года. Сейчас в городах идёт набор первых поваров — откройте страницу своего города и посмотрите, кто готовит рядом." },
     ],
   },
 
@@ -455,7 +455,7 @@ const ru = {
     emailCopied: "Почта скопирована",
     copyEmail: "Скопировать почту",
     social: "Мы в соцсетях",
-    rights: "© 2026 Celina · работаем с июня 2026 года. Соседи кормят соседей.",
+    rights: "© 2026 Celina · работаем с июля 2026 года. Соседи кормят соседей.",
     growth: "и растём каждый день",
     trustTitle: "Безопасность — в основе Celina",
     trustSubtitle: "Доверие — это не функция, а фундамент маркетплейса еды.",
@@ -619,7 +619,7 @@ const ru = {
   about: {
     title: "О нас",
     playVideo: "Смотреть видео",
-    intro: "Celina (Селина) — это маркетплейс домашней еды в России, который превращает обычный район в одну большую домашнюю кухню. Мы соединяем талантливых домашних поваров с соседями, которые соскучились по настоящей еде — той, что готовят дома, с душой и по семейным рецептам, а не на фабрике и не на ресторанном конвейере. Закажите борщ, пельмени, сырники, грузинскую кухню или домашнюю выпечку у проверенного повара в нескольких минутах от дома — с доставкой или самовывозом. Над Celina идёт работа с января 2026 года из Лиссабона, а сервис запущен в России в июне 2026 года. Наш девиз прост: соседи кормят соседей.",
+    intro: "Celina (Селина) — это маркетплейс домашней еды в России, который превращает обычный район в одну большую домашнюю кухню. Мы соединяем талантливых домашних поваров с соседями, которые соскучились по настоящей еде — той, что готовят дома, с душой и по семейным рецептам, а не на фабрике и не на ресторанном конвейере. Закажите борщ, пельмени, сырники, грузинскую кухню или домашнюю выпечку у проверенного повара в нескольких минутах от дома — с доставкой или самовывозом. Над Celina идёт работа с января 2026 года из Лиссабона, а сервис запущен в России в июле 2026 года. Наш девиз прост: соседи кормят соседей.",
     whatTitle: "Что мы делаем",
     what: "Celina устроена просто и по-человечески. Найдите повара рядом, посмотрите его блюда, фотографии и историю, выберите понравившееся, оформите заказ и получите свежую домашнюю еду с доставкой или самовывозом — всё это занимает пару минут. Каждый повар проходит проверку личности и подтверждает санитарные правила, а честные отзывы и рейтинги соседей помогают вам всегда знать, у кого вы заказываете. Удобный поиск показывает кухни именно в вашем городе и районе, а поддержка готова помочь на каждом шаге. А когда хочется не просто поесть, а собраться — позовите соседей за общий стол: на Celina можно создавать и находить застолья и посиделки, чтобы знакомиться ближе через еду.",
     whyTitle: "Почему в России",
@@ -638,7 +638,7 @@ const ru = {
     forWho: "Celina — для тех, кто ценит домашнюю еду и хочет заказывать её у проверенных соседей-поваров, а не у фабрики или безликого сервиса. И для домашних поваров по всей России, которые мечтают превратить любимое дело в стабильный доход — без аренды, посредников и витрины в центре города. Если вы любите готовить или любите вкусно поесть по-домашнему — это место для вас.",
     linkedinCompany: "Celina в LinkedIn",
     ctaTitle: "Готовы попробовать?",
-    ctaText: "Селина работает в России с июня 2026 года. Готовите дома — откройте свою витрину и станьте поваром своего района: первым достаются все заказы рядом. Хотите заказывать — найдите повара рядом или отметьте свой район.",
+    ctaText: "Селина работает в России с июля 2026 года. Готовите дома — откройте свою витрину и станьте поваром своего района: первым достаются все заказы рядом. Хотите заказывать — найдите повара рядом или отметьте свой район.",
     ctaButton: "Найти повара рядом",
   },
 
@@ -849,7 +849,7 @@ const ru = {
     open: "Открыть",
     close: "Закрыть",
     accept: "Принимаю",
-    lastUpdated: "Редакция от 22 августа 2026 · проверяется еженедельно",
+    lastUpdated: "Редакция от 25 августа 2026 · проверяется еженедельно",
   },
 
   founder: {
@@ -1122,7 +1122,7 @@ const en: typeof ru = {
       { q: "How do I pay for an order?", a: "Right now, payment is cash on delivery — directly to the cook, with no fees or bank cards." },
       { q: "Is there delivery of homemade food?", a: "Yes. Choose delivery by the cook within your city or pickup from the cook — whatever suits you." },
       { q: "How do I become a cook on Celina?", a: "Register as a cook, pass identity and food-safety verification, add dishes with photos — and start taking orders from neighbors." },
-      { q: "Which cities does Celina operate in?", a: "Celina has been operating in Russia since June 2026. Cooks are joining city by city — open your city page to see who cooks nearby." },
+      { q: "Which cities does Celina operate in?", a: "Celina has been operating in Russia since July 2026. Cooks are joining city by city — open your city page to see who cooks nearby." },
     ],
   },
 
@@ -1371,7 +1371,7 @@ const en: typeof ru = {
     emailCopied: "Email copied",
     copyEmail: "Copy email",
     social: "Follow us",
-    rights: "© 2026 Celina · operating since June 2026. Neighbors feeding neighbors.",
+    rights: "© 2026 Celina · operating since July 2026. Neighbors feeding neighbors.",
     growth: "and growing every day",
     trustTitle: "Safety is at Celina's core",
     trustSubtitle: "Trust isn't a feature — it's the foundation of a food marketplace.",
@@ -1530,7 +1530,7 @@ const en: typeof ru = {
   about: {
     title: "About",
     playVideo: "Play video",
-    intro: "Celina is a homemade-food marketplace in Russia that turns an ordinary neighborhood into one big home kitchen. We connect talented home cooks with neighbors who miss real food — the kind made at home, with soul and family recipes, not in a factory or on a restaurant conveyor belt. Order borscht, pelmeni, syrniki, Georgian cuisine, or home baking from a verified cook minutes from your door — with delivery or pickup. Celina has been in the making since January 2026 in Lisbon, and the service launched in Russia in June 2026. Our motto is simple: neighbors feeding neighbors.",
+    intro: "Celina is a homemade-food marketplace in Russia that turns an ordinary neighborhood into one big home kitchen. We connect talented home cooks with neighbors who miss real food — the kind made at home, with soul and family recipes, not in a factory or on a restaurant conveyor belt. Order borscht, pelmeni, syrniki, Georgian cuisine, or home baking from a verified cook minutes from your door — with delivery or pickup. Celina has been in the making since January 2026 in Lisbon, and the service launched in Russia in July 2026. Our motto is simple: neighbors feeding neighbors.",
     whatTitle: "What we do",
     what: "Celina is simple and human by design. Find a cook nearby, browse their dishes, photos and story, pick what you love, place your order, and get fresh homemade food by delivery or pickup — all in a couple of minutes. Every cook passes identity verification and confirms food-safety rules, while honest reviews and ratings from neighbors help you always know who you're ordering from. Smart search shows kitchens right in your city and neighborhood, and support is there at every step. And when you'd rather gather than just eat — invite neighbors to a shared table: on Celina you can create and find gatherings and get-togethers, growing closer through food.",
     whyTitle: "Why Russia",
@@ -1549,7 +1549,7 @@ const en: typeof ru = {
     forWho: "Celina is for anyone who values homemade food and wants to order it from verified neighbor-cooks instead of a factory or a faceless service. And for home cooks across Russia who dream of turning what they love into steady income — without rent, middlemen, or a storefront downtown. If you love to cook, or love to eat real home cooking, this is the place for you.",
     linkedinCompany: "Celina on LinkedIn",
     ctaTitle: "Ready to try?",
-    ctaText: "Celina has been operating in Russia since June 2026. If you cook at home — open your storefront and become your neighborhood's cook: the first ones get all the orders nearby. If you want to order — find a cook near you or mark your district.",
+    ctaText: "Celina has been operating in Russia since July 2026. If you cook at home — open your storefront and become your neighborhood's cook: the first ones get all the orders nearby. If you want to order — find a cook near you or mark your district.",
     ctaButton: "Find a cook nearby",
   },
 
@@ -1753,7 +1753,7 @@ const en: typeof ru = {
     open: "Open",
     close: "Close",
     accept: "I accept",
-    lastUpdated: "Revision of August 22, 2026 · reviewed weekly",
+    lastUpdated: "Revision of August 25, 2026 · reviewed weekly",
   },
 
   founder: {

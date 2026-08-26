@@ -2,7 +2,7 @@
 
 **🟢 Live in production: [celinaeda.ru](https://celinaeda.ru)**
 
-Marketplace for home-cooked food, built for the Russian market. Founded January 2026 in Lisbon, Portugal, launched June 2026 — site and API serving since.
+Marketplace for home-cooked food, built for the Russian market. Founded January 2026 in Lisbon, Portugal, launched July 2026 — site and API serving since.
 
 Verified home cooks sell to neighbours in their own city. Delivery or pickup, cash on handover, identity verification for every cook, composition and allergens on every dish, reviews only from real orders.
 
@@ -73,7 +73,7 @@ cd frontend && npm install && npm run dev
 
 The product is finished and running: ordering, delivery tracking, identity verification, gatherings, reviews, the operator dashboard and the legal layer all work end to end.
 
-Celina launched in Russia in June 2026 and is onboarding its first cooks. The platform is complete; the marketplace is in its early days — worth saying plainly, since finished code and a mature marketplace are different things.
+Celina launched in Russia in July 2026 and is onboarding its first cooks. The platform is complete; the marketplace is in its early days — worth saying plainly, since finished code and a mature marketplace are different things.
 
 ## Also here
 
