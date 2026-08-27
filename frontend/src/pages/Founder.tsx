@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "../components/Toast";
 import type React from "react";
 import { api, getToken } from "../api/client";
 import { Spinner, Button } from "../components/ui";
@@ -12,12 +13,12 @@ import { useT, useLang } from "../i18n";
 async function openKycDoc(url: string) {
   try {
     const res = await fetch(url, { headers: { Authorization: `Bearer ${getToken()}` } });
-    if (!res.ok) return;
+    if (!res.ok) { toast("Не удалось открыть документ"); return; }
     const blob = await res.blob();
     const obj = URL.createObjectURL(blob);
     window.open(obj, "_blank", "noopener");
     setTimeout(() => URL.revokeObjectURL(obj), 60_000);
-  } catch { /* сеть недоступна — просто ничего не открываем */ }
+  } catch { toast("Не удалось открыть документ"); }
 }
 
 interface Metrics {
@@ -77,8 +78,12 @@ export function Founder() {
     try {
       await api.post(`/admin/verifications/${id}`, { decision });
     } catch (e) {
-      on403(e as Error & { status?: number });
-      return; // не «проглатываем» ошибку молча — при истёкшей 2FA вернём шлюз
+      const err = e as Error & { status?: number };
+      on403(err);
+      // не-403 (сеть, 500): молча «не сработало» выглядит как «одобрено» —
+      // показываем ошибку явно
+      if (err.status !== 403) toast(err.message || t.common.error);
+      return;
     }
     loadPending();
     loadMetrics();
@@ -118,7 +123,7 @@ export function Founder() {
             </div>
             <h1 className="text-xl font-bold text-white drop-shadow-sm">{t.founder.twoFATitle}</h1>
             {/* замок-бейдж, «наезжающий» на границу шапки/тела */}
-            <div className="absolute -bottom-6 left-1/2 flex h-12 w-12 -translate-x-1/2 items-center justify-center rounded-full bg-white shadow-md ring-1 ring-orange-100">
+            <div className="absolute -bottom-6 left-1/2 flex h-12 w-12 -translate-x-1/2 items-center justify-center rounded-full bg-white shadow-md border border-[var(--hairline)]">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e0860c" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="4" y="11" width="16" height="10" rx="2.5" /><path d="M8 11V7a4 4 0 0 1 8 0v4" />
               </svg>
@@ -151,7 +156,7 @@ export function Founder() {
                   className="w-full rounded-2xl border-2 border-orange-100 bg-orange-50/50 px-4 py-3.5 text-center text-2xl font-bold tracking-[0.5em] text-[#e0860c] outline-none transition focus:border-[#e0860c] focus:bg-white"
                 />
                 <Button full onClick={verifyCode} disabled={busy || code.length < 4}>{busy ? "…" : t.founder.unlock}</Button>
-                <button onClick={requestCode} disabled={busy} className="text-xs font-medium text-[#e0860c] transition hover:text-[#e0860c] disabled:opacity-50">
+                <button onClick={requestCode} disabled={busy} className="px-3 py-2.5 text-xs font-medium text-[#e0860c] transition hover:underline disabled:opacity-50">
                   {t.auth.sendCode}
                 </button>
               </div>
@@ -218,7 +223,7 @@ export function Founder() {
       <h2 className="mb-2 text-sm font-bold uppercase tracking-wide text-white/80 drop-shadow">{title}</h2>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {cells.map((c) => (
-          <div key={c.l} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-orange-100">
+          <div key={c.l} className="rounded-2xl bg-white p-4 border border-[var(--hairline)] shadow-[var(--e1)]">
             <div className="text-2xl font-bold text-[#e0860c]">{c.v}</div>
             <div className="mt-0.5 text-xs text-[#e0860c]">{c.l}</div>
           </div>
@@ -231,7 +236,7 @@ export function Founder() {
     <div className="mx-auto max-w-4xl">
       <div className="mb-6 flex items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-white drop-shadow sm:text-3xl">{t.founder.title}</h1>
+          <h1 className="t-h1 text-white drop-shadow">{t.founder.title}</h1>
           <p className="text-sm text-white/85">
             {t.founder.subtitle}
             <span className="text-white/60"> · {t.founder.updated} {new Date(m.updatedAt).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}</span>
@@ -264,7 +269,7 @@ export function Founder() {
         <h2 className="mb-2 text-sm font-bold uppercase tracking-wide text-white/80 drop-shadow">{t.founder.funnelTitle}</h2>
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
           {funnelCells.map((c) => (
-            <div key={c.l} className={`rounded-2xl p-3 text-center shadow-sm ${c.l === t.founder.fCancelled ? "bg-orange-50 ring-1 ring-orange-200" : "bg-white ring-1 ring-orange-100"}`}>
+            <div key={c.l} className={`rounded-2xl p-3 text-center shadow-sm ${c.l === t.founder.fCancelled ? "bg-orange-50 ring-1 ring-orange-200" : "bg-white border border-[var(--hairline)]"}`}>
               <div className="text-xl font-bold text-[#e0860c]">{c.v}</div>
               <div className="mt-0.5 text-[11px] leading-tight text-[#e0860c]">{c.l}</div>
             </div>
@@ -279,7 +284,7 @@ export function Founder() {
       {m.topCooks.length > 0 && (
         <div className="mt-4">
           <h2 className="mb-2 text-sm font-bold uppercase tracking-wide text-white/80 drop-shadow">{t.founder.topCooksTitle}</h2>
-          <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-orange-100">
+          <div className="overflow-hidden rounded-2xl bg-white border border-[var(--hairline)] shadow-[var(--e1)]">
             {m.topCooks.map((c, i) => (
               <div key={i} className={`flex items-center justify-between gap-3 px-4 py-3 ${i > 0 ? "border-t border-orange-100" : ""}`}>
                 <div className="flex min-w-0 items-center gap-3">
@@ -297,13 +302,13 @@ export function Founder() {
       )}
 
       {/* пилот — только наличные при получении */}
-      <div className="mt-4 flex items-center gap-3 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-orange-100">
+      <div className="mt-4 flex items-center gap-3 rounded-2xl bg-white p-5 border border-[var(--hairline)] shadow-[var(--e1)]">
         <span className="shrink-0"><CoinsIcon size={26} /></span>
         <span className="text-sm font-medium text-[#e0860c]">{t.founder.cashOnlyNote}</span>
       </div>
 
       {/* заявки на верификацию — одобрение основателем */}
-      <div className="mt-3 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-orange-100">
+      <div className="mt-3 rounded-2xl bg-white p-5 border border-[var(--hairline)] shadow-[var(--e1)]">
         <h2 className="mb-3 flex items-center gap-2 font-bold text-[#e0860c]">
           {t.founder.verifTitle}
           {pending.length > 0 && (
@@ -315,7 +320,7 @@ export function Founder() {
         ) : (
           <div className="space-y-3">
             {pending.map((u) => (
-              <div key={u.id} className="rounded-xl border border-orange-100 bg-orange-50/60 p-3">
+              <div key={u.id} className="rounded-xl border border-[var(--hairline)] bg-orange-50/60 p-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="font-semibold text-[#e0860c]">
@@ -324,8 +329,8 @@ export function Founder() {
                     <div className="flex items-center gap-1 text-xs text-[#e0860c]">{u.phone} · <PinIcon size={12} /> {u.city || "—"}{u.cookProfile ? ` · ${u.cookProfile.kitchenName}` : ""}</div>
                   </div>
                   <div className="flex shrink-0 gap-2">
-                    <button onClick={() => decide(u.id, "approve")} className="rounded-full bg-[#e0860c] px-4 py-1.5 text-sm font-semibold text-white hover:opacity-90">{t.founder.approve}</button>
-                    <button onClick={() => decide(u.id, "decline")} className="rounded-full bg-orange-100 px-4 py-1.5 text-sm font-semibold text-[#e0860c] hover:bg-orange-100">{t.founder.decline}</button>
+                    <button onClick={() => decide(u.id, "approve")} className="rounded-full bg-[#e0860c] px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90">{t.founder.approve}</button>
+                    <button onClick={() => decide(u.id, "decline")} className="rounded-full bg-orange-100 px-4 py-2.5 text-sm font-semibold text-[#e0860c] hover:bg-orange-200">{t.founder.decline}</button>
                   </div>
                 </div>
                 {/* видео + документ для проверки */}

@@ -80,7 +80,7 @@ export function Manifest() {
       <Seo title={ru.title} titleEn={enC.title} description={ru.desc} descriptionEn={enC.desc} path="/manifest" jsonLd={jsonLd} />
 
       <p className="text-sm font-semibold uppercase tracking-widest text-white/70">{c.kicker}</p>
-      <h1 className="mt-2 text-3xl font-black leading-tight drop-shadow sm:text-5xl">{c.h1}</h1>
+      <h1 className="t-h1 mt-2 drop-shadow">{c.h1}</h1>
 
       <div className="mt-7 space-y-5">
         {c.lines.map((line, i) => (
@@ -100,7 +100,7 @@ export function Manifest() {
       <p className="mt-8 border-t border-white/20 pt-6 text-center text-xl font-bold text-white drop-shadow">{c.signoff}</p>
 
       <div className="mt-6 flex flex-wrap justify-center gap-2.5">
-        <Link to="/" className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 font-semibold text-[#e0860c] shadow-sm transition hover:bg-orange-50 active:scale-95">
+        <Link to="/" className="btn-glass inline-flex items-center gap-2 rounded-xl px-5 py-2.5 font-semibold">
           {c.ctaFeed} →
         </Link>
         <Link to="/login?mode=register&role=cook" className="inline-flex items-center gap-2 rounded-xl border border-white/60 px-5 py-2.5 font-semibold text-white transition hover:bg-white/10 active:scale-95">
@@ -117,7 +117,7 @@ export function Manifest() {
         <h2 className="mb-3 text-lg font-bold text-white/90">{c.relatedTitle}</h2>
         <div className="flex flex-wrap gap-2">
           {c.related.map((r) => (
-            <Link key={r.to} to={r.to} className="rounded-full bg-white/90 px-3.5 py-1.5 text-sm font-medium text-[#e0860c] transition hover:bg-white">
+            <Link key={r.to} to={r.to} className="inline-flex min-h-11 items-center rounded-full bg-white/90 px-4 py-1.5 text-sm font-medium text-[#e0860c] transition hover:bg-white">
               {r.label}
             </Link>
           ))}

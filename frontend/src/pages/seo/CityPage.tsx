@@ -35,7 +35,7 @@ export function CookCard({ cook }: { cook: SeoCook }) {
   return (
     <Link
       to={`/cooks/${cook.id}`}
-      className="group block overflow-hidden rounded-3xl bg-white shadow-[0_6px_24px_rgba(176,104,8,0.10)] ring-1 ring-orange-100 transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_44px_rgba(176,104,8,0.20)]"
+      className="group block overflow-hidden rounded-3xl bg-white shadow-[0_6px_24px_rgba(176,104,8,0.10)] border border-[var(--hairline)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_44px_rgba(176,104,8,0.20)]"
     >
       <div className="relative h-44 overflow-hidden bg-orange-50">
         <img
@@ -185,7 +185,7 @@ export function CityPage() {
         <div className="absolute inset-0 rounded-3xl" style={{ background: "rgba(224,134,12,0.30)" }} />
         <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-black/55 via-black/20 to-transparent" />
         <div className="relative px-6 py-10 sm:px-10 sm:py-14">
-          <h1 className="text-3xl font-bold text-white drop-shadow sm:text-4xl">Домашняя еда в {city.prep}</h1>
+          <h1 className="t-h1 text-white drop-shadow">Домашняя еда в {city.prep}</h1>
           <p className="mt-2 max-w-xl text-white/90">
             {empty
               ? `Селина здесь пока не работает: поваров в ${city.prep} ещё нет. Собираем список ожидания — отметьте свой район.`
@@ -206,7 +206,7 @@ export function CityPage() {
       {cityCats.length > 0 && (
         <div className="mb-6 flex flex-wrap gap-2">
           {cityCats.map((cat) => (
-            <Link key={cat.slug} to={`/eda/${city.slug}/${cat.slug}`} className="rounded-full bg-orange-50 px-3.5 py-1.5 text-sm font-medium text-[#e0860c] ring-1 ring-orange-100 transition hover:bg-orange-100">
+            <Link key={cat.slug} to={`/eda/${city.slug}/${cat.slug}`} className="rounded-full bg-orange-50 px-3.5 py-1.5 text-sm font-medium text-[#e0860c] border border-[var(--hairline)] transition hover:bg-orange-100">
               {cap(cat.name)} в {city.prep}
             </Link>
           ))}
@@ -241,7 +241,7 @@ export function CityPage() {
                 <div className="mt-4 flex flex-wrap items-center gap-3">
                   <Link
                     to="/login?mode=register&role=cook"
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#e0860c] px-5 py-2.5 font-semibold text-white shadow-sm transition hover:brightness-105 active:scale-95"
+                    className="btn-solid inline-flex items-center gap-2 rounded-xl px-5 py-2.5 font-semibold"
                   >
                     Открыть витрину в {city.prep}
                   </Link>
@@ -274,7 +274,7 @@ export function CityPage() {
               на русском языке, названная по чужому городу, иначе читается
               как предложение услуги в этой стране. */}
           {foreign && (
-            <p className="mt-4 text-sm leading-relaxed text-[#e0860c]/75">
+            <p className="mt-4 text-sm leading-relaxed text-white/85">
               Сейчас Селина работает только в России. Запуск в {country.prep} потребует
               отдельного решения и выполнения требований местного законодательства: своя
               юрисдикция, свой закон о персональных данных, свой налоговый статус повара.
@@ -292,7 +292,7 @@ export function CityPage() {
         <section className="mt-8">
           <Link
             to={`/blog/${CITY_GUIDES[city.slug]}`}
-            className="block rounded-2xl border border-orange-100 bg-white p-5 shadow-sm transition hover:bg-orange-50"
+            className="block rounded-2xl card p-5 transition hover:bg-orange-50"
           >
             <span className="text-sm font-medium text-[#e0860c]/70">Гид Селины</span>
             <span className="mt-0.5 block font-semibold text-[#e0860c]">
@@ -307,7 +307,7 @@ export function CityPage() {
         <h2 className="mb-4 text-2xl font-bold text-white drop-shadow">Частые вопросы</h2>
         <div className="space-y-3">
           {faqs.map((f) => (
-            <div key={f.q} className="rounded-2xl border border-orange-100 bg-white p-5 shadow-sm">
+            <div key={f.q} className="rounded-2xl card p-5">
               <h3 className="font-semibold text-[#e0860c]">{f.q}</h3>
               <p className="mt-1 text-sm text-[#e0860c]">{f.a}</p>
             </div>
@@ -318,10 +318,10 @@ export function CityPage() {
       {/* другие города */}
       {otherCities.length > 0 && (
         <section className="mt-10">
-          <h2 className="mb-3 text-xl font-bold text-white drop-shadow">Домашняя еда в других городах</h2>
+          <h2 className="t-h2 mb-3 text-white drop-shadow">Домашняя еда в других городах</h2>
           <div className="flex flex-wrap gap-2">
             {otherCities.map((c) => (
-              <Link key={c.slug} to={`/eda/${c.slug}`} className="rounded-full bg-white px-3.5 py-1.5 text-sm font-medium text-[#e0860c] ring-1 ring-orange-100 transition hover:bg-orange-50">
+              <Link key={c.slug} to={`/eda/${c.slug}`} className="inline-flex min-h-11 items-center rounded-full bg-white px-3.5 py-1.5 text-sm font-medium text-[#e0860c] border border-[var(--hairline)] transition hover:bg-orange-50">
                 {c.name}
               </Link>
             ))}

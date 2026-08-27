@@ -74,14 +74,14 @@ export function BlogPost() {
     <div className="mx-auto max-w-2xl">
       <Seo title={`${L.title} — Селина`} description={L.excerpt} path={`/blog/${post.slug}`} type="article" image={post.cover} jsonLd={jsonLd} />
 
-      <Link to="/blog" className="text-sm font-medium text-white/90 hover:underline">← {t.blog.title}</Link>
+      <Link to="/blog" className="-my-2.5 inline-block py-2.5 text-sm font-medium text-white/90 hover:underline">← {t.blog.title}</Link>
 
       <div className="mt-3 overflow-hidden rounded-3xl shadow-lg ring-1 ring-white/30">
         <img src={post.cover} alt={L.title} className="h-56 w-full object-cover sm:h-72" />
       </div>
 
       <article className="mt-5 text-white drop-shadow-sm">
-        <h1 className="text-2xl font-bold sm:text-3xl">{L.title}</h1>
+        <h1 className="t-h2">{L.title}</h1>
         <div className="mt-1 text-sm text-white/80">
           {new Date(post.date).toLocaleDateString(lang === "en" ? "en-US" : "ru-RU", { day: "numeric", month: "long", year: "numeric" })} · {post.readMin} {t.blog.minRead}
         </div>
@@ -112,7 +112,7 @@ export function BlogPost() {
         {/* внутренние ссылки статьи — перелинковка на города/категории/блюда (SEO) */}
         {liveLinks.length > 0 && (
           <div className="mt-7 rounded-2xl border border-white/30 p-5">
-            <div className="mb-2 font-bold text-white">{lang === "en" ? "See also" : "Читайте также"}</div>
+            <h2 className="t-h3 mb-2 text-white">{lang === "en" ? "See also" : "Читайте также"}</h2>
             <ul className="space-y-1.5">
               {liveLinks.map((lnk) => (
                 <li key={lnk.to}>
@@ -127,8 +127,8 @@ export function BlogPost() {
 
         {/* перелинковка: ведём в ленту/города */}
         <div className="mt-7 rounded-2xl glass-card p-5">
-          <div className="mb-2 font-bold text-[#e0860c]">{t.blog.cta}</div>
-          <Link to="/" className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 font-semibold text-[#e0860c] shadow-sm transition hover:bg-orange-50 active:scale-95">
+          <h2 className="t-h3 mb-2 text-[#e0860c]">{t.blog.cta}</h2>
+          <Link to="/" className="btn-solid inline-flex items-center gap-2 rounded-xl px-5 py-2.5 font-semibold">
             {t.blog.ctaButton} →
           </Link>
         </div>
@@ -139,7 +139,7 @@ export function BlogPost() {
           <h2 className="mb-3 text-lg font-bold text-white drop-shadow">{t.blog.more}</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {others.map((p) => (
-              <Link key={p.slug} to={`/blog/${p.slug}`} className="group overflow-hidden rounded-3xl border border-orange-100 bg-white shadow-sm transition hover:shadow-lg">
+              <Link key={p.slug} to={`/blog/${p.slug}`} className="group overflow-hidden rounded-3xl border border-[var(--hairline)] bg-white shadow-[var(--e1)] transition hover:shadow-[var(--e2)]">
                 <div className="h-32 overflow-hidden">
                   <img src={p.cover} alt={postL(p, lang).title} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
                 </div>

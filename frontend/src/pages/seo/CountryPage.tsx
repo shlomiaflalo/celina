@@ -88,7 +88,7 @@ export function CountryPage() {
           <Link
             key={c.slug}
             to={`/eda/${c.slug}`}
-            className="rounded-full bg-white px-3.5 py-1.5 text-sm font-medium text-[#e0860c] border border-[var(--hairline)] transition hover:bg-orange-50"
+            className="inline-flex min-h-11 items-center rounded-full bg-white px-3.5 py-1.5 text-sm font-medium text-[#e0860c] border border-[var(--hairline)] transition hover:bg-orange-50"
           >
             {c.name}
           </Link>

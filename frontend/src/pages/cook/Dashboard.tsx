@@ -20,6 +20,16 @@ export function Dashboard() {
   // держим переключатель в синхроне с сервером (после refresh/навигации)
   useEffect(() => { setOnline(user?.cookProfile?.isOnline ?? false); }, [user]);
 
+  // сколько блюд опубликовано — для чек-листа активации
+  const [dishCount, setDishCount] = useState<number | null>(null);
+  useEffect(() => {
+    const id = user?.cookProfile?.id;
+    if (!id) return;
+    api.get<{ cook: { dishes?: unknown[] } }>(`/cooks/${id}`)
+      .then((r) => setDishCount((r.cook.dishes ?? []).length))
+      .catch(() => setDishCount(null));
+  }, [user?.cookProfile?.id]);
+
   function load() {
     setFailed(false);
     setOrders(null);
@@ -71,6 +81,39 @@ export function Dashboard() {
           {online ? t.cook.online : t.cook.offline}
         </button>
       </div>
+
+      {/* Чек-лист активации: повар — узкое место маркетплейса, и его первая
+          сессия должна вести за руку до первого заказа. Прячется сам, когда
+          все шаги пройдены. */}
+      {user && (!user.isVerified || dishCount === 0 || !online) && (
+        <div className="card mb-6 rounded-2xl p-5">
+          <p className="font-bold text-[#e0860c]">{t.cook.onb.title}</p>
+          <ol className="mt-3 space-y-2.5">
+            {[
+              { done: !!user.isVerified, label: t.cook.onb.verify, to: "/verify", cta: t.verify.goVerify },
+              { done: (dishCount ?? 0) > 0, label: t.cook.onb.dish, to: "/cook/menu", cta: t.nav.menu },
+              { done: online, label: t.cook.onb.online, action: toggleOnline, cta: t.cook.onb.turnOn },
+            ].map((st, i) => (
+              <li key={i} className="flex items-center gap-3">
+                <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold ${st.done ? "bg-[#e0860c] text-white" : "bg-orange-50 text-[#e0860c]"}`}>
+                  {st.done ? "✓" : i + 1}
+                </span>
+                <span className={`min-w-0 flex-1 text-sm font-medium text-[#e0860c] ${st.done ? "opacity-60 line-through" : ""}`}>{st.label}</span>
+                {!st.done && (st.to ? (
+                  <Link to={st.to} className="btn-solid shrink-0 rounded-xl px-3.5 py-2 text-sm font-semibold">{st.cta}</Link>
+                ) : (
+                  <button onClick={st.action} disabled={toggling} className="btn-solid shrink-0 rounded-xl px-3.5 py-2 text-sm font-semibold disabled:opacity-50">{st.cta}</button>
+                ))}
+              </li>
+            ))}
+            <li className="flex items-center gap-3">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-orange-50 text-sm font-bold text-[#e0860c]">4</span>
+              <span className="min-w-0 flex-1 text-sm font-medium text-[#e0860c]">{t.cook.onb.invite}</span>
+              <Link to="/listovki" className="btn-glass shrink-0 rounded-xl px-3.5 py-2 text-sm font-semibold">{t.cook.onb.flyers}</Link>
+            </li>
+          </ol>
+        </div>
+      )}
 
       <div className="mb-6 grid grid-cols-3 gap-3">
         <Stat label={t.dash.active} value={active.length} />

@@ -20,7 +20,7 @@ export function Contact() {
     setForm({ ...form, [k]: e.target.value });
 
   const input =
-    "w-full rounded-xl border border-orange-100 bg-orange-50/40 px-3.5 py-2.5 text-sm outline-none transition focus:border-orange-300 focus:bg-white focus:ring-2 focus:ring-orange-200";
+    "w-full rounded-xl border border-[color:var(--hairline)] bg-orange-50/40 px-3.5 py-2.5 text-sm outline-none transition focus:border-orange-300 focus:bg-white focus:ring-2 focus:ring-orange-200";
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -47,12 +47,12 @@ export function Contact() {
         description={lang === "en" ? "Contact the Celina team: questions about homemade food, cook and buyer support, partnerships." : "Свяжитесь с командой Celina: вопросы о домашней еде, поддержка поваров и покупателей, сотрудничество."}
         path="/contact"
       />
-      <h1 className="mb-2 text-center text-3xl font-bold text-white drop-shadow sm:text-4xl">
+      <h1 className="t-h1 mb-2 text-center text-white drop-shadow">
         {t.contact.title}
       </h1>
       <p className="mx-auto mb-6 max-w-md text-center text-white/90">{t.contact.intro}</p>
 
-      <div className="rounded-3xl border border-orange-100 bg-white/80 p-7 shadow-xl shadow-orange-500/10 backdrop-blur">
+      <div className="rounded-3xl border border-[color:var(--hairline)] bg-white/80 p-7 shadow-xl shadow-orange-500/10 backdrop-blur">
         {sent ? (
           <div className="py-10 text-center">
             <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50 text-3xl text-[#e0860c]">

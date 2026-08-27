@@ -26,7 +26,7 @@ export function BlogList() {
         path="/blog"
         jsonLd={jsonLd}
       />
-      <h1 className="mb-1 text-3xl font-bold text-white drop-shadow sm:text-4xl">{t.blog.title}</h1>
+      <h1 className="t-h1 mb-1 text-white drop-shadow">{t.blog.title}</h1>
       <p className="mb-6 text-white/90 drop-shadow-sm">{t.blog.subtitle}</p>
 
       {/* карточки 2-в-ряд (как везде на сайте) */}
@@ -37,7 +37,7 @@ export function BlogList() {
           <Link
             key={p.slug}
             to={`/blog/${p.slug}`}
-            className="group overflow-hidden rounded-3xl border border-orange-100 bg-white shadow-sm transition hover:shadow-lg"
+            className="group overflow-hidden rounded-3xl border border-[var(--hairline)] bg-white shadow-[var(--e1)] transition hover:shadow-[var(--e2)]"
           >
             <div className="h-44 overflow-hidden">
               <img src={p.cover} alt={L.title} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />

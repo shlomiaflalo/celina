@@ -49,7 +49,7 @@ export function About() {
         )}
       </div>
 
-      <h1 className="mb-4 text-3xl font-bold text-white drop-shadow sm:text-4xl">{t.about.title}</h1>
+      <h1 className="t-h1 mb-4 text-white drop-shadow">{t.about.title}</h1>
 
       {/* вступительный абзац — крупнее, задаёт тон */}
       <p className="mb-6 max-w-2xl text-lg leading-relaxed text-white/95 drop-shadow-sm">{t.about.intro}</p>
@@ -91,7 +91,7 @@ export function About() {
           <p className="mx-auto mb-5 max-w-xl leading-relaxed ">{t.about.ctaText}</p>
           <Link
             to="/"
-            className="inline-flex items-center gap-2 rounded-xl bg-[#e0860c] px-6 py-3 font-semibold text-white shadow-sm transition hover:brightness-105 active:scale-95"
+            className="btn-solid inline-flex items-center gap-2 rounded-xl px-6 py-3 font-semibold"
           >
             {t.about.ctaButton} →
           </Link>
