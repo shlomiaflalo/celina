@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate, Navigate, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { toast } from "../components/Toast";
@@ -97,12 +97,16 @@ export function Login() {
   }
 
   // ручная проверка адреса: геокодер должен найти конкретную точку В ВЫБРАННОМ городе
+  const addrGen = useRef(0);
   async function checkAddress() {
     const a = form.address.trim();
     if (!form.city) { setError(t.auth.chooseCityFirst); return; }
     if (a.length < 5) { setAddrStatus("idle"); setAddrCoords(null); return; }
     setAddrStatus("checking");
+    // поколение запроса: поздний ответ для старого адреса/города игнорируется
+    const gen = ++addrGen.current;
     const r = await geocodeInCity(a, form.city);
+    if (gen !== addrGen.current) return;
     if (r.ok) {
       setAddrStatus("ok");
       setAddrCoords(r.lat != null && r.lng != null ? { lat: r.lat, lng: r.lng } : null);
@@ -259,7 +263,20 @@ export function Login() {
                   {role === "COOK" && (
                     <input className={input} placeholder={t.auth.kitchenName} value={form.kitchenName} onChange={set("kitchenName")} aria-label={t.auth.kitchenName} />
                   )}
-                  <select className={input} value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} aria-label={t.auth.city} required>
+                  <select
+                    className={input}
+                    value={form.city}
+                    onChange={(e) => {
+                      // новый город обнуляет подтверждения старого: иначе
+                      // регистрация в Перми уносила координаты Москвы
+                      setForm({ ...form, city: e.target.value });
+                      setGps(null); setGeoStatus("idle");
+                      setAddrStatus("idle"); setAddrCoords(null);
+                      addrGen.current++;
+                    }}
+                    aria-label={t.auth.city}
+                    required
+                  >
                     <option value="" disabled>{t.auth.city}</option>
                     {/* value — канонический русский город, подпись переводим */}
                     {RU_CITIES.map((c) => (

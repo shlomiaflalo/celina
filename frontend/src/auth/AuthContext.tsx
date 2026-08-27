@@ -70,7 +70,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    if (!getToken()) {
+    const startToken = getToken();
+    if (!startToken) {
       setLoading(false);
       return;
     }
@@ -78,9 +79,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .get<{ user: User }>("/auth/me")
       .then((r) => setUser(r.user))
       .catch((e: Error & { status?: number }) => {
-        // токен чистим только при НАСТОЯЩЕМ 401: временный сбой сети/перезапуск
-        // сервера не должен разлогинивать пользователя навсегда
-        if (e?.status === 401) { setToken(null); setUser(null); }
+        // токен чистим только при НАСТОЯЩЕМ 401 и только если это ВСЁ ЕЩЁ тот
+        // же токен: медленный 401 старого токена не должен стирать свежий,
+        // полученный при входе за это время
+        if (e?.status === 401 && getToken() === startToken) { setToken(null); setUser(null); }
       })
       .finally(() => setLoading(false));
   }, []);

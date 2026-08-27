@@ -52,14 +52,18 @@ export function Cart() {
   const [termsRetry, setTermsRetry] = useState(0);
   useEffect(() => {
     setTermsFailed(false);
+    // отмена: устаревший ответ (после ретрая или удаления повара из корзины)
+    // не должен ни кэшировать, ни поднимать termsFailed заново
+    let cancelled = false;
     cookProfileIds.forEach((id) => {
       if (cooks[id]) return;
       api.get<{ cook: CookProfile }>(`/cooks/${id}`)
-        .then((r) => setCooks((m) => ({ ...m, [id]: r.cook })))
+        .then((r) => { if (!cancelled) setCooks((m) => ({ ...m, [id]: r.cook })); })
         // молча глотать нельзя: без условий повара итог считался без доставки
         // и минимального заказа — сюрприз суммы на последнем шаге
-        .catch(() => setTermsFailed(true));
+        .catch(() => { if (!cancelled) setTermsFailed(true); });
     });
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cookProfileIds.join(","), termsRetry]);
 
@@ -69,12 +73,16 @@ export function Cart() {
     if (!a) { setAddrStatus("idle"); setAddrReason(null); return; }
     if (!looksLikeAddress(a)) { setAddrStatus("invalid"); setAddrReason("format"); return; }
     setAddrStatus("checking");
+    // отмена: поздний ответ геокодера для СТАРОГО текста не имеет права
+    // ставить «подтверждён» мусорному адресу (или «не найден» — исправленному)
+    let cancelled = false;
     const h = setTimeout(async () => {
       const r = await geocodeInCity(a, buyerCity || "");
+      if (cancelled) return;
       setAddrStatus(r.ok ? "valid" : "invalid");
       setAddrReason(r.ok ? null : (r.reason ?? "notFound"));
     }, 700);
-    return () => clearTimeout(h);
+    return () => { cancelled = true; clearTimeout(h); };
   }, [address, buyerCity]);
 
   // всегда видимая плашка лимита — и при пустой, и при полной корзине.

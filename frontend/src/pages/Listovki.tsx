@@ -101,14 +101,15 @@ export function Listovki() {
     return () => { alive = false; };
   }, []);
 
-  // печать одного постера: рендерим его в print-контейнер и зовём диалог печати
+  // Печать одного постера: рендерим его в print-контейнер и зовём диалог.
+  // Сбрасываем контейнер ТОЛЬКО по afterprint: в Safari window.print() не
+  // блокирует скрипт, и мгновенный сброс печатал пустой лист.
   useEffect(() => {
     if (!printKey) return;
-    const t = setTimeout(() => {
-      window.print();
-      setPrintKey(null);
-    }, 60);
-    return () => clearTimeout(t);
+    const done = () => setPrintKey(null);
+    window.addEventListener("afterprint", done);
+    const t = setTimeout(() => window.print(), 60);
+    return () => { clearTimeout(t); window.removeEventListener("afterprint", done); };
   }, [printKey]);
 
   const printing = POSTERS.find((p) => p.key === printKey) ?? null;
@@ -137,9 +138,10 @@ export function Listovki() {
               </div>
               <button
                 onClick={() => { metricaGoal(`poster_print_${p.key}`); setPrintKey(p.key); }}
-                className="btn-solid mt-3 w-full rounded-xl px-4 py-2.5 text-sm font-semibold"
+                disabled={!qrs[p.key]}
+                className="btn-solid mt-3 w-full rounded-xl px-4 py-2.5 text-sm font-semibold disabled:opacity-50"
               >
-                Распечатать
+                {qrs[p.key] ? "Распечатать" : "Готовим QR…"}
               </button>
             </div>
           ))}

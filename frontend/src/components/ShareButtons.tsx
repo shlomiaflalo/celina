@@ -30,10 +30,29 @@ export function ShareButtons({
   const vk = `https://vk.com/share.php?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`;
   const wa = `https://wa.me/?text=${encodeURIComponent(text + " " + url)}`;
   const hit = (ch: string) => { if (goal) metricaGoal(`${goal}_${ch}`); };
-  const copy = () => {
-    navigator.clipboard?.writeText(copyMessage ? `${text} ${url}` : url);
+  const copy = async () => {
+    const payload = copyMessage ? `${text} ${url}` : url;
     hit("copy");
-    toast(t.share.copied);
+    // тост — только при РЕАЛЬНОМ успехе: во встроенных браузерах Telegram/VK
+    // clipboard часто недоступен, и «Скопировано» было бы враньём
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(payload);
+      } else {
+        const ta = document.createElement("textarea");
+        ta.value = payload;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand("copy");
+        ta.remove();
+        if (!ok) throw new Error("copy failed");
+      }
+      toast(t.share.copied);
+    } catch {
+      toast(t.common.error);
+    }
   };
   const btn = "rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#e0860c] shadow-sm ring-1 ring-orange-100 transition hover:bg-orange-50 active:scale-95";
   return (

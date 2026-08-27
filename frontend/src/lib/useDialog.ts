@@ -8,6 +8,11 @@ import { useEffect, useRef } from "react";
 export function useDialog<T extends HTMLElement>(open: boolean, onClose: () => void) {
   const ref = useRef<T>(null);
   const restoreTo = useRef<HTMLElement | null>(null);
+  // onClose живёт в ref: иначе каждая перерисовка родителя (новая функция)
+  // пересоздавала эффект, cleanup ВОЗВРАЩАЛ фокус на кнопку-триггер ПОД
+  // модалкой, и Enter во время «обработки» повторял действие (дубли заказов)
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     if (!open) return;
@@ -24,7 +29,7 @@ export function useDialog<T extends HTMLElement>(open: boolean, onClose: () => v
     (first ?? node)?.focus?.();
 
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") { e.stopPropagation(); onClose(); return; }
+      if (e.key === "Escape") { e.stopPropagation(); onCloseRef.current(); return; }
       if (e.key !== "Tab" || !node) return;
       const items = focusables();
       if (!items.length) return;
@@ -37,7 +42,7 @@ export function useDialog<T extends HTMLElement>(open: boolean, onClose: () => v
       document.removeEventListener("keydown", onKey, true);
       restoreTo.current?.focus?.(); // вернуть фокус на триггер
     };
-  }, [open, onClose]);
+  }, [open]);
 
   return ref;
 }

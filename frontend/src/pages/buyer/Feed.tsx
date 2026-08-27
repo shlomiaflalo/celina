@@ -307,7 +307,7 @@ export function Feed() {
               <div className="mt-3 flex flex-wrap gap-2">
                 {parsed.minRating > 0 && <Crit><StarIcon size={12} className="inline -mt-0.5" /> {parsed.minRating}+</Crit>}
                 {parsed.city && <Crit><PinIcon size={12} /> {parsed.city.charAt(0).toUpperCase() + parsed.city.slice(1)}</Crit>}
-                {parsed.maxDistanceM && (
+                {parsed.maxDistanceM && myLoc && (
                   <Crit>≤ {parsed.maxDistanceM >= 1000 ? `${(parsed.maxDistanceM / 1000).toFixed(parsed.maxDistanceM % 1000 ? 1 : 0)} ${t.feed.km}` : `${parsed.maxDistanceM} ${t.feed.meters}`}</Crit>
                 )}
                 {parsed.openNow && <Crit>{t.feed.openNow}</Crit>}

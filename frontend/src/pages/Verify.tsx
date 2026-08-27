@@ -40,7 +40,7 @@ export function Verify() {
   // пока на проверке — опрашиваем сервер; одобрение откроет доступ автоматически
   useEffect(() => {
     if (status !== "PENDING") return;
-    const iv = setInterval(() => { refresh(); }, 4000);
+    const iv = setInterval(() => { refresh().catch(() => {}); }, 4000);
     return () => clearInterval(iv);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
@@ -180,7 +180,7 @@ export function Verify() {
                 accept="video/*"
                 capture="user"
                 className="sr-only"
-                onChange={(e) => upload(e.target.files?.[0], setVideoUrl, setUpV)}
+                onChange={(e) => { upload(e.target.files?.[0], setVideoUrl, setUpV); e.target.value = ""; }}
                 disabled={upV}
               />
             </label>
@@ -207,7 +207,7 @@ export function Verify() {
                 type="file"
                 accept="image/*,application/pdf"
                 className="sr-only"
-                onChange={(e) => upload(e.target.files?.[0], setDocUrl, setUpD)}
+                onChange={(e) => { upload(e.target.files?.[0], setDocUrl, setUpD); e.target.value = ""; }}
                 disabled={upD}
               />
             </label>
@@ -241,7 +241,7 @@ export function Verify() {
                 {kitchenPhotos.length < 4 && (
                   <label className="flex h-16 w-16 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-orange-300 bg-white text-center text-[10px] font-medium text-[#e0860c] hover:bg-orange-100">
                     {upK ? "…" : "+ " + t.verify.addKitchenPhoto}
-                    <input type="file" accept="image/*" className="sr-only" onChange={(e) => onKitchenPhoto(e.target.files?.[0])} disabled={upK} />
+                    <input type="file" accept="image/*" className="sr-only" onChange={(e) => { onKitchenPhoto(e.target.files?.[0]); e.target.value = ""; }} disabled={upK} />
                   </label>
                 )}
               </div>

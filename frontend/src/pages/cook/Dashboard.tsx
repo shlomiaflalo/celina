@@ -44,9 +44,11 @@ export function Dashboard() {
     setToggling(true);
     try {
       await api.patch("/cooks/me/status", { isOnline: next });
-      await refresh(); // сохраняем статус в сессии, чтобы не сбрасывался при переходах
+      // refresh отдельно: PATCH уже прошёл, и его сбой не должен откатывать
+      // тумблер и пугать «ошибкой» при успешном переключении
+      refresh().catch(() => {});
     } catch (e) {
-      setOnline(!next); // откат при ошибке
+      setOnline(!next); // откат при ошибке САМОГО переключения
       toast(e instanceof Error ? e.message : t.common.error);
     } finally {
       setToggling(false);
@@ -91,7 +93,7 @@ export function Dashboard() {
           <ol className="mt-3 space-y-2.5">
             {[
               { done: !!user.isVerified, label: t.cook.onb.verify, to: "/verify", cta: t.verify.goVerify },
-              { done: (dishCount ?? 0) > 0, label: t.cook.onb.dish, to: "/cook/menu", cta: t.nav.menu },
+              { done: dishCount !== 0, label: t.cook.onb.dish, to: "/cook/menu", cta: t.nav.menu },
               { done: online, label: t.cook.onb.online, action: toggleOnline, cta: t.cook.onb.turnOn },
             ].map((st, i) => (
               <li key={i} className="flex items-center gap-3">

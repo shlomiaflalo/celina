@@ -61,8 +61,13 @@ export function Menu() {
     setUploading(true);
     try {
       const { url } = await api.upload(file);
-      const photos = [...photosOf(editing), url].slice(0, 4);
-      setEditing({ ...editing, photos, photoUrl: photos[0] });
+      // функциональный апдейт: пока файл летел, повар мог править поля или
+      // закрыть форму — устаревшее замыкание стирало правки и воскрешало форму
+      setEditing((cur) => {
+        if (!cur) return cur;
+        const photos = [...photosOf(cur), url].slice(0, 4);
+        return { ...cur, photos, photoUrl: photos[0] };
+      });
     } catch (err) {
       // раньше сбой загрузки был полностью беззвучным — повар не понимал, почему фото не появилось
       toast(err instanceof Error ? err.message : t.common.error);
@@ -84,7 +89,7 @@ export function Menu() {
     setUploadingVideo(true);
     try {
       const { url } = await api.upload(file);
-      setEditing({ ...editing, videoUrl: url });
+      setEditing((cur) => (cur ? { ...cur, videoUrl: url } : cur));
     } catch (err) {
       toast(err instanceof Error ? err.message : t.common.error);
     } finally {

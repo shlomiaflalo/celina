@@ -62,7 +62,7 @@ export function PaymentModal({
     // БЕЗ onClick={close} на фоне: случайный тап по затемнению отменял УЖЕ
     // созданные заказы на последнем шаге воронки. Закрытие — крестик и Esc.
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={t.payment.cashTitle} className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={t.payment.cashTitle} className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         {status === "success" ? (
           <div className="py-8 text-center">
             <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50 text-3xl text-[#e0860c]">

@@ -48,7 +48,7 @@ export function CookProfilePage() {
   // этот повар недоступен для добавления, если в корзине уже 2 ДРУГИХ повара
   const cookBlocked = !!cook && !cookProfileIds.includes(cook.id) && cookProfileIds.length >= maxCooks;
   function tryAdd(dish: Dish) {
-    if (!user) return navigate("/login");
+    if (!user) return navigate(`/login?next=${encodeURIComponent(location.pathname)}`);
     const res = add(dish);
     if (res === "ok") return;
     setCartLimit(
@@ -84,7 +84,7 @@ export function CookProfilePage() {
   // и только после подтверждения создаём заказ (bookDinner)
   function askDinner() {
     if (!cook || bookingRef.current || booked) return;
-    if (!user) { navigate("/login"); return; }
+    if (!user) { navigate(`/login?next=${encodeURIComponent(location.pathname)}`); return; }
     if (!user.isVerified) { navigate("/verify"); return; }
     setConfirmDine(true);
   }
@@ -92,7 +92,7 @@ export function CookProfilePage() {
   async function bookDinner() {
     // синхронная защита от двойного клика (state обновляется асинхронно и пропускает быстрые клики)
     if (!cook || bookingRef.current || booked) return;
-    if (!user) { navigate("/login"); return; }
+    if (!user) { navigate(`/login?next=${encodeURIComponent(location.pathname)}`); return; }
     if (!user.isVerified) { navigate("/verify"); return; }
     bookingRef.current = true;
     setBooking(true);
@@ -273,7 +273,7 @@ export function CookProfilePage() {
             {!isOwner && cook.isOnline && (
               <button
                 onClick={async () => {
-                  if (!user) return navigate("/login");
+                  if (!user) return navigate(`/login?next=${encodeURIComponent(location.pathname)}`);
                   const id = await startCall(cook.id, tr(cook.kitchenName));
                   if (!id) toast(t.video.offline);
                 }}

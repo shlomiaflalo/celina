@@ -37,13 +37,15 @@ export function Profile() {
     if (!a) { setAddrStatus("idle"); setAddrReason(null); setAddrCoords(null); return; }
     if (!looksLikeAddress(a)) { setAddrStatus("invalid"); setAddrReason("format"); setAddrCoords(null); return; }
     setAddrStatus("checking");
+    let cancelled = false;
     const h = setTimeout(async () => {
       const r = await geocodeInCity(a, form.city || "");
+      if (cancelled) return; // поздний ответ для старого текста игнорируем
       setAddrStatus(r.ok ? "valid" : "invalid");
       setAddrReason(r.ok ? null : (r.reason ?? "notFound"));
       setAddrCoords(r.ok && r.lat != null && r.lng != null ? { lat: r.lat, lng: r.lng } : null);
     }, 700);
-    return () => clearTimeout(h);
+    return () => { cancelled = true; clearTimeout(h); };
   }, [form.address, form.city]);
 
   if (!user) return <Spinner />;

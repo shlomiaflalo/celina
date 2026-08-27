@@ -36,7 +36,9 @@ export function CookOrders() {
   // защита от двойного тапа: пока PATCH летит, кнопки карточки заблокированы
   const [acting, setActing] = useState<string | null>(null);
   async function setStatus(id: string, status: OrderStatus) {
-    if (acting) return;
+    // защита от двойного тапа — ПО КАРТОЧКЕ: глобальный guard молча глотал
+    // подтверждённую отмену другой карточки, пока летел чужой PATCH
+    if (acting === id) return;
     setActing(id);
     try {
       await api.patch(`/orders/${id}/status`, { status });
