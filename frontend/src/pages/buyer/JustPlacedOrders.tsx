@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "../../api/client";
 import type { Order } from "../../types";
-import { Spinner } from "../../components/ui";
+import { Spinner, ErrorState } from "../../components/ui";
 import { CheckIcon } from "../../components/icons";
 import { OrderPanel } from "./OrderTracking";
 import { InviteMoment } from "../../components/InviteMoment";
@@ -40,6 +40,9 @@ export function JustPlacedOrders() {
   }, [orders]);
 
   if (!orders) return <Spinner />;
+  // сеть упала → каждая загрузка съелась в null и отфильтровалась: страница
+  // рисовала «Заказ оформлен» и пустоту. Честнее — ошибка с «Повторить».
+  if (ids.length > 0 && orders.length === 0) return <ErrorState onRetry={load} />;
   const multi = orders.length > 1;
 
   return (
@@ -60,7 +63,7 @@ export function JustPlacedOrders() {
       <InviteMoment variant="order" />
 
       <div className="mt-5 text-center">
-        <Link to="/orders" className="text-sm font-medium text-[#e0860c] hover:underline">{t.tracking.back} →</Link>
+        <Link to="/orders" className="text-sm font-medium hover:underline">{t.tracking.back} →</Link>
       </div>
     </div>
   );

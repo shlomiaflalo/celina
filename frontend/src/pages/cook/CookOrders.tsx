@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../../api/client";
 import type { Order, OrderStatus } from "../../types";
-import { Spinner, Badge, Button, ErrorState } from "../../components/ui";
+import { Spinner, Badge, Button, ErrorState, ConfirmModal } from "../../components/ui";
 import { toast } from "../../components/Toast";
 import { PinIcon } from "../../components/icons";
 import { statusTone, NEXT_ACTION } from "./orderStatus";
@@ -31,7 +31,13 @@ export function CookOrders() {
   }
   useEffect(load, []);
 
+  // подтверждение отмены: один случайный тап не должен терять заказ
+  const [cancelId, setCancelId] = useState<string | null>(null);
+  // защита от двойного тапа: пока PATCH летит, кнопки карточки заблокированы
+  const [acting, setActing] = useState<string | null>(null);
   async function setStatus(id: string, status: OrderStatus) {
+    if (acting) return;
+    setActing(id);
     try {
       await api.patch(`/orders/${id}/status`, { status });
       load();
@@ -39,6 +45,8 @@ export function CookOrders() {
       // отклонённый переход (напр. заказ уже отменил покупатель) больше не пропадает молча
       toast(e instanceof Error ? e.message : t.common.error);
       load();
+    } finally {
+      setActing(null);
     }
   }
 
@@ -63,7 +71,8 @@ export function CookOrders() {
           <button
             key={tb}
             onClick={() => setPicked(tb)}
-            className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition ${
+            aria-pressed={tab === tb}
+            className={`flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition ${
               // btn-glass и glass-soft различались ТОЛЬКО глубиной тени — какая
               // вкладка выбрана, понять было нельзя. ring-* здесь не работает:
               // .btn-glass задаёт box-shadow напрямую и перебивает кольцо
@@ -92,7 +101,7 @@ export function CookOrders() {
           {visible.map((o) => {
             const action = NEXT_ACTION[o.status];
             return (
-              <div key={o.id} className="rounded-2xl border border-orange-100 bg-white p-5 shadow-sm">
+              <div key={o.id} className="card p-5">
                 <div className="flex items-center justify-between">
                   <div>
                     <span className="font-medium">{o.buyer?.name}</span>
@@ -111,18 +120,21 @@ export function CookOrders() {
 
                 {o.address && <p className="mt-2 flex items-center gap-1 text-sm "><PinIcon size={14} /> {o.address}</p>}
 
-                <div className="mt-3 flex items-center justify-between border-t border-orange-100 pt-3">
+                <div className="mt-3 flex items-center justify-between border-t border-[color:var(--hairline)] pt-3">
                   <span className="font-semibold">
                     {o.total} {t.common.rub}
                   </span>
                   <div className="flex gap-2">
                     {(o.status === "PENDING" || o.status === "ACCEPTED" || o.status === "COOKING") && (
-                      <Button variant="danger" onClick={() => setStatus(o.id, "CANCELLED")}>
+                      // ghost, не solid: «Отменить» не должна выглядеть как
+                      // главная кнопка рядом с «Принять» — и без подтверждения
+                      // один промах пальцем терял заказ безвозвратно
+                      <Button variant="ghost" disabled={acting === o.id} onClick={() => setCancelId(o.id)}>
                         {t.orders.cancel}
                       </Button>
                     )}
                     {action && (
-                      <Button onClick={() => setStatus(o.id, action.next)}>
+                      <Button disabled={acting === o.id} onClick={() => setStatus(o.id, action.next)}>
                         {(t.orders as any)[action.labelKey]}
                       </Button>
                     )}
@@ -133,6 +145,13 @@ export function CookOrders() {
           })}
         </div>
       )}
+      <ConfirmModal
+        open={!!cancelId}
+        title={t.tracking.cancelConfirm}
+        confirmLabel={t.orders.cancel}
+        onConfirm={() => { if (cancelId) setStatus(cancelId, "CANCELLED"); setCancelId(null); }}
+        onClose={() => setCancelId(null)}
+      />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { getCityStatic, CITY_CATALOG } from "../../lib/cityCatalog";
 import { useTr , plRu, useT } from "../../i18n";
 import { NotFound } from "../NotFound";
 import { WaitlistForm } from "../../components/WaitlistForm";
+import { ShareButtons } from "../../components/ShareButtons";
 import { cityContent } from "../../data/cityContent";
 import { COUNTRIES } from "../../lib/cityCatalog";
 import { StarIcon } from "../../components/icons";
@@ -25,6 +26,7 @@ const CITY_GUIDES: Record<string, string> = {
   chelyabinsk: "domashnyaya-eda-v-chelyabinske",
   krasnoyarsk: "domashnyaya-eda-v-krasnoyarske",
   samara: "domashnyaya-eda-v-samare",
+  perm: "domashnyaya-eda-v-permi",
 };
 
 // Карточка повара — те же классы оформления, что в ленте (дизайн не меняем).
@@ -251,6 +253,23 @@ export function CityPage() {
             </div>
           )}
           <WaitlistForm city={city.name} allowsContact={country.allowsContact} />
+
+          {/* Домовой чат — дистрибуция точно в рынок: одно сообщение в чат
+              дома доносит Селину ровно до соседей этого города. Текст готов,
+              клики считаются целями Метрики (domchat_city_*). */}
+          <div className="mt-6 rounded-2xl bg-white/80 p-4">
+            <p className="font-semibold text-[#e0860c]">Одно сообщение в домовой чат</p>
+            <p className="mt-1 text-sm leading-relaxed text-[#e0860c]/85">
+              Почти у каждого дома в {city.prep} есть чат в Telegram или WhatsApp. Перешлите туда
+              готовый текст — о Селине узнают ровно те соседи, которые могут готовить для вас.
+            </p>
+            <ShareButtons
+              url={`https://celinaeda.ru/eda/${city.slug}?utm_source=domchat&utm_medium=share&utm_campaign=city-${city.slug}`}
+              text={`Соседи, есть сервис домашней еды между соседями — Селина. Кто готовит дома — может продавать порции своим же домом, остальные — заказывать. Деньги через сервис не проходят, оплата наличными при получении. Страница нашего города:`}
+              goal="domchat_city"
+              copyMessage
+            />
+          </div>
           {/* Дисклеймер обязателен на каждой странице вне России: страница
               на русском языке, названная по чужому городу, иначе читается
               как предложение услуги в этой стране. */}

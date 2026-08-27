@@ -47,7 +47,7 @@ export function ReviewForm({ orderId, onDone }: { orderId: string; onDone?: () =
             onClick={() => setRating(n)}
             aria-label={t.a11y.rate(n)}
             aria-pressed={rating === n}
-            className={`transition ${(hover || rating) >= n ? "text-[#e0860c]" : ""}`}
+            className={`transition ${(hover || rating) >= n ? "text-[#e0860c]" : "text-[#e0860c] opacity-25"}`}
           >
             ★
           </button>

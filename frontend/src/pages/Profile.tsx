@@ -68,7 +68,7 @@ export function Profile() {
   }
 
   const input =
-    "w-full rounded-xl border border-orange-100 bg-orange-50/40 px-3.5 py-2.5 text-sm outline-none transition focus:border-orange-300 focus:bg-white focus:ring-2 focus:ring-orange-100";
+    "w-full rounded-xl border border-[color:var(--hairline)] bg-orange-50/40 px-3.5 py-2.5 text-sm outline-none transition focus:border-orange-300 focus:bg-white focus:ring-2 focus:ring-orange-100";
   const label = "mb-1 block text-sm font-medium ";
   const onlyLetters = (v: string) => v.replace(/[^\p{L}\s'-]/gu, "");
   const onlyPhone = (v: string) => v.replace(/[^\d+()\-\s]/g, "");
@@ -136,6 +136,9 @@ export function Profile() {
             {/* с непроверенным адресом сохранить нельзя (пустой адрес — можно) */}
             <Button onClick={save} disabled={busy || (!!form.address.trim() && addrStatus !== "valid")}>{t.profile.save}</Button>
             {saved && <span className="text-sm font-medium text-[#e0860c]">✓ {t.profile.saved}</span>}
+            {!!form.address.trim() && addrStatus === "checking" && (
+              <span className="text-sm opacity-80">{t.cart.addressChecking}</span>
+            )}
           </div>
           <button
             onClick={() => setShowLogout(true)}

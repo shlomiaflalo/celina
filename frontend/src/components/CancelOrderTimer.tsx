@@ -60,11 +60,11 @@ export function CancelOrderTimer({
   }
 
   return (
-    <div className={compact ? "flex items-center gap-2" : "mt-4 flex flex-wrap items-center gap-3 border-t border-orange-100 pt-4"}>
+    <div className={compact ? "flex items-center gap-2" : "mt-4 flex flex-wrap items-center gap-3 border-t border-[color:var(--hairline)] pt-4"}>
       <button
         type="button"
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen(true); }}
-        className="btn-glass inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold"
+        className="btn-glass inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold"
       >
         {t.tracking.cancelOrder}
       </button>

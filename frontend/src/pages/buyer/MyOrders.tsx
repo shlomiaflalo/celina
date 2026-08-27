@@ -20,7 +20,8 @@ export function MyOrders() {
 
   function load() {
     setFailed(false);
-    setOrders(null);
+    // БЕЗ setOrders(null): первый визит и так стартует с null (спиннер), а
+    // перезагрузка после отмены обновляет список НА МЕСТЕ, не пряча экран
     api.get<{ orders: Order[] }>("/orders").then((r) => setOrders(r.orders)).catch(() => setFailed(true));
   }
   useEffect(load, []);

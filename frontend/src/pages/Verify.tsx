@@ -18,6 +18,11 @@ export function Verify() {
   const [upD, setUpD] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // ошибка может родиться у верхнего загрузчика, а рендерится внизу формы —
+  // сама прокручиваемся к ней, иначе на телефоне она остаётся за экраном
+  useEffect(() => {
+    if (error) document.getElementById("kyc-error")?.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [error]);
   // ОТДЕЛЬНОЕ согласие на биометрию (ст.11 152-ФЗ) — не смешивается с общей
   // Политикой; видео-селфи + документ обрабатываются только при этой отметке
   const [bioConsent, setBioConsent] = useState(false);
@@ -174,7 +179,7 @@ export function Verify() {
                 type="file"
                 accept="video/*"
                 capture="user"
-                className="hidden"
+                className="sr-only"
                 onChange={(e) => upload(e.target.files?.[0], setVideoUrl, setUpV)}
                 disabled={upV}
               />
@@ -201,7 +206,7 @@ export function Verify() {
               <input
                 type="file"
                 accept="image/*,application/pdf"
-                className="hidden"
+                className="sr-only"
                 onChange={(e) => upload(e.target.files?.[0], setDocUrl, setUpD)}
                 disabled={upD}
               />
@@ -228,15 +233,15 @@ export function Verify() {
               <div className="text-xs text-[#e0860c]">{t.verify.kitchenHint}</div>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 {kitchenPhotos.map((url) => (
-                  <div key={url} className="relative h-16 w-16 overflow-hidden rounded-lg border border-orange-100">
+                  <div key={url} className="relative h-16 w-16 overflow-hidden rounded-lg border border-[color:var(--hairline)]">
                     <img src={url} alt="" className="h-full w-full object-cover" />
-                    <button type="button" onClick={() => setKitchenPhotos((p) => p.filter((x) => x !== url))} aria-label={t.a11y.removePhoto} className="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-xs text-white">×</button>
+                    <button type="button" onClick={() => setKitchenPhotos((p) => p.filter((x) => x !== url))} aria-label={t.a11y.removePhoto} className="absolute right-0 top-0 p-1.5"><span className="flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-xs text-white">×</span></button>
                   </div>
                 ))}
                 {kitchenPhotos.length < 4 && (
                   <label className="flex h-16 w-16 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-orange-300 bg-white text-center text-[10px] font-medium text-[#e0860c] hover:bg-orange-100">
                     {upK ? "…" : "+ " + t.verify.addKitchenPhoto}
-                    <input type="file" accept="image/*" className="hidden" onChange={(e) => onKitchenPhoto(e.target.files?.[0])} disabled={upK} />
+                    <input type="file" accept="image/*" className="sr-only" onChange={(e) => onKitchenPhoto(e.target.files?.[0])} disabled={upK} />
                   </label>
                 )}
               </div>
@@ -263,11 +268,14 @@ export function Verify() {
         </label>
 
         {error && (
-          <p className="mt-4 rounded-lg bg-orange-50 px-3 py-2 text-sm font-semibold text-[#e0860c]">{error}</p>
+          <p id="kyc-error" role="alert" className="mt-4 rounded-lg bg-orange-50 px-3 py-2 text-sm font-semibold text-[#e0860c]">{error}</p>
         )}
 
         <div className="mt-6">
-          <Button full onClick={submit} disabled={busy || !canSubmit}>
+          {/* НЕ дизейблим по canSubmit: внутри submit() уже написана точная
+              диагностика (needBoth/needCook/needBioConsent) — мёртвая кнопка
+              прятала её, и повар не понимал, чего не хватает */}
+          <Button full onClick={submit} disabled={busy}>
             {busy ? t.verify.submitting : t.verify.submit}
           </Button>
         </div>

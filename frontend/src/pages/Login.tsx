@@ -35,6 +35,11 @@ export function Login() {
   // не сделать. Ссылки-приглашения для повара несут ?mode=register&role=cook.
   const [params] = useSearchParams();
   const wantsCook = params.get("role") === "cook";
+  // «Оформить заказ» гостем вёл на /login, а после входа — на главную:
+  // человек терял корзину. next возвращает его ровно туда, откуда пришёл.
+  const rawNext = params.get("next");
+  const nextPath = rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
+  const afterLogin = (role: string) => (role === "COOK" ? "/cook" : nextPath ?? "/");
   const [mode, setMode] = useState<"login" | "register">(
     params.get("mode") === "register" || wantsCook ? "register" : "login"
   );
@@ -71,7 +76,7 @@ export function Login() {
   const [addrCoords, setAddrCoords] = useState<{ lat: number; lng: number } | null>(null);
 
   // уже вошли? на страницу входа не пускаем — всегда ведём на свою страницу
-  if (user) return <Navigate to={user.role === "COOK" ? "/cook" : "/"} replace />;
+  if (user) return <Navigate to={afterLogin(user.role)} replace />;
 
   function detectLocation() {
     const target = cityCoords(form.city);
@@ -128,7 +133,7 @@ export function Login() {
     try {
       const user = await login(form.phone, form.password, logoutSessionId);
       setDeviceLimit(null);
-      navigate(user.role === "COOK" ? "/cook" : "/");
+      navigate(afterLogin(user.role));
     } catch (err) {
       const e = err as Error & { deviceLimit?: boolean; sessions?: typeof deviceLimit };
       if (e.deviceLimit && e.sessions) {
@@ -157,7 +162,7 @@ export function Login() {
       // KPI-воронка: регистрация (и отдельно — регистрация повара)
       metricaGoal("register");
       if (user.role === "COOK") metricaGoal("cook_signup");
-      navigate(user.role === "COOK" ? "/cook" : "/");
+      navigate(afterLogin(user.role));
       // индикация создания кухни: тост после перехода в кабинет повара
       if (user.role === "COOK") setTimeout(() => toast(t.auth.kitchenCreated), 600);
     } catch (err) {

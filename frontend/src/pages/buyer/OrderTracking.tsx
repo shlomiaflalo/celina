@@ -41,7 +41,7 @@ export function OrderPanel({ order, onReload }: { order: Order; onReload: () => 
               <h1 className="break-words text-xl font-bold">{tr(order.cookProfile?.kitchenName || "")}</h1>
               <p className="text-sm ">{t.tracking.drinkTitle}</p>
             </div>
-            <Badge tone={statusTone(order.status)}>{t.orders.status[order.status]}</Badge>
+            <span role="status"><Badge tone={statusTone(order.status)}>{t.orders.status[order.status]}</Badge></span>
           </div>
 
           <div className="mt-5 flex items-center gap-3 rounded-2xl bg-orange-50 p-4 font-semibold text-[#e0860c]">
@@ -94,7 +94,7 @@ export function OrderPanel({ order, onReload }: { order: Order; onReload: () => 
               const active = i === currentIdx;
               const Ico = STEP_ICON[step];
               return (
-                <li key={step} className="flex items-start gap-3">
+                <li key={step} aria-current={active ? "step" : undefined} className="flex items-start gap-3">
                   <div className="flex flex-col items-center">
                     <div className={`flex h-10 w-10 items-center justify-center rounded-full transition ${reached ? "bg-[#e0860c] text-white shadow" : "bg-orange-50 "} ${active ? "ring-4 ring-orange-200" : ""}`}>
                       <Ico size={20} />

@@ -48,13 +48,20 @@ export function Cart() {
   }, [user?.address]);
 
   // подтягиваем условия каждого повара (доставка, минимальный заказ)
+  const [termsFailed, setTermsFailed] = useState(false);
+  const [termsRetry, setTermsRetry] = useState(0);
   useEffect(() => {
+    setTermsFailed(false);
     cookProfileIds.forEach((id) => {
       if (cooks[id]) return;
-      api.get<{ cook: CookProfile }>(`/cooks/${id}`).then((r) => setCooks((m) => ({ ...m, [id]: r.cook }))).catch(() => {});
+      api.get<{ cook: CookProfile }>(`/cooks/${id}`)
+        .then((r) => setCooks((m) => ({ ...m, [id]: r.cook })))
+        // молча глотать нельзя: без условий повара итог считался без доставки
+        // и минимального заказа — сюрприз суммы на последнем шаге
+        .catch(() => setTermsFailed(true));
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cookProfileIds.join(",")]);
+  }, [cookProfileIds.join(","), termsRetry]);
 
   // настоящая проверка адреса: структурно + геокодер (с дебаунсом)
   useEffect(() => {
@@ -127,9 +134,9 @@ export function Cart() {
   }
 
   async function checkout() {
-    if (!user) { navigate("/login"); return; }
+    if (!user) { navigate("/login?next=" + encodeURIComponent("/cart")); return; }
     if (!user.isVerified) { navigate("/verify"); return; }
-    if (anyBelowMin || !addressOk) return;
+    if (anyBelowMin || !addressOk || termsFailed) return;
     setBusy(true);
     setError(null);
     // создаём отдельный заказ для каждого повара
@@ -215,7 +222,7 @@ export function Cart() {
 
           <div className="space-y-2">
             {g.lines.map((l) => (
-              <div key={l.dish.id} className="flex items-center gap-3 rounded-xl border border-orange-100 bg-white p-3">
+              <div key={l.dish.id} className="flex items-center gap-3 rounded-xl border border-[color:var(--hairline)] bg-white p-3">
                 <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-orange-50">
                   {l.dish.photoUrl ? (
                     <img src={l.dish.photoUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
@@ -228,21 +235,22 @@ export function Cart() {
                   <div className="text-sm text-[#e0860c]">{l.dish.price} {t.common.rub}</div>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <button onClick={() => remove(l.dish.id)} aria-label="−" className="h-7 w-7 rounded-full bg-orange-50 text-lg leading-none hover:bg-orange-100">−</button>
+                  <button onClick={() => remove(l.dish.id)} aria-label={t.a11y.removePortion} className="relative h-7 w-7 rounded-full bg-orange-50 text-lg leading-none after:absolute after:-inset-2 after:content-[''] hover:bg-orange-100">−</button>
                   <span className="w-5 text-center">{l.qty}</span>
                   <button
                     onClick={() => add(l.dish)}
-                    aria-label="+"
+                    aria-label={t.a11y.addPortion}
                     disabled={l.qty >= l.dish.portions}
                     title={l.qty >= l.dish.portions ? t.cart.allPortionsInCart.replace("{x}", String(l.dish.portions)) : undefined}
-                    className="h-7 w-7 rounded-full bg-orange-50 text-lg leading-none transition hover:bg-orange-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="relative h-7 w-7 rounded-full bg-orange-50 text-lg leading-none transition after:absolute after:-inset-2 after:content-[''] hover:bg-orange-100 disabled:cursor-not-allowed disabled:opacity-40"
                   >+</button>
                 </div>
                 <div className="w-20 shrink-0 text-right font-semibold">{l.dish.price * l.qty} {t.common.rub}</div>
               </div>
             ))}
             {g.lines.some((l) => l.qty >= l.dish.portions) && (
-              <p className="px-1 text-xs text-[#e0860c]">
+              // на оранжевом полотне оранжевый текст невидим — плашка на белом
+              <p className="rounded-xl bg-orange-50 px-3 py-2 text-xs font-medium text-[#e0860c]">
                 {t.cart.allPortionsInCart.replace(
                   "{x}",
                   String(g.lines.find((l) => l.qty >= l.dish.portions)!.dish.portions)
@@ -259,7 +267,7 @@ export function Cart() {
         </div>
       ))}
 
-      <div className="mt-2 rounded-xl border border-orange-100 bg-white p-4">
+      <div className="mt-2 rounded-xl border border-[color:var(--hairline)] bg-white p-4">
         <div className="mb-1 flex items-center justify-between">
           <label htmlFor="cart-address" className="text-sm text-[#e0860c]">
             {t.cart.address}{buyerCityLabel ? ` · ${buyerCityLabel}` : ""}
@@ -327,7 +335,7 @@ export function Cart() {
             </div>
           )}
         </div>
-        <div className="mt-2 flex items-center justify-between border-t border-orange-100 pt-2 text-lg font-semibold">
+        <div className="mt-2 flex items-center justify-between border-t border-[color:var(--hairline)] pt-2 text-lg font-semibold">
           <span>{t.cart.total}</span><span>{grandTotal} {t.common.rub}</span>
         </div>
 
@@ -347,7 +355,15 @@ export function Cart() {
         ) : (
           <div className="relative mt-4">
             {placed && <SteamFx />}
-            <Button full onClick={checkout} disabled={busy || placed || anyBelowMin || !addressOk}>
+            {termsFailed && (
+              <div className="mb-3 flex items-center justify-between gap-3 rounded-xl bg-orange-50 px-3 py-2.5 text-sm font-medium text-[#e0860c]">
+                <span>{t.common.loadError}</span>
+                <button type="button" onClick={() => setTermsRetry((v) => v + 1)} className="shrink-0 font-semibold underline underline-offset-2">
+                  {t.common.retry}
+                </button>
+              </div>
+            )}
+            <Button full onClick={checkout} disabled={busy || placed || anyBelowMin || !addressOk || termsFailed}>
               {placed ? `✓ ${t.cart.placed}` : busy ? t.cart.processing : t.cart.checkout}
             </Button>
           </div>

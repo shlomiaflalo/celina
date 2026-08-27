@@ -59,7 +59,9 @@ export function PaymentModal({
   const dialogRef = useDialog<HTMLDivElement>(true, close);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={close}>
+    // БЕЗ onClick={close} на фоне: случайный тап по затемнению отменял УЖЕ
+    // созданные заказы на последнем шаге воронки. Закрытие — крестик и Esc.
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
       <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={t.payment.cashTitle} className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         {status === "success" ? (
           <div className="py-8 text-center">
@@ -80,7 +82,7 @@ export function PaymentModal({
                   <p className="mt-0.5 text-sm font-semibold text-[#e0860c]">{t.cart.fromCook}: {orders[0].cookName}</p>
                 )}
               </div>
-              <button onClick={close} disabled={!canClose} aria-label={t.a11y.close} className="text-2xl leading-none text-[#e0860c] hover:text-[#e0860c] disabled:opacity-40">×</button>
+              <button onClick={close} disabled={!canClose} aria-label={t.a11y.close} className="-m-2 flex h-11 w-11 items-center justify-center rounded-full text-2xl leading-none text-[#e0860c] transition hover:bg-orange-50 disabled:opacity-40">×</button>
             </div>
 
             <div className="mt-4 mb-4 flex items-center gap-3 rounded-2xl bg-orange-50 p-4">
@@ -90,7 +92,7 @@ export function PaymentModal({
 
             {/* при заказе у двух поваров — разбивка по каждому */}
             {multi && (
-              <div className="mb-3 space-y-1.5 rounded-2xl border border-orange-100 p-3">
+              <div className="mb-3 space-y-1.5 rounded-2xl border border-[color:var(--hairline)] p-3">
                 {orders.map((o) => (
                   <div key={o.id} className="flex items-center justify-between text-sm">
                     <span className="font-medium">{t.cart.fromCook}: {o.cookName}</span>

@@ -75,7 +75,7 @@ export function Kitchen() {
   }
 
   const input =
-    "w-full rounded-xl border border-orange-100 px-3.5 py-2.5 text-sm outline-none focus:border-orange-300 focus:ring-2 focus:ring-orange-100";
+    "w-full rounded-xl border border-[color:var(--hairline)] px-3.5 py-2.5 text-sm";
   const label = "mb-1 block text-sm font-medium ";
 
   return (
@@ -84,7 +84,7 @@ export function Kitchen() {
       <p className="mb-5 text-sm ">{t.kitchen.subtitle}</p>
 
       {/* статус приёма заказов */}
-      <div className="mb-5 flex items-center justify-between rounded-2xl border border-orange-100 bg-white p-4 shadow-sm">
+      <div className="mb-5 flex items-center justify-between card p-4">
         <div>
           <div className="font-medium">{t.kitchen.accepting}</div>
           <div className="text-sm ">{online ? t.cook.online : t.cook.offline}</div>
@@ -102,7 +102,7 @@ export function Kitchen() {
         </button>
       </div>
 
-      <div className="space-y-4 rounded-2xl border border-orange-100 bg-white p-6 shadow-sm">
+      <div className="space-y-4 card p-6">
         <div>
           <label htmlFor="kitchen-name" className={label}>{t.kitchen.name}</label>
           {/* maxLength/min/max совпадают с пределами updateSchema на бэкенде:

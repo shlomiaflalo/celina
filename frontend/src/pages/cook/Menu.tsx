@@ -134,7 +134,7 @@ export function Menu() {
   if (failed) return <ErrorState onRetry={load} />;
   if (!dishes) return <Spinner />;
 
-  const input = "w-full rounded-lg border border-orange-200 px-3 py-2 text-sm focus:border-[#f97316] focus:outline-none";
+  const input = "w-full rounded-lg border border-[color:var(--hairline)] px-3 py-2 text-sm";
 
   return (
     <div>
@@ -144,21 +144,21 @@ export function Menu() {
       </div>
 
       {editing && (
-        <div className="mb-6 rounded-2xl border border-[#f97316]/30 bg-white p-5 shadow-sm">
+        <div className="mb-6 card rounded-2xl p-5">
           {/* загрузка фото (до 4) + видео */}
           <div className="mb-4">
             <div className="mb-1.5 text-sm font-medium">{t.cook.photosLabel}</div>
             <div className="flex flex-wrap items-center gap-2">
               {photosOf(editing).map((url) => (
-                <div key={url} className="relative h-20 w-20 overflow-hidden rounded-xl border border-orange-100">
+                <div key={url} className="relative h-20 w-20 overflow-hidden rounded-xl border border-[color:var(--hairline)]">
                   <img src={url} alt="" className="h-full w-full object-cover" />
                   <button
                     type="button"
                     onClick={() => removePhoto(url)}
                     aria-label={t.a11y.removePhoto}
-                    className="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-xs text-white"
+                    className="absolute right-0 top-0 p-1.5"
                   >
-                    ×
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-xs text-white">×</span>
                   </button>
                 </div>
               ))}
@@ -249,8 +249,8 @@ export function Menu() {
                       const cur = editing.allergens ?? [];
                       setEditing({ ...editing, allergens: on ? cur.filter((x) => x !== a) : [...cur, a] });
                     }}
-                    className={`rounded-full px-3 py-1 text-xs font-medium transition ${
-                      on ? "bg-[#e0860c] text-white" : "border border-orange-100 text-[#e0860c] hover:border-orange-200"
+                    className={`rounded-full px-3 py-2 text-xs font-medium transition ${
+                      on ? "bg-[#e0860c] text-white" : "border border-[color:var(--hairline)] text-[#e0860c] hover:border-orange-200"
                     }`}
                   >
                     {t.allergens[a] || a}
@@ -274,6 +274,11 @@ export function Menu() {
           {photosOf(editing).length < MIN_DISH_PHOTOS && (
             <p className="mt-3 flex items-center gap-2 rounded-xl bg-orange-50 px-3.5 py-2.5 text-sm font-medium text-[#e0860c]"><CameraIcon size={18} /> {t.cook.photoRequired}</p>
           )}
+          {(!editing.title || !((editing.price ?? 0) > 0)) && (
+            // у фото объяснение было, а у пустого названия/цены кнопка молча
+            // серела — повар не понимал, что не так, и бросал форму
+            <p className="mt-3 rounded-xl bg-orange-50 px-3.5 py-2.5 text-sm font-medium text-[#e0860c]">{t.cook.titlePriceRequired}</p>
+          )}
           <div className="mt-4 flex gap-2">
             <Button onClick={save} disabled={saving || !editing.title || !((editing.price ?? 0) > 0) || photosOf(editing).length < MIN_DISH_PHOTOS}>{t.cook.save}</Button>
             <Button variant="ghost" onClick={() => setEditing(null)}>{t.cook.cancel}</Button>
@@ -283,7 +288,7 @@ export function Menu() {
 
       <div className="grid gap-3 sm:grid-cols-2">
         {dishes.map((d) => (
-          <div key={d.id} className="flex flex-col rounded-xl border border-orange-100 bg-white p-4">
+          <div key={d.id} className="flex flex-col card rounded-xl p-4">
             <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-orange-50">
                 {d.photoUrl ? (

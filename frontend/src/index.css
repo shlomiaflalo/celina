@@ -669,6 +669,18 @@ input[type="month"]::-webkit-calendar-picker-indicator:hover {
   overflow: hidden;
   line-height: 0;
 }
+/* Завтрак стоит ниже урожая: самая высокая фигура набора — кружка с паром
+   (120px вместе с тенью). Высота полосы равна ей РОВНО, и это не косметика:
+   .day-heap переносит лишние фигуры на вторую строку, а прячет её overflow.
+   При 130px на 320/375 из-под первой строки выглядывала крышка банки со
+   второй — 10 пикселей тёмной полоски, которые читаются как мусор в вёрстке. */
+.day-heap--breakfast { --day-heap-h: 120px; }
+
+/* Пермский набор ниже завтрака: самая высокая фигура — пельмень-ушко,
+   88px + 14px на тень = 102. Высота полосы равна ей РОВНО (см. урок 25.08:
+   лишние 10px показывают вторую строку переноса и читаются как мусор). */
+.day-heap--perm { --day-heap-h: 102px; }
+
 .day-heap-item {
   flex: 0 0 auto;
   display: block;
@@ -751,6 +763,29 @@ input[type="month"]::-webkit-calendar-picker-indicator:hover {
    Поэтому падение снимается целиком — куча остаётся, день по-прежнему виден. */
 @media (prefers-reduced-motion: reduce) {
   .day-fall { display: none; }
+}
+
+/* Пар над кружкой (набор "breakfast", 25.08.2026).
+   Единственное движение дня: три струйки дышат вверх, каждая своим темпом.
+   Анимируется только transform, гаснет пар градиентом внутри SVG — так слой
+   не просит ни маски, ни лишней перерисовки.
+   Замершая струйка, в отличие от замершего в воздухе кабачка, читается как
+   нарисованный пар, а не как баг, — поэтому здесь достаточно снять анимацию,
+   а не прятать графику. */
+.day-steam {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  will-change: transform;
+  animation-name: day-steam-rise;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+@keyframes day-steam-rise {
+  0%, 100% { transform: translateY(4px) scaleY(0.82); }
+  50%      { transform: translateY(-6px) scaleY(1.08); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .day-steam { animation: none; }
 }
 
 /* ───────────────── переходы между страницами ─────────────────
