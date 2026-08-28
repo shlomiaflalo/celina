@@ -31,8 +31,14 @@ function fuzzCoord(v: number | null | undefined): number | null {
 }
 
 export function serializeCook(cook: any) {
+  // ВНИМАНИЕ: user вырезаем из спреда явно. Верхнеуровневые lat/lng ниже
+  // огрубляются до ~110 м, но вложенный user приходил из Prisma с ТОЧНЫМИ
+  // lat/lng — то есть домашний адрес повара уезжал в публичный /api/cooks
+  // мимо всего огрубления. Отдаём наружу только безопасные поля профиля.
+  const { user, activationPaymentId, activationPaidAt, ...rest } = cook;
   return {
-    ...cook,
+    ...rest,
+    user: user ? { name: user.name, city: user.city, isVerified: user.isVerified } : undefined,
     cuisine: csvToArray(cook.cuisine),
     kitchenPhotos: csvToArray(cook.kitchenPhotos),
     dishes: cook.dishes?.map(serializeDish),

@@ -99,6 +99,13 @@ billingRouter.post(
     if (!me) return res.status(403).json({ error: "Только для повара" });
     if (me.cookProfile.activationPaidAt) return res.json({ ok: true, alreadyPaid: true });
 
+    // Платёж обязан быть СВОИМ: без этой сверки один оплаченный paymentId
+    // активировал сколько угодно чужих аккаунтов повара (его достаточно было
+    // подсмотреть или переиспользовать со своего второго аккаунта).
+    if (!me.cookProfile.activationPaymentId || paymentId !== me.cookProfile.activationPaymentId) {
+      return res.status(403).json({ error: "Платёж не принадлежит этому аккаунту" });
+    }
+
     const st = await getActivationPaymentStatus(paymentId);
     if (!st.paid) return res.json({ ok: false, status: st.status });
     const r = await markPaidAndReceipt(me, paymentId);
@@ -141,6 +148,12 @@ billingRouter.post(
     const { cardNumber, email } = z
       .object({ cardNumber: z.string().min(12), email: z.string().email().optional() })
       .parse(req.body);
+    // Симуляционная оплата — только для стенда. Если настроен реальный
+    // провайдер, этот путь обязан быть закрыт: иначе повар «активируется»
+    // бесплатно в обход кассы.
+    if (billingConfigured()) {
+      return res.status(409).json({ error: "Оплата проходит только через провайдера" });
+    }
     const me = await cookOf(req.user!.userId);
     if (!me) return res.status(403).json({ error: "Активация доступна только повару" });
     if (me.cookProfile.activationPaidAt) return res.json({ ok: true, alreadyPaid: true });

@@ -16,8 +16,8 @@ export const ordersRouter = Router();
 const createSchema = z.object({
   cookProfileId: z.string(),
   fulfillment: z.enum(["DELIVERY", "PICKUP"]).default("DELIVERY"),
-  address: z.string().optional(),
-  note: z.string().optional(),
+  address: z.string().trim().max(300).optional(),
+  note: z.string().trim().max(1000).optional(),
   scheduledFor: z.string().datetime().optional(),
   items: z
     .array(z.object({ dishId: z.string(), qty: z.number().int().positive() }))
@@ -63,6 +63,16 @@ ordersRouter.post(
     const recentCooks = new Set(recent.map((o) => o.cookProfileId));
     if (!recentCooks.has(data.cookProfileId) && recentCooks.size >= 2) {
       return res.status(429).json({ error: "Можно заказывать максимум у 2 поваров за 30 минут — попробуйте чуть позже" });
+    }
+
+    // Способ получения обязан быть включён у самого повара: UI кнопку прячет,
+    // но прямой POST создавал заказ на доставку у повара, который возит только
+    // самовывозом (и наоборот) — повар получал невыполнимый заказ.
+    if (data.fulfillment === "DELIVERY" && cook.deliveryEnabled === false) {
+      return res.status(400).json({ error: "Повар не доставляет — выберите самовывоз" });
+    }
+    if (data.fulfillment === "PICKUP" && cook.pickupEnabled === false) {
+      return res.status(400).json({ error: "У этого повара нет самовывоза" });
     }
 
     const deliveryFee = data.fulfillment === "DELIVERY" ? cook.deliveryFee : 0;
@@ -119,7 +129,7 @@ ordersRouter.post(
     // защита от двойного клика (idempotency): если тот же покупатель только что
     // (в течение 90 сек) создал такой же заказ этому повару на ту же сумму — не
     // плодим дубль и не списываем порции дважды, а возвращаем уже созданный заказ.
-    const dup = await prisma.order.findFirst({
+    const dupCandidate = await prisma.order.findFirst({
       where: {
         buyerId: req.user!.userId,
         cookProfileId: data.cookProfileId,
@@ -130,6 +140,15 @@ ordersRouter.post(
       orderBy: { createdAt: "desc" },
       include: { items: true, cookProfile: { select: { kitchenName: true } }, buyer: { select: { name: true } } },
     });
+    // Сверяем СОСТАВ, а не только сумму: разные наборы блюд легко дают
+    // одинаковый итог (борщ 500 ≠ два пирожка по 250), и такой «дубль»
+    // молча съедал второй, реально новый заказ.
+    const sameBasket = (o: { items: { dishId: string | null; qty: number }[] }) => {
+      if (o.items.length !== data.items.length) return false;
+      const want = new Map(data.items.map((i) => [i.dishId, i.qty]));
+      return o.items.every((it) => it.dishId != null && want.get(it.dishId) === it.qty);
+    };
+    const dup = dupCandidate && sameBasket(dupCandidate) ? dupCandidate : null;
     if (dup) return res.status(200).json({ order: dup, deduplicated: true });
 
     class OutOfStock extends Error {

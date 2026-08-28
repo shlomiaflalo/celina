@@ -1,20 +1,26 @@
 import { Router } from "express";
+import { notify } from "../lib/notify.js";
 import { z } from "zod";
 import { prisma } from "../prisma.js";
 import { asyncHandler } from "../middleware/error.js";
-import { requireAuth, requireVerified } from "../middleware/auth.js";
+import { requireAuth, requireVerified, isSessionActive } from "../middleware/auth.js";
 import { rateLimit } from "../middleware/rateLimit.js";
 import { verifyToken } from "../lib/auth.js";
 
 export const gatheringsRouter = Router();
 
 // мягкая авторизация: если есть валидный токен — вернём userId, иначе null
-function optionalUserId(req: { headers: Record<string, unknown>; query: Record<string, unknown> }): string | null {
+async function optionalUserId(req: { headers: Record<string, unknown>; query: Record<string, unknown> }): Promise<string | null> {
   const h = String(req.headers["authorization"] || "");
   const token = h.startsWith("Bearer ") ? h.slice(7) : String(req.query.token || "");
   if (!token) return null;
   try {
-    return verifyToken(token).userId;
+    const payload = verifyToken(token);
+    // Голая проверка подписи игнорировала отзыв сессий: после «выйти везде»
+    // или смены пароля старый токен продолжал открывать адреса и списки
+    // гостей. Сверяем сессию с базой, как это делает requireAuth.
+    if (!(await isSessionActive(payload))) return null;
+    return payload.userId;
   } catch {
     return null;
   }
@@ -37,8 +43,11 @@ function serializeGathering(g: any, viewerId: string | null) {
     coverUrl: g.coverUrl,
     city: g.city,
     address: canSeeAddress ? g.address : null,
-    lat: g.lat,
-    lng: g.lng,
+    // Адрес прятали, а координаты отдавали всем — по ним дом хоста находится
+    // за один клик на карте. Точные — только хосту и записавшимся; остальным
+    // огрублённые до ~1 км (город/район на карте виден, подъезд — нет).
+    lat: canSeeAddress ? g.lat : g.lat == null ? null : Math.round(g.lat * 100) / 100,
+    lng: canSeeAddress ? g.lng : g.lng == null ? null : Math.round(g.lng * 100) / 100,
     startsAt: g.startsAt,
     maxSeats: g.maxSeats,
     pricePerGuest: g.pricePerGuest,
@@ -48,7 +57,12 @@ function serializeGathering(g: any, viewerId: string | null) {
     isHost,
     myGuests: myRsvp?.guests ?? 0,
     host: g.host ? { id: g.host.id, name: g.host.name } : undefined,
-    attendees: going.map((r: any) => ({ name: r.user?.name ?? "", guests: r.guests })),
+    // Полные имена всех гостей отдавались анонимам: список «кто придёт домой
+    // к человеку в такой-то день» — не публичные данные. Гостям и хосту —
+    // имена, случайному посетителю — только числа мест.
+    attendees: viewerId
+      ? going.map((r: any) => ({ name: r.user?.name ?? "", guests: r.guests }))
+      : [],
     createdAt: g.createdAt,
   };
 }
@@ -63,7 +77,7 @@ gatheringsRouter.get(
   "/",
   asyncHandler(async (req, res) => {
     const { city, upcoming } = req.query as Record<string, string>;
-    const viewerId = optionalUserId(req as any);
+    const viewerId = await optionalUserId(req as any);
     const gatherings = await prisma.gathering.findMany({
       where: {
         status: { not: "CANCELLED" },
@@ -82,7 +96,7 @@ gatheringsRouter.get(
 gatheringsRouter.get(
   "/:id",
   asyncHandler(async (req, res) => {
-    const viewerId = optionalUserId(req as any);
+    const viewerId = await optionalUserId(req as any);
     const g = await prisma.gathering.findUnique({ where: { id: req.params.id }, include: withRelations });
     if (!g) return res.status(404).json({ error: "Застолье не найдено" });
     res.json({ gathering: serializeGathering(g, viewerId) });
@@ -94,7 +108,7 @@ const createSchema = z.object({
   description: z.string().max(2000).optional(),
   coverUrl: z.string().min(1, "Добавьте фото места или хозяина"), // фото обязательно
 
-  city: z.string().optional(),
+  city: z.string().max(80).optional(),
   address: z.string().max(300).optional(),
   lat: z.number().min(-90).max(90).optional(),
   lng: z.number().min(-180).max(180).optional(),
@@ -188,6 +202,17 @@ gatheringsRouter.delete(
     if (!g) return res.status(404).json({ error: "Застолье не найдено" });
     if (g.hostId !== req.user!.userId) return res.status(403).json({ error: "Только организатор может отменить" });
     await prisma.gathering.update({ where: { id: g.id }, data: { status: "CANCELLED" } });
+    // Гости узнавали об отмене, только открыв страницу: у сервиса есть
+    // и уведомления, и SSE — просто их здесь не звали. Теперь зовём.
+    const going = await prisma.gatheringRsvp.findMany({
+      where: { gatheringId: req.params.id, status: "GOING" },
+      select: { userId: true },
+    });
+    await Promise.all(
+      going.map((r) =>
+        notify(r.userId, { type: "gathering_cancelled", title: g.title, body: "Застолье отменено организатором" }).catch(() => {})
+      )
+    );
     res.json({ ok: true });
   })
 );

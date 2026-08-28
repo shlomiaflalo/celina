@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "../prisma.js";
 import { asyncHandler } from "../middleware/error.js";
 import { requireAuth, requireRole } from "../middleware/auth.js";
-import { serializeDish, arrayToCsv } from "../lib/serialize.js";
+import { serializeDish, arrayToCsv, csvToArray } from "../lib/serialize.js";
 
 export const dishesRouter = Router();
 
@@ -30,13 +30,18 @@ dishesRouter.get(
 // Разумные пределы: без них повар мог сохранить название в 200 символов или
 // цену 999999999 — карточка блюда в ленте разъезжается и вытесняет кнопку
 // «В корзину» за край. Значения совпадают с maxLength/max в форме меню.
+/** Допустимая ссылка на медиа: наша загрузка или обычный http(s)-адрес. */
+const mediaUrl = (v: string) => v === "" || v.startsWith("/uploads/") || /^https?:\/\//.test(v);
+
 const dishSchema = z.object({
   title: z.string().min(1).max(80),
   description: z.string().max(500).optional(),
   price: z.number().positive().max(100000),
-  photoUrl: z.string().optional(),
-  photos: z.array(z.string()).max(4).optional(),
-  videoUrl: z.string().nullable().optional(),
+  // Медиа — только ссылки (свои загрузки /uploads/... или http(s)), с лимитом
+  // длины: без него в публичную ленту улетал двухмегабайтный data:-URI.
+  photoUrl: z.string().max(300).refine(mediaUrl, "Некорректная ссылка").optional(),
+  photos: z.array(z.string().max(300).refine(mediaUrl, "Некорректная ссылка")).max(4).optional(),
+  videoUrl: z.string().max(300).refine(mediaUrl, "Некорректная ссылка").nullable().optional(),
   category: z.string().default("горячее"),
   portions: z.number().int().min(0).max(500).default(0),
   prepTimeMin: z.number().int().min(0).max(1440).default(30),
@@ -116,8 +121,16 @@ dishesRouter.put(
     if (!dish || dish.cookProfileId !== cookProfileId) {
       return res.status(404).json({ error: "Блюдо не найдено" });
     }
-    // нельзя убрать все фото — в карточке всегда должно быть фото
-    if (data.photos !== undefined && photoCount(data) < 1) {
+    // Нельзя убрать все фото — в карточке всегда должно быть фото.
+    // Раньше условие смотрело только на photos, и PUT {photoUrl:""} снимал
+    // последнее фото в обход инварианта.
+    if (
+      (data.photos !== undefined || data.photoUrl !== undefined) &&
+      photoCount({
+        photos: data.photos ?? csvToArray(dish.photos),
+        photoUrl: data.photoUrl ?? dish.photoUrl ?? undefined,
+      }) < 1
+    ) {
       return res.status(400).json({ error: "Добавьте хотя бы одно фото блюда" });
     }
     const { tags, photos, allergens, cookAt, ...rest } = data;

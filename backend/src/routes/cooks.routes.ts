@@ -1,8 +1,9 @@
 import { Router } from "express";
+import { isOperatingCity } from "../lib/operatingCities.js";
 import { z } from "zod";
 import { prisma } from "../prisma.js";
 import { asyncHandler } from "../middleware/error.js";
-import { requireAuth, requireRole } from "../middleware/auth.js";
+import { requireAuth, requireRole, isSessionActive } from "../middleware/auth.js";
 import { verifyToken } from "../lib/auth.js";
 import { serializeCook, arrayToCsv } from "../lib/serialize.js";
 
@@ -43,7 +44,12 @@ cooksRouter.get(
     let requesterId: string | null = null;
     const header = req.headers.authorization;
     if (header?.startsWith("Bearer ")) {
-      try { requesterId = verifyToken(header.slice(7)).userId; } catch { /* гость */ }
+      try {
+        const payload = verifyToken(header.slice(7));
+        // отозванная сессия («выйти везде», сброс пароля) не должна открывать
+        // скрытые блюда: считаем такой запрос гостевым
+        if (await isSessionActive(payload)) requesterId = payload.userId;
+      } catch { /* гость */ }
     }
     const cook = await prisma.cookProfile.findUnique({
       where: { id: req.params.id },
@@ -104,6 +110,11 @@ cooksRouter.put(
   requireRole("COOK"),
   asyncHandler(async (req, res) => {
     const data = updateSchema.parse(req.body);
+    // Тот же барьер, что и при регистрации: без него профиль повара
+    // «переезжал» в нерабочую страну и попадал в чужие ленты.
+    if (data.city && !isOperatingCity(data.city)) {
+      return res.status(400).json({ error: "Селина пока работает только в России" });
+    }
     const { cuisine, ...rest } = data;
     const cook = await prisma.cookProfile.update({
       where: { userId: req.user!.userId },

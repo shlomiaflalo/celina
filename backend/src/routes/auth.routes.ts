@@ -164,6 +164,22 @@ authRouter.post(
     }
 
     const sid = await createSession(user.id, req);
+    // Проверка «сколько сессий» и создание новой — два отдельных запроса, и
+    // параллельные входы проскакивали лимит вдвоём. Перепроверяем ПОСЛЕ
+    // создания: если лимит превышен, гасим самые старые лишние сессии —
+    // ограничение соблюдается по факту, а не по гонке.
+    const after = await activeSessions(user.id);
+    if (after.length > MAX_DEVICES) {
+      const extra = after
+        .slice()
+        .sort((a, b) => new Date(a.lastSeenAt).getTime() - new Date(b.lastSeenAt).getTime())
+        .filter((x) => x.id !== sid)
+        .slice(0, after.length - MAX_DEVICES);
+      await prisma.session.updateMany({
+        where: { id: { in: extra.map((x) => x.id) } },
+        data: { revokedAt: new Date() },
+      });
+    }
     const token = signToken({ userId: user.id, role: user.role as Role, sid });
     res.json({ token, user: sanitize(user) });
   })
@@ -278,6 +294,12 @@ authRouter.put(
   requireAuth,
   asyncHandler(async (req, res) => {
     const data = updateMeSchema.parse(req.body);
+    // Регистрация проверяет город (Селина работает только в России), а правка
+    // профиля — нет: аккаунт «переезжал» в Ереван и обходил границу, ради
+    // которой всё и сделано (оферта, налоговый статус повара, персданные).
+    if (data.city && !isOperatingCity(data.city)) {
+      return res.status(400).json({ error: "Селина пока работает только в России" });
+    }
     if (data.phone) {
       const ex = await prisma.user.findUnique({ where: { phone: data.phone } });
       if (ex && ex.id !== req.user!.userId) {
@@ -309,14 +331,23 @@ authRouter.put(
   })
 );
 
+/**
+ * Ссылки на KYC-материалы обязаны быть НАШИМИ приватными загрузками.
+ * Раньше сюда принималась любая строка, и злоумышленник мог записать
+ * https://evil.example/... — панель основателя автоматически загружала этот
+ * URL при разборе заявки, раскрывая его IP и подставляя чужой контент в
+ * самый привилегированный экран. Владельца пути проверяем в обработчике.
+ */
+const KYC_PATH = /^\/api\/uploads\/kyc\/[a-z0-9]+\/[0-9a-f]{32}\.[a-z0-9]{2,5}$/i;
+
 const verifySchema = z.object({
-  videoUrl: z.string().min(1),
-  docUrl: z.string().min(1),
+  videoUrl: z.string().min(1).regex(KYC_PATH, "Некорректная ссылка на файл"),
+  docUrl: z.string().min(1).regex(KYC_PATH, "Некорректная ссылка на файл"),
   // отдельное согласие на биометрию (ст.11 152-ФЗ) — обязательно
   biometricConsent: z.boolean().optional(),
   // для поваров — безопасность пищи (обязательно)
   hygieneAccepted: z.boolean().optional(),
-  kitchenPhotos: z.array(z.string()).max(4).optional(),
+  kitchenPhotos: z.array(z.string().regex(KYC_PATH, "Некорректная ссылка на файл")).max(4).optional(),
   foodSafetySigned: z.boolean().optional(),
 });
 
@@ -329,6 +360,13 @@ authRouter.post(
   requireAuth,
   asyncHandler(async (req, res) => {
     const data = verifySchema.parse(req.body);
+    // Путь обязан вести в приватную папку САМОГО заявителя: иначе можно
+    // сослаться на чужую (или подсмотренную) загрузку.
+    const own = `/api/uploads/kyc/${req.user!.userId}/`;
+    const urls = [data.videoUrl, data.docUrl, ...(data.kitchenPhotos ?? [])];
+    if (urls.some((u) => !u.startsWith(own))) {
+      return res.status(400).json({ error: "Некорректная ссылка на файл" });
+    }
     const me = await prisma.user.findUnique({ where: { id: req.user!.userId } });
     if (!me) return res.status(404).json({ error: "Пользователь не найден" });
 
@@ -396,6 +434,24 @@ authRouter.post(
   asyncHandler(async (req, res) => {
     const { identifier } = z.object({ identifier: z.string().min(3) }).parse(req.body);
     const user = await prisma.user.findFirst({ where: { OR: [{ phone: identifier }, { email: identifier }] } });
+    // Троттлинг ведётся по САМОМУ идентификатору, а не только по найденному
+    // пользователю: иначе 429 приходил лишь на существующие аккаунты и сам
+    // становился оракулом существования.
+    {
+      const now = Date.now();
+      const key = `id:${identifier.trim().toLowerCase()}`;
+      const probes = (resetSendLog.get(key) ?? []).filter((ts) => ts > now - 3600_000);
+      if (probes.length >= RESET_SENDS_PER_HOUR) {
+        const retryAfterSec = Math.ceil((probes[0] + 3600_000 - now) / 1000);
+        res.setHeader("Retry-After", String(retryAfterSec));
+        return res.status(429).json({
+          error: "Лимит запросов кода исчерпан (3 в час) — попробуйте позже",
+          retryAfterSec,
+        });
+      }
+      probes.push(now);
+      resetSendLog.set(key, probes);
+    }
     if (user) {
       // лимит 3 отправки в час на аккаунт → на 4-й раз честный отказ с таймером
       const now = Date.now();
@@ -430,10 +486,15 @@ authRouter.post(
       }
       sends.push(now);
       resetSendLog.set(user.id, sends);
-      return res.json({ sent: true, to: mask(user.email || user.phone), expiresInMin: 15 });
+      // маска считается от ВВЕДЁННОГО идентификатора, а не от найденного:
+      // иначе ответ для существующего и несуществующего аккаунта различался
+      return res.json({ sent: true, to: mask(identifier), expiresInMin: 15 });
     }
-    // не раскрываем, существует ли аккаунт
-    res.json({ sent: true, expiresInMin: 15 });
+    // Не раскрываем, существует ли аккаунт: тело ответа обязано быть
+    // идентичным. Раньше поле `to` приходило только для реальных аккаунтов —
+    // один запрос давал точный ответ «есть/нет», то есть перебор всей базы
+    // телефонов. Теперь ответ одинаковый в обеих ветках.
+    res.json({ sent: true, to: mask(identifier), expiresInMin: 15 });
   })
 );
 
