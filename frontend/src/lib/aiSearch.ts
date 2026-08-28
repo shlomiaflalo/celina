@@ -1,3 +1,4 @@
+import { RU_CITIES as RU_CITY_NAMES } from "./ruCities";
 /**
  * Умный разбор запроса на естественном языке, напр.:
  *  борщ 4 звезды рядом 100 метров / borscht 4+ stars within 100m open now.
@@ -67,11 +68,25 @@ const CITY_MAP: Record<string, string> = {
   "ростов-на-дону": "ростов-на-дону", "ростов": "ростов-на-дону", "rostov": "ростов-на-дону",
 };
 
+/**
+ * Реальный ли это город (по справочнику координат), даже если его нет в
+ * CITY_MAP. Нужен, чтобы нечёткое исправление опечаток не «чинило» города,
+ * которые никто не ломал.
+ */
+function isKnownCity(lower: string): boolean {
+  return RU_CITY_NAMES.some((c) => c.toLowerCase() === lower);
+}
+
 /** Привести название города (любой язык/написание) к каноническому русскому, или null. */
 export function canonicalCity(text: string | null | undefined): string | null {
   if (!text) return null;
   const t = text.toLowerCase().trim().replace(/\s+/g, " ");
   if (CITY_MAP[t] !== undefined) return CITY_MAP[t] || null;
+  // Нечёткий поиск ниже исправляет ОПЕЧАТКИ («масква» → «москва»). Но если
+  // введён реальный город, которого просто нет в справочнике, исправлять
+  // нечего: раньше «Омск» превращался в «Москву», а «Рязань» — в «Казань»,
+  // и человек получал ленту чужого города, будучи уверен, что искал свой.
+  if (isKnownCity(t)) return null;
   let best = Infinity, hit: string | null = null;
   for (const k in CITY_MAP) {
     if (!CITY_MAP[k]) continue;

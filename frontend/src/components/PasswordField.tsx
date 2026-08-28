@@ -64,11 +64,29 @@ export function PasswordField({
   async function copy() {
     // копировать можно ТОЛЬКО в режиме показа — иначе пользователь скопирует вслепую
     if (!shown || !value) return;
+    // «Скопировано» обязано означать, что пароль ДЕЙСТВИТЕЛЬНО в буфере:
+    // сгенерированный пароль нигде больше не хранится, и ложный успех = пароль
+    // потерян. Во встроенных браузерах clipboard часто недоступен — там фолбэк.
     try {
-      await navigator.clipboard?.writeText(value);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(value);
+      } else {
+        const ta = document.createElement("textarea");
+        ta.value = value;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand("copy");
+        ta.remove();
+        if (!ok) throw new Error("copy failed");
+      }
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1500);
-    } catch { /* буфер недоступен — молча */ }
+    } catch {
+      // молчим только в логах — пользователю не показываем ложный успех
+      setCopied(false);
+    }
   }
 
   function suggest() {

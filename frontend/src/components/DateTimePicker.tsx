@@ -96,10 +96,29 @@ export function DateTimePicker({
         .format(new Date(selected.getFullYear(), selected.getMonth(), selected.getDate(), hour, minute))
     : "";
 
+  /**
+   * Проверка ВРЕМЕНИ, а не только дня. minDay блокировал прошедшие даты в
+   * календаре, но на СЕГОДНЯ пропускал любой час: можно было выбрать 09:00,
+   * когда на часах 14:00, и сохранить застолье, которое уже прошло.
+   */
+  function tooEarly(d: Date, h: number, m: number): boolean {
+    if (!minDate) return false;
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, m) < minDate;
+  }
+
   function pickDay(d: Date) {
-    onChange(toValue(d, hour, minute));
+    let h = hour, m = minute;
+    if (tooEarly(d, h, m)) {
+      // подтягиваем к ближайшему допустимому времени вместо прошедшего
+      h = minDate!.getHours();
+      m = Math.ceil(minDate!.getMinutes() / 5) * 5;
+      if (m > 55) { m = 0; h = Math.min(23, h + 1); }
+      setHour(h); setMinute(m);
+    }
+    onChange(toValue(d, h, m));
   }
   function setTime(h: number, m: number) {
+    if (selected && tooEarly(selected, h, m)) return; // прошедшее время не выбираем
     setHour(h); setMinute(m);
     if (selected) onChange(toValue(selected, h, m));
   }

@@ -31,7 +31,9 @@ export function useFavorites() {
   const toggle = useCallback((id: string) => {
     const cur = read();
     const next = cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id];
-    localStorage.setItem(KEY, JSON.stringify(next));
+    // приватный режим Safari бросает на setItem: избранное тогда живёт хотя бы
+    // в пределах сессии, а не роняет обработчик клика целиком
+    try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* не сохранится */ }
     setIds(next);
     window.dispatchEvent(new Event("celina-favs"));
   }, []);

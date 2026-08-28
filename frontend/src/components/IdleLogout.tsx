@@ -22,7 +22,18 @@ export function IdleLogout() {
 
   useEffect(() => {
     if (!user) return;
-    // вход/появление на странице считаем активностью
+    // Сначала ЧИТАЕМ отметку, потом пишем. Раньше каждый монтаж (то есть любая
+    // перезагрузка страницы) штамповал «сейчас», и брошенная сессия на чужом
+    // компьютере жила вечно: F5 обнулял счётчик неактивности.
+    let last = 0;
+    try { last = Number(localStorage.getItem(KEY) || 0); } catch { /* приватный режим */ }
+    if (last && Date.now() - last >= IDLE_MS) {
+      // час бездействия уже истёк, пока вкладка была закрыта — выходим сразу
+      try { sessionStorage.setItem("celina_signout_reason", "idle"); } catch { /* нет хранилища */ }
+      logout();
+      navigate("/login");
+      return;
+    }
     try { localStorage.setItem(KEY, String(Date.now())); } catch { /* приватный режим */ }
 
     const mark = () => {

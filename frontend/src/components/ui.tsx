@@ -31,12 +31,15 @@ export function ConfirmModal({
   confirmLabel,
   onConfirm,
   onClose,
+  busy = false,
 }: {
   open: boolean;
   title: string;
   confirmLabel: string;
   onConfirm: () => void;
   onClose: () => void;
+  /** Идёт запрос: кнопки заблокированы, чтобы не отправить действие дважды. */
+  busy?: boolean;
 }) {
   const t = useT();
   const dialogRef = useDialog<HTMLDivElement>(open, onClose);
@@ -51,8 +54,10 @@ export function ConfirmModal({
       <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={title} className="w-full max-w-xs rounded-3xl bg-white p-6 text-center shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <p className="mb-5 text-base font-semibold text-[#e0860c]">{title}</p>
         <div className="flex gap-2">
-          <Button variant="ghost" full onClick={onClose}>{t.common.cancel}</Button>
-          <Button full onClick={onConfirm}>{confirmLabel}</Button>
+          {/* busy блокирует обе кнопки на время запроса: второй тап по
+              «Удалить» отправлял разрушительное действие дважды */}
+          <Button variant="ghost" full disabled={busy} onClick={onClose}>{t.common.cancel}</Button>
+          <Button full disabled={busy} onClick={onConfirm}>{confirmLabel}</Button>
         </div>
       </div>
     </div>,

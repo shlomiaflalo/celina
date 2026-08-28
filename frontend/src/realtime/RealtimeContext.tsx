@@ -69,6 +69,9 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
   }
 
   function markRead(id?: string) {
+    // Повторный клик по уже прочитанному уведомлению не должен «съедать»
+    // счётчик: раньше два клика по одному письму занижали число непрочитанных.
+    if (id && !notifications.some((n) => n.id === id && !n.read)) return;
     setNotifications((ns) => ns.map((n) => (!id || n.id === id ? { ...n, read: true } : n)));
     setUnread((u) => (id ? Math.max(0, u - 1) : 0));
     api.post("/events/notifications/read", id ? { id } : {}).catch(() => {});

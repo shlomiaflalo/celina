@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { getToken } from "../api/client";
 import type { Dish } from "../types";
 import { useAuth } from "../auth/AuthContext";
 
@@ -78,6 +79,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [lines]);
 
+  // Синхронизация между вкладками: без неё вторая вкладка держала устаревшую
+  // корзину и затирала ею свежую при первом же изменении — а покупатель мог
+  // оформить один и тот же заказ дважды.
+  useEffect(() => {
+    const sync = (e: StorageEvent) => {
+      if (e.key !== null && e.key !== CART_KEY) return;
+      const fresh = loadCart();
+      owner.current = fresh.owner;
+      setLines(fresh.lines);
+    };
+    window.addEventListener("storage", sync);
+    return () => window.removeEventListener("storage", sync);
+  }, []);
+
   // Корзина привязана к владельцу, записанному РЯДОМ с ней в localStorage
   // (а не к ref в памяти — тот сбрасывается при каждой перезагрузке, из-за чего
   // корзина утекала следующему аккаунту после 401-разлогина). Правила:
@@ -88,6 +103,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (loading) return; // профиль ещё грузится — решение принимать рано
     const id = user?.id ?? null;
     if (id === null) {
+      // ВАЖНО: «профиль не доехал» ≠ «пользователь вышел». Если токен на месте,
+      // а /auth/me упал (сеть, 500), корзину трогать нельзя — раньше человек
+      // с плохим соединением открывал сайт и терял всё, что набрал.
+      if (getToken()) return;
       if (owner.current !== null) {
         owner.current = null;
         setLines([]);
