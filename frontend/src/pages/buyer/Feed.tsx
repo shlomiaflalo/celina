@@ -197,7 +197,16 @@ export function Feed() {
   }, [cooks, parsed, cuisine, drinkOnly, favOnly, favs, distM, myLoc]);
   const aiActive = q.trim().length > 0;
 
-  if (failed) return <ErrorState onRetry={loadCooks} />;
+  // Недоступный API НЕ должен гасить главную страницу целиком.
+  //
+  // Раньше здесь стоял голый ErrorState: при падении сервера (или при чисто
+  // статическом хостинге, где API вообще нет) человек видел «не удалось
+  // загрузить» вместо сайта — включая прилавок, приглашение повару и весь
+  // SEO-блок, которым сервер не нужен вовсе.
+  //
+  // Теперь лента честно сообщает о недоступности узкой строкой, а страница
+  // продолжает работать: витрина, предложение повару и навигация на месте.
+  const apiDown = failed;
   // ВАЖНО: НЕ блокируем всю страницу спиннером, пока грузится /api/cooks —
   // иначе после входа несколько секунд виден пустой оранжевый экран. Каркас
   // (герой, поиск, чипы) рендерим сразу, а загрузку показываем только в области
@@ -357,7 +366,22 @@ export function Feed() {
         ))}
       </div>
 
-      {cooks === null ? (
+      {apiDown && (
+        <div className="mb-4 flex items-center justify-between gap-3 rounded-xl bg-orange-50 px-3.5 py-2.5 text-sm font-medium text-[#e0860c]">
+          <span>{t.common.loadError}</span>
+          <button type="button" onClick={loadCooks} className="shrink-0 font-semibold underline underline-offset-2">
+            {t.common.retry}
+          </button>
+        </div>
+      )}
+      {apiDown ? (
+        // сервер недоступен: показываем то, ради чего сервер не нужен —
+        // витрину-пример и предложение стать поваром района
+        <>
+          <StorefrontPreview />
+          <FirstCookInvite />
+        </>
+      ) : cooks === null ? (
         // Пока список едет — прилавок, а не четыре серых прямоугольника.
         //
         // Это ещё и то, что видит краулер: страница собирается статикой, а на

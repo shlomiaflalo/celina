@@ -14,7 +14,8 @@
     "db:reset": "prisma db push --force-reset && tsx prisma/seed.ts",
     "create-founder": "tsx prisma/createFounder.ts",
     "reset-data": "tsx prisma/resetData.ts",
-    "demo:refresh": "tsx prisma/refreshGatherings.ts"
+    "demo:refresh": "tsx prisma/refreshGatherings.ts",
+    "test": "tsx --test src/__tests__/*.test.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

@@ -75,7 +75,14 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
   }
 
   // ───────── WebRTC helpers ─────────
+  // Поколение медиазапроса. Промпт «разрешить камеру» живёт столько, сколько
+  // человек на него смотрит; за это время звонок может закончиться. Раньше
+  // ответ «Разрешить» после отбоя включал камеру НАВСЕГДА: остановить её было
+  // уже некому и нечем — интерфейса звонка на экране нет.
+  const mediaGen = useRef(0);
+
   function cleanupMedia() {
+    mediaGen.current++; // всё, что разрешат после этого момента, — устарело
     pcRef.current?.getSenders().forEach((s) => s.track?.stop());
     pcRef.current?.close();
     pcRef.current = null;
@@ -88,13 +95,22 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
 
   async function getLocalMedia(): Promise<MediaStream | null> {
     if (localRef.current) return localRef.current;
+    const gen = mediaGen.current;
+    // поток, приехавший после завершения звонка, немедленно гасим
+    const stale = (st: MediaStream) => {
+      if (gen === mediaGen.current) return false;
+      st.getTracks().forEach((t) => t.stop());
+      return true;
+    };
     try {
       const s = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      if (stale(s)) return null;
       localRef.current = s; setLocalStream(s); setMicOn(true); setCamOn(true);
       return s;
     } catch {
       try {
         const s = await navigator.mediaDevices.getUserMedia({ audio: true });
+        if (stale(s)) return null;
         localRef.current = s; setLocalStream(s); setCamOn(false);
         return s;
       } catch { return null; }
@@ -109,7 +125,11 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
     pc.ontrack = (e) => setRemoteStream(e.streams[0]);
     pc.onconnectionstatechange = () => {
       if (pc.connectionState === "connected") setCall((c) => (c ? { ...c, state: "connected" } : c));
-      if (["failed", "disconnected", "closed"].includes(pc.connectionState)) endCall(false);
+      // «disconnected» — обычный кратковременный блип сети (переключение
+      // Wi-Fi/LTE), из него соединение штатно возвращается. Раньше он мгновенно
+      // рвал разговор, а собеседник об этом даже не узнавал. Рвём только по
+      // «failed» — и сообщаем второй стороне.
+      if (pc.connectionState === "failed") endCall(true);
     };
     pcRef.current = pc;
     return pc;
@@ -225,11 +245,34 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    const onEnd = () => { cleanupMedia(); setCall(null); };
+    // Отбой/отказ обязан относиться к КОНКРЕТНОМУ звонку и гасить плашку
+    // входящего. Раньше: звонящий отменял вызов, у повара плашка «входящий»
+    // висела вечно, и «Принять» включало камеру для звонка, которого уже нет.
+    // при каждом (пере)подключении сервер шлёт ready — на реконнекте
+    // подтягиваем пропущенное, иначе новые заказы терялись до перезагрузки
+    es.addEventListener("ready", () => { refreshNotifs(); });
+
+    const onEnd = (e: Event) => {
+      let callId = "";
+      try { callId = JSON.parse((e as MessageEvent).data || "{}").callId || ""; } catch { /* нет тела */ }
+      setIncoming((i) => (i && callId && i.callId === callId ? null : i));
+      const c = callRef.current;
+      if (callId && c && c.callId !== callId) return; // отбой чужого звонка
+      cleanupMedia();
+      setCall(null);
+    };
     es.addEventListener("call:declined", onEnd);
     es.addEventListener("call:hangup", onEnd);
 
-    return () => es.close();
+    // Полная уборка: раньше здесь закрывался только SSE, а камера с микрофоном
+    // продолжали работать после выхода из аккаунта — индикатор записи горел,
+    // а экран звонка висел поверх страницы входа с мёртвым сигналингом.
+    return () => {
+      es.close();
+      cleanupMedia();
+      setCall(null);
+      setIncoming(null);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
